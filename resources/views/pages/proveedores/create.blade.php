@@ -155,11 +155,22 @@
                 comuna: "El campo comuna es obligatorio",
 
             },
+
             submitHandler: function(form) {
+                var data= {
+                    rut: $('#rut').inputmask('unmaskedvalue'),
+                    razon_social: $('#razon_social').val(),
+                    giro: $('#giro').val(),
+                    direccion: $('#direccion').val(),
+                    comuna: $('#comuna').val(),
+                    telefono: $('#telefono').val(),
+                    correcto_contacto: $('#correcto_contacto').val(),
+                    web: $('#web').val()
+                };
                 $.ajax({
                     type: "POST",
                     url: '/api/proveedores',
-                    data: $(form).serialize(), // serializes the form's elements.
+                    data: data, // serializes the form's elements.
                     success: function(data){
                         Swal.fire({
                             title: "Proveedor guardado exitosamente",
