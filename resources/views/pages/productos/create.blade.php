@@ -115,7 +115,6 @@
 
 @push('custom-scripts')
     <script>
-        $("#precio_costo").inputmask('numeric', { prefix: '$ ', radixPoint:',', groupSeparator:'.', rightAlign: false });
         $("#storeForm").validate({
             rules: {
                 sku: {
@@ -163,7 +162,6 @@
                     es_afecto: $('#es_afecto').val(),
                     se_vende: $('#se_vende').val(),
                     se_compra: $('#se_compra').val(),
-                    precio_costo: $('#precio_costo').inputmask('unmaskedvalue')
                 };
                 $.ajax({
                     type: "POST",

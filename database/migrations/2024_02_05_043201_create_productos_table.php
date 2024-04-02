@@ -21,7 +21,6 @@ return new class extends Migration
             $table->boolean('es_afecto')->default(false);
             $table->boolean('se_compra')->default(false);;
             $table->boolean('se_vende')->default(false);;
-            $table->bigInteger('precio_costo');
             $table->timestamps();
         });
     }

@@ -85,12 +85,7 @@
                                                     El producto se puede comprar
                                                 </label>
                                             </div>
-                                            <div class="mb-2">
-                                                <label class="form-label">Precio costo</label>
-                                                <input type="text" name="precio_costo" id="precio_costo" class="form-control"
-                                                    placeholder="Ingrese el precio costo del producto"
-                                                    value="{{$producto->precio_costo}}">
-                                            </div>
+
                                             <div class="mb-2">
                                                 <label class="form-label">Lista de precio</label>
                                                 <select class="form-control" name="lista_precio" id="lista_precio">
