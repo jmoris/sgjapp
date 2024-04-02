@@ -403,7 +403,7 @@
                             text: "La información ingresada es correcta y fue procesada exitosamente.",
                             icon: "success"
                         }).then((result) => {
-                            window.location.href = "/productos/{{ $producto->id }}#venta";
+                            window.location.href = "/productos/editar/{{ $producto->id }}#venta";
                         });
                     } else {
                         Swal.fire({
@@ -453,7 +453,7 @@
                             text: "La información ingresada es correcta y fue procesada exitosamente.",
                             icon: "success"
                         }).then((result) => {
-                            window.location.href = "/productos/{{ $producto->id }}#compra";
+                            window.location.href = "/productos/editar/{{ $producto->id }}#compra";
                         });
                     } else {
                         Swal.fire({
