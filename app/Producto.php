@@ -4,10 +4,12 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Multitenancy\Models\Concerns\UsesTenantConnection;
+
 
 class Producto extends Model
 {
-    use HasFactory;
+    use HasFactory, UsesTenantConnection;
 
     public function unidades(){
         return $this->hasOne(Unidad::class, 'id', 'unidad_id');

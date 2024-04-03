@@ -9,6 +9,7 @@ use App\User;
 use Database\Seeders\ComunasRegionesSeeder;
 use Database\Seeders\RolesPermisosSeeder;
 use Illuminate\Database\Seeder;
+use Spatie\Multitenancy\Models\Tenant;
 
 class DatabaseSeeder extends Seeder
 {
@@ -19,6 +20,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        Tenant::checkCurrent()
+           ? $this->runTenantSpecificSeeders()
+           : $this->runLandlordSpecificSeeders();
+
+    }
+
+    public function runTenantSpecificSeeders()
+    {
+        $tenant = Tenant::current();
         $this->call(RolesPermisosSeeder::class);
         $this->call(ComunasRegionesSeeder::class);
         $user = new User();
@@ -44,11 +54,11 @@ class DatabaseSeeder extends Seeder
 
         $config = new Config();
         $config->key = "emisor_razonsocial";
-        $config->value = "CONSTRUCTORA JOREMET LIMITADA";
+        $config->value = $tenant->name;
         $config->save();
         $config = new Config();
         $config->key = "emisor_rut";
-        $config->value = "76737584-0";
+        $config->value = $tenant->rut;
         $config->save();
         $config = new Config();
         $config->key = "emisor_direccion";
@@ -75,5 +85,22 @@ class DatabaseSeeder extends Seeder
         $config->value = "FABRICACION DE PRODUCTOS METALICOS PARA USO
         ESTRUCTURAL";
         $config->save();
+    }
+
+    public function runLandlordSpecificSeeders()
+    {
+        $tenant = Tenant::create([
+            'rut' => '77192227-9',
+            'name' => 'INGENIERIA Y CONSTRUCCION SOLUCIONTOTAL CHILE LIMITADA',
+            'domain' => 'soluciontotal.cl',
+            'database' => 'sgjapp_soluciontotal'
+        ]);
+        $tenant = Tenant::create([
+            'rut' => '19587757-2',
+            'name' => 'JESÚS EDUARDO MORIS HERNÁNDEZ',
+            'domain' => 'jesusmoris.cl',
+            'database' => 'sgjapp_jesusmoris'
+        ]);
+        // run landlord specific seeders
     }
 }

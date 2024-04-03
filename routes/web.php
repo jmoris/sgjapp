@@ -19,16 +19,19 @@ use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\UserController;
 use App\Producto;
-
-Route::get('/', function(){
-    return redirect('/dashboard');
-});
+use App\Tenant;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 
 Route::get('login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('login', [AuthController::class, 'doLogin']);
+Route::get('/', function(){
+    return Redirect::to('/dashboard');
+});
 
 
-Route::middleware(['auth:web'])->group(function () {
+Route::middleware(['auth:web', 'tenant'])->group(function () {
+
     Route::get('/dashboard', function () {
         return view('dashboard');
     });

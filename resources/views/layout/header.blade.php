@@ -94,7 +94,9 @@
             <div class="mb-3">
               <img style="background-color: gainsboro" class="wd-80 ht-80 rounded-circle" src="{{ url('https://freesvg.org/img/abstract-user-flat-4.png') }}" alt="">
             </div>
-            @php $currentUser = Auth::user(); @endphp
+            @php
+            $currentUser = Auth::user();
+            @endphp
             <div class="text-center">
               <p class="tx-16 fw-bolder">{{ $currentUser->name.' '.$currentUser->lastname }}</p>
               <p class="tx-12 text-muted">{{ $currentUser->email }}</p>

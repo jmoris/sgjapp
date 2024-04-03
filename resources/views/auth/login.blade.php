@@ -20,6 +20,15 @@
                                 @csrf
 
                                 <div class="mb-3">
+                                    <label for="userEmail" class="form-label">RUT</label>
+                                    <input type="rut" class="form-control" name="rut" id="userRut"
+                                        placeholder="Ingrese el RUT">
+                                    @error('rut')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+
+                                <div class="mb-3">
                                     <label for="userEmail" class="form-label">Email</label>
                                     <input type="email" class="form-control" name="email" id="userEmail"
                                         placeholder="Ingrese su correo electrónico">

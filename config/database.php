@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'mysql'),
+    'default' => env('DB_CONNECTION', 'tenant'),
 
     /*
     |--------------------------------------------------------------------------
@@ -34,6 +34,23 @@ return [
     */
 
     'connections' => [
+        'tenant' => [
+            'driver' => 'pgsql',
+            'database' => null,
+            'host' => '127.0.0.1',
+            'username' => 'postgres',
+            'password' => 'Moris.234',
+            // And other options if needed ...
+        ],
+
+        'landlord' => [
+            'driver' => 'pgsql',
+            'database' => 'sgjapp_landlord',
+            'host' => '127.0.0.1',
+            'username' => 'postgres',
+            'password' => 'Moris.234',
+            // And other options if needed ...
+        ],
 
         'sqlite' => [
             'driver' => 'sqlite',

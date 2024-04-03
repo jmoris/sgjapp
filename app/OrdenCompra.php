@@ -4,10 +4,11 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Multitenancy\Models\Concerns\UsesTenantConnection;
 
 class OrdenCompra extends Model
 {
-    use HasFactory;
+    use HasFactory, UsesTenantConnection;
 
     protected $fillable = [
         'monto_neto', 'monto_iva', 'monto_total',

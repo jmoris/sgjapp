@@ -52,11 +52,11 @@ class ProveedorController extends Controller
     public function store(Request $request){
         try{
             $validator = Validator::make($request->all(), [
-                'rut' => 'required|unique:proveedors',
+                'rut' => 'required|unique:tenant.proveedors',
                 'razon_social' => 'required',
                 'giro' => 'required',
                 'direccion' => 'required',
-                'comuna' => 'required|exists:comunas,id',
+                'comuna' => 'required|exists:tenant.comunas,id',
                 'telefono' => '',
                 'correo_contacto' => '',
                 'web' => ''
@@ -98,7 +98,7 @@ class ProveedorController extends Controller
                 'razon_social' => 'required',
                 'giro' => 'required',
                 'direccion' => 'required',
-                'comuna' => 'required|exists:comunas,id',
+                'comuna' => 'required|exists:tenant.comunas,id',
                 'telefono' => '',
                 'correo_contacto' => '',
                 'web' => ''

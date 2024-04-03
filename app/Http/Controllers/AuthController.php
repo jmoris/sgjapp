@@ -6,10 +6,11 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Validator;
-
+use Spatie\Multitenancy\Models\Tenant;
 
 class AuthController extends Controller
 {
@@ -18,14 +19,19 @@ class AuthController extends Controller
 	}
 
 	public function doLogout(){
+        $tenant = Tenant::current();
+        $tenant->forget();
 		Auth::logout(); // logging out user
 		return Redirect::to('login'); // redirection to login screen
 	}
 
 	public function doLogin(Request $request){
+        $tenant = Tenant::whereRut($request->rut)->first();
+        Cookie::forget('tenant');
+        Cookie::queue(Cookie::forever('tenant', encrypt($tenant->id)));
 		// Creating Rules for Email and Password
 		$rules = array(
-			'email' => 'required|email|exists:users,email', // make sure the email is an actual email
+			'email' => 'required|email|exists:tenant.users,email', // make sure the email is an actual email
 			'password' => 'required',
             'remember_me' => 'boolean'
 			// password has to be greater than 3 characters and can only be alphanumeric and
@@ -36,6 +42,7 @@ class AuthController extends Controller
             'email.exists' => 'El correo ingresado no existe en la base de datos',
             'password.required' => 'La contraseña es obligatoria'
         ];
+
 		// checking all field
         $input = $request->all();
 		$validator = Validator::make($input, $rules, $msg);
@@ -59,7 +66,6 @@ class AuthController extends Controller
                 Log::info("Usuario conectado: " . $user->id);
                 User::where('id', $user->id)->update(['last_login' => Carbon::now()]);
                 return Redirect::to('/dashboard');
-				// do whatever you want on success
 			}else{
 
                 return Redirect::to('login')

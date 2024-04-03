@@ -29,7 +29,7 @@ class MaestroController extends Controller
     public function storeUnidad(Request $request){
         try{
             $validator = Validator::make($request->all(), [
-                'nombre' => 'required|unique:unidads',
+                'nombre' => 'required|unique:tenant.unidads',
                 'abreviacion' => 'required',
 
             ]);
@@ -75,7 +75,7 @@ class MaestroController extends Controller
         try{
             $validator = Validator::make($request->all(), [
                 'codigo_interno' => '',
-                'nombre' => 'required|unique:categorias',
+                'nombre' => 'required|unique:tenant.categorias',
                 'descripcion' => 'required',
             ]);
 
@@ -106,7 +106,7 @@ class MaestroController extends Controller
         try{
             $validator = Validator::make($request->all(), [
                 'codigo_interno' => '',
-                'nombre' => 'required|unique:lista_precios',
+                'nombre' => 'required|unique:tenant.lista_precios',
             ]);
 
             if($validator->fails()){
