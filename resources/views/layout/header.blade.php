@@ -4,6 +4,9 @@
   </a>
   <div class="navbar-content">
     <ul class="navbar-nav">
+        <li class="nav-item">
+            <b>{{ \App\Helpers\Ajustes::getEmisor()['razon_social'] }}</b>
+        </li>
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="appsDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <i data-feather="grid"></i>
@@ -109,11 +112,11 @@
                 <span>Modificar Información</span>
               </a>
             </li>
-            <li class="dropdown-item py-2">
-              <a href="/auth/logout" class="text-body ms-0">
+            <li class="dropdown-item py-2" onclick="location.href='/auth/logout'">
+              <div class="text-body ms-0">
                 <i class="me-2 icon-md" data-feather="log-out"></i>
                 <span>Cerrar Sesión</span>
-              </a>
+              </div>
             </li>
           </ul>
         </div>

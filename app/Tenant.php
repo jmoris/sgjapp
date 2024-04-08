@@ -15,14 +15,10 @@ class Tenant extends \Spatie\Multitenancy\Models\Tenant
 
     protected static function booted(){
         static::creating(function(Tenant $tenant){
-
-            $query = "CREATE DATABASE 'sgjapp_".$tenant->database."'";
+            $query = "CREATE DATABASE ".$tenant->database;
             DB::statement($query);
         });
 
-        static::creating(function(Tenant $tenant){
-            Artisan::call("tenant:aristan \"migrate --database=tenant\"");
-        });
     }
 
 }

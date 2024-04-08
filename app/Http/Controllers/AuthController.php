@@ -15,20 +15,30 @@ use Spatie\Multitenancy\Models\Tenant;
 class AuthController extends Controller
 {
     public function showLogin(){
-	    return view('auth.login');
+        $tenants = Tenant::all();
+
+	    return view('auth.login', ['empresas' => $tenants]);
 	}
 
 	public function doLogout(){
         $tenant = Tenant::current();
         $tenant->forget();
-		Auth::logout(); // logging out user
-		return Redirect::to('login'); // redirection to login screen
+        Cookie::forget('tenant');
+		auth()->logout(); // logging out user
+        session()->flush();
+		return Redirect::to('dashboard'); // redirection to login screen
 	}
 
 	public function doLogin(Request $request){
-        $tenant = Tenant::whereRut($request->rut)->first();
         Cookie::forget('tenant');
+        $tenant = Tenant::whereRut($request->rut)->first();
+        if(!$tenant) {
+            return back()->withErrors([
+            'rut' 	=> 'No existen empresas asociadas al RUT',
+            ])->withInput();
+        }
         Cookie::queue(Cookie::forever('tenant', encrypt($tenant->id)));
+
 		// Creating Rules for Email and Password
 		$rules = array(
 			'email' => 'required|email|exists:tenant.users,email', // make sure the email is an actual email
@@ -59,15 +69,17 @@ class AuthController extends Controller
 			);
 			// attempt to do the login
 			if (Auth::guard('web')->attempt($userdata, $request->remember_me)){
-                $request->session()->regenerate();
-
 				// validation successful
                 $user = Auth::user();
-                Log::info("Usuario conectado: " . $user->id);
+
+                Log::info("---------------------------------------------------");
+                Log::info("Cookie Tenant: ".decrypt(Cookie::get('tenant')));
+                Log::info("Estado Auth:". (Auth::check()?'Conectado':'Desconectado') );
+                Log::info("Usuario conectado: ".json_encode($user));
+
                 User::where('id', $user->id)->update(['last_login' => Carbon::now()]);
                 return Redirect::to('/dashboard');
 			}else{
-
                 return Redirect::to('login')
                             ->withErrors(['password' => 'La contraseña ingresada no es correcta'])->withInput($request->except('password')); // send back all errors to the login form
 			}

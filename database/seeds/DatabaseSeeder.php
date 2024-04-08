@@ -89,18 +89,6 @@ class DatabaseSeeder extends Seeder
 
     public function runLandlordSpecificSeeders()
     {
-        $tenant = Tenant::create([
-            'rut' => '77192227-9',
-            'name' => 'INGENIERIA Y CONSTRUCCION SOLUCIONTOTAL CHILE LIMITADA',
-            'domain' => 'soluciontotal.cl',
-            'database' => 'sgjapp_soluciontotal'
-        ]);
-        $tenant = Tenant::create([
-            'rut' => '19587757-2',
-            'name' => 'JESÚS EDUARDO MORIS HERNÁNDEZ',
-            'domain' => 'jesusmoris.cl',
-            'database' => 'sgjapp_jesusmoris'
-        ]);
-        // run landlord specific seeders
+
     }
 }
