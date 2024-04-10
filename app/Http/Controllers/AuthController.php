@@ -31,13 +31,14 @@ class AuthController extends Controller
 
 	public function doLogin(Request $request){
         Cookie::forget('tenant');
+
         $tenant = Tenant::whereRut($request->rut)->first();
         if(!$tenant) {
             return back()->withErrors([
             'rut' 	=> 'No existen empresas asociadas al RUT',
             ])->withInput();
         }
-        Cookie::queue(Cookie::forever('tenant', $tenant->id));
+        Cookie::queue(Cookie::forever('tenant', encrypt($tenant->id)));
 
 		// Creating Rules for Email and Password
 		$rules = array(
@@ -46,6 +47,7 @@ class AuthController extends Controller
             'remember_me' => 'boolean'
 			// password has to be greater than 3 characters and can only be alphanumeric and
         );
+
         $msg = [
             'email.required' => 'El correo es obligatorio',
             'email.email' => 'El formato del correo es incorrecto',
@@ -73,7 +75,7 @@ class AuthController extends Controller
                 $user = Auth::user();
 
                 Log::info("---------------------------------------------------");
-                Log::info("Cookie Tenant: ".(Cookie::get('tenant')));
+                Log::info("Cookie Tenant: ".decrypt(Cookie::get('tenant')));
                 Log::info("Estado Auth:". (Auth::check()?'Conectado':'Desconectado') );
                 Log::info("Usuario conectado: ".json_encode($user));
 
