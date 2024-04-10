@@ -72,6 +72,8 @@ class AuthController extends Controller
 			// attempt to do the login
 			if (Auth::guard('web')->attempt($userdata, $request->remember_me)){
                 $request->session()->regenerate();
+                $tenant->makeCurrent();
+
 				// validation successful
                 $user = Auth::user();
 
