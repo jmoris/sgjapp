@@ -30,6 +30,7 @@ class AuthController extends Controller
 	}
 
 	public function doLogin(Request $request){
+        Cookie::forget('tenant');
         $tenant = Tenant::whereRut($request->rut)->first();
         if(!$tenant) {
             return back()->withErrors([
@@ -45,7 +46,6 @@ class AuthController extends Controller
             'remember_me' => 'boolean'
 			// password has to be greater than 3 characters and can only be alphanumeric and
         );
-
         $msg = [
             'email.required' => 'El correo es obligatorio',
             'email.email' => 'El formato del correo es incorrecto',
@@ -69,8 +69,6 @@ class AuthController extends Controller
 			);
 			// attempt to do the login
 			if (Auth::guard('web')->attempt($userdata, $request->remember_me)){
-                $request->session()->regenerate();
-
 				// validation successful
                 $user = Auth::user();
 
@@ -78,7 +76,6 @@ class AuthController extends Controller
                 Log::info("Cookie Tenant: ".decrypt(Cookie::get('tenant')));
                 Log::info("Estado Auth:". (Auth::check()?'Conectado':'Desconectado') );
                 Log::info("Usuario conectado: ".json_encode($user));
-                Log::info("---------------------------------------------------");
 
                 User::where('id', $user->id)->update(['last_login' => Carbon::now()]);
                 return Redirect::to('/dashboard');
