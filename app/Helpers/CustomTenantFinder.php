@@ -17,7 +17,7 @@ class CustomTenantFinder extends TenantFinder
         if ($request->hasCookie('tenant')) {
             $accountId = $request->cookie('tenant');
 
-            $accountId = decrypt($accountId);
+            $accountId = ($accountId);
 
             $account = $this->getTenantModel()::find($accountId);
 

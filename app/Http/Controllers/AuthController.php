@@ -37,7 +37,7 @@ class AuthController extends Controller
             'rut' 	=> 'No existen empresas asociadas al RUT',
             ])->withInput();
         }
-        Cookie::queue(Cookie::forever('tenant', encrypt($tenant->id)));
+        Cookie::queue(Cookie::forever('tenant', $tenant->id));
         $tenant->makeCurrent();
 
 		// Creating Rules for Email and Password
@@ -74,7 +74,7 @@ class AuthController extends Controller
                 $user = Auth::user();
 
                 Log::info("---------------------------------------------------");
-                Log::info("Cookie Tenant: ".decrypt(Cookie::get('tenant')));
+                Log::info("Cookie Tenant: ".(Cookie::get('tenant')));
                 Log::info("Estado Auth:". (Auth::check()?'Conectado':'Desconectado') );
                 Log::info("Usuario conectado: ".json_encode($user));
 
