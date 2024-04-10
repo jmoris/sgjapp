@@ -30,8 +30,6 @@ class AuthController extends Controller
 	}
 
 	public function doLogin(Request $request){
-        Cookie::forget('tenant');
-
         $tenant = Tenant::whereRut($request->rut)->first();
         if(!$tenant) {
             return back()->withErrors([
@@ -72,7 +70,6 @@ class AuthController extends Controller
 			// attempt to do the login
 			if (Auth::guard('web')->attempt($userdata, $request->remember_me)){
                 $request->session()->regenerate();
-                $tenant->makeCurrent();
 
 				// validation successful
                 $user = Auth::user();
