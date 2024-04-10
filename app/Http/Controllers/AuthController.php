@@ -38,6 +38,7 @@ class AuthController extends Controller
             ])->withInput();
         }
         Cookie::queue(Cookie::forever('tenant', encrypt($tenant->id)));
+        $tenant->makeCurrent();
 
 		// Creating Rules for Email and Password
 		$rules = array(
