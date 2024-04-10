@@ -22,9 +22,9 @@ class LoginListener
     public function handle(object $event): void
     {
         /*/** @var User $authUser */
-        /*$authUser = $event->user;
+        $authUser = $event->user;
 
         Cookie::forget('tenant');
-        Cookie::queue(Cookie::forever('tenant', encrypt($authUser->tenant_id)));*/
+        Cookie::queue(Cookie::forever('tenant', encrypt($authUser->tenant_id)));
     }
 }
