@@ -11,24 +11,26 @@
 |
 */
 
+use App\DomicilioContribuyente;
 use App\Http\Controllers\AjusteController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\OrdenCompraController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
+use App\Http\Controllers\ProyectoController;
 use App\Http\Controllers\UserController;
 use App\Producto;
 use App\Tenant;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use SolucionTotal\CoreDTE\Sii;
 
 Route::get('login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('login', [AuthController::class, 'doLogin']);
 Route::get('/', function(){
     return Redirect::to('/dashboard');
 });
-
 
 Route::middleware(['auth:web', 'tenant'])->group(function () {
 
@@ -59,6 +61,14 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
             Route::get('/', [OrdenCompraController::class, 'index']);
             Route::get('/editar/{id}', [OrdenCompraController::class, 'editOC']);
             Route::get('/nuevo', [OrdenCompraController::class, 'newOC']);
+        });
+    });
+
+    Route::prefix('ventas')->group(function(){
+        Route::prefix('proyectos')->middleware('tag:ver-proyecto')->group(function(){
+            Route::get('/', [ProyectoController::class, 'index']);
+            Route::get('/editar/{id}', [ProyectoController::class, 'editProyecto']);
+            Route::get('/nuevo', [ProyectoController::class, 'newProyecto']);
         });
     });
 
@@ -242,6 +252,7 @@ Route::get('/clear-cache', function() {
     Artisan::call('cache:clear');
     return "Cache is cleared";
 });
+
 
 // 404 for undefined routes
 Route::any('/{page?}',function(){

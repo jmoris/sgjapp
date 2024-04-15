@@ -1,12 +1,16 @@
 <?php
 
+use App\Comuna;
+use App\DomicilioContribuyente;
 use App\Http\Controllers\MaestroController;
 use App\Http\Controllers\OrdenCompraController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
+use App\Http\Controllers\ProyectoController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
+use SolucionTotal\CoreDTE\Sii;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,6 +22,7 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
 Route::middleware(['auth:web', 'tenant'])->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
@@ -35,7 +40,6 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
     Route::post('/proveedores', [ProveedorController::class, 'store']);
     Route::post('/proveedores/editar/{id}', [ProveedorController::class, 'update']);
     Route::delete('/proveedores/{id}', [ProveedorController::class, 'delete']);
-
 
 
     Route::get('/productos', [ProductoController::class, 'getAll']);
@@ -58,6 +62,13 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
         Route::post('ordenescompra', [OrdenCompraController::class, 'store']);
     });
 
+    Route::prefix('ventas')->group(function(){
+        Route::get('proyectos', [ProyectoController::class, 'getAll']);
+        Route::post('proyectos', [ProyectoController::class, 'store']);
+        Route::post('proyectos/editar/{id}', [ProyectoController::class, 'update']);
+        Route::delete('proyectos/{id}', [ProyectoController::class, 'delete']);
+    });
+
     Route::get('/roles', [PermissionController::class, 'getRoles']);
     Route::post('/roles', [PermissionController::class, 'storeRol']);
     Route::get('/roles/{id}/permisos', [PermissionController::class, 'getPermisos']);
@@ -76,4 +87,24 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
     Route::post('/unidades', [MaestroController::class, 'storeUnidad']);
     Route::post('/categorias', [MaestroController::class, 'storeCategoria']);
     Route::post('/listaprecios', [MaestroController::class, 'storeListaPrecio']);
+
+
+    Route::get('infodte/proveedores/{rut}', function($rut){
+        \SolucionTotal\CoreDTE\Sii::setAmbiente(Sii::PRODUCCION);
+        $firma_config = ['file' => storage_path('app/cert.p12'), 'pass'=>'Moris234'];
+        $firma = App\Helpers\SII::temporalPEM();
+        $cookies = \SolucionTotal\CoreDTE\Sii\Autenticacion::requestCookies($firma, '19587757-2');
+        $info = Sii::getInfoContribuyente($rut, $cookies);
+        $domicilio = DomicilioContribuyente::where('rut', $rut)->first();
+        $data = ['DIRECCION' => '', 'COMUNA' => ''];
+        if($domicilio != null){
+            $comuna = Comuna::whereRaw('LOWER(comunas.nombre) = (?)', [strtolower($domicilio->comuna)])->first();
+            $data = [
+                'DIRECCION' => $domicilio->direccion,
+                'COMUNA' => $comuna->id
+            ];
+        }
+
+        return response()->json(array_merge($info, $data));
+    });
 });

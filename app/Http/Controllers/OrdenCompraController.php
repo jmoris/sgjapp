@@ -29,7 +29,7 @@ class OrdenCompraController extends Controller
         $comunas = Comuna::all();
         $proveedores = Proveedor::all();
         $unidades = Unidad::all();
-        $proyectos = Proyecto::where('estado', 1)->get();
+        $proyectos = Proyecto::where('estado', 0)->get();
         return view('pages.ordenescompra.create', ['proveedores' => $proveedores, 'unidades' => $unidades,'comunas' => $comunas, 'emisor' => $emisor, 'proyectos' => $proyectos]);
     }
 
@@ -75,7 +75,7 @@ class OrdenCompraController extends Controller
             }
             $ocs = OrdenCompra::orderBy('folio', 'desc')->first();
             if($ocs == null){
-                $folio = 0;
+                $folio = 500;
             }else{
                 $folio = $ocs->folio;
             }
@@ -85,6 +85,7 @@ class OrdenCompraController extends Controller
             $oc->proveedor_id = $request->proveedor;
             $oc->user_id = auth()->user()->id;
             $oc->proyecto = $request->proyecto;
+            $oc->tipo_pago = $request->tipo_pago;
             $oc->descuento = 1;
             $oc->monto_neto = 0;
             $oc->monto_iva = 0;
@@ -183,7 +184,7 @@ class OrdenCompraController extends Controller
                         'Folio' => $oc->folio,
                         'FchEmis' => date('Y-m-d', strtotime($oc->fecha_emision)),
                         'FchVenc' => date('Y-m-d'),
-                        'FmaPago' => 1,
+                        'FmaPago' => $oc->tipo_pago,
                     ],
                     'Emisor' => [
                         'RUTEmisor' => $emisor['rut'],

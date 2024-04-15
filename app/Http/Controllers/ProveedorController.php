@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Comuna;
 use App\Proveedor;
+use App\Tenant;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -59,7 +60,8 @@ class ProveedorController extends Controller
                 'comuna' => 'required|exists:tenant.comunas,id',
                 'telefono' => '',
                 'correo_contacto' => '',
-                'web' => ''
+                'web' => '',
+                'sincronizar' => 'required|boolean'
             ]);
 
             if($validator->fails()){
@@ -69,17 +71,36 @@ class ProveedorController extends Controller
                     'error' => $validator->errors()
                 ]);
             }
-
-            $proveedor = new Proveedor();
-            $proveedor->rut = substr($request->rut, 0, -1).'-'.$request->rut[strlen($request->rut)-1];
-            $proveedor->razon_social = $request->razon_social;
-            $proveedor->giro = $request->giro;
-            $proveedor->direccion = $request->direccion;
-            $proveedor->comuna_id = $request->comuna;
-            $proveedor->telefono = $request->telefono;
-            $proveedor->email = $request->correo_contacto;
-            $proveedor->web = $request->web;
-            $proveedor->save();
+            if($request->sincronizar){
+                $currentTenant = Tenant::current();
+                $tenants = Tenant::all();
+                foreach($tenants as $tenant){
+                    Tenant::forgetCurrent();
+                    $tenant->makeCurrent();
+                    $proveedor = new Proveedor();
+                    $proveedor->rut = substr($request->rut, 0, -1).'-'.$request->rut[strlen($request->rut)-1];
+                    $proveedor->razon_social = $request->razon_social;
+                    $proveedor->giro = $request->giro;
+                    $proveedor->direccion = $request->direccion;
+                    $proveedor->comuna_id = $request->comuna;
+                    $proveedor->telefono = $request->telefono;
+                    $proveedor->email = $request->correo_contacto;
+                    $proveedor->web = $request->web;
+                    $proveedor->save();
+                }
+                $currentTenant->makeCurrent();
+            }else{
+                $proveedor = new Proveedor();
+                $proveedor->rut = substr($request->rut, 0, -1).'-'.$request->rut[strlen($request->rut)-1];
+                $proveedor->razon_social = $request->razon_social;
+                $proveedor->giro = $request->giro;
+                $proveedor->direccion = $request->direccion;
+                $proveedor->comuna_id = $request->comuna;
+                $proveedor->telefono = $request->telefono;
+                $proveedor->email = $request->correo_contacto;
+                $proveedor->web = $request->web;
+                $proveedor->save();
+            }
 
             return response()->json([
                 'success' => true,

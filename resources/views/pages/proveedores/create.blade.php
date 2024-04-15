@@ -84,6 +84,17 @@
                                                             placeholder="Ingrese la página web del proveedor">
                                                     </div>
                                                 </div>
+                                                <div class="mb-2 border-bottom">
+                                                    <h5>Sincronización entre empresas</h5>
+                                                </div>
+                                                <div class="ms-3">
+                                                    <div class="mb-2">
+                                                        <input class="form-check-input" type="checkbox" value="1" id="sincronizar" name="sincronizar" checked>
+                                                    <label class="form-check-label" for="sincronizar">
+                                                        Agregar información en todas las empresas
+                                                    </label>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -104,7 +115,14 @@
             </div>
         </div>
     </div>
-
+    <div class="modal fade bd-example-modal-lg" data-backdrop="static" data-keyboard="false" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                <img class="text-center mx-auto" src="/loading.gif" style="width: 48px; height: 48px;">
+                <span id="statusTxt" class="text-center fw-bold">Obteniendo información desde el SII...</span>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('plugin-scripts')
@@ -115,13 +133,56 @@
 
 @push('custom-scripts')
     <script>
-
         $('#rut').inputmask({mask: '99.999.999-[9|K]', definitions: {
             'K': {
                 validator: "(k|K)",
                 casing: "upper"
             }
         }});
+        $('#rut').keypress(function (e) {
+        if (e.which == 13) {
+            $('.modal').modal('show');
+            $('#razon_social').val("");
+            $('#giro').val("");
+            $('#direccion').val("");
+            $("#comuna").val(null);
+            $('#comuna').trigger('change');
+            var rut = $(this).inputmask('unmaskedvalue');
+            var dv = rut[rut.length-1];
+            var rutCompleto = rut.slice(0,-1) + '-' + dv;
+            console.log(rutCompleto);
+            $.ajax({
+                url: '/api/infodte/proveedores/' + rutCompleto,
+                type: 'GET',
+                tryCount: 0,
+                retryLimit: 3,
+                success: function(data) {
+                    $('#razon_social').val(data.RAZONSOCIAL);
+                    $('#giro').val(data.GIROS[0].DESCRIPCION);
+                    $('#direccion').val(data.DIRECCION);
+                    $("#comuna").val(data.COMUNA);
+                    $('#comuna').trigger('change');
+                    $('.modal').modal('hide');
+                },
+                error: function(response, status, error) {
+                    if (response.status == 500) {
+                    this.tryCount++;
+                        if (this.tryCount <= this.retryLimit) {
+                            console.log('Peticion al SII fallida');
+                            setTimeout(() => {
+                            console.log('Reintentando peticion');
+                            $.ajax(this);
+                            }, 1000);
+                            return;
+                        } else {
+                            console.log('No se pudo obtener la informacion');
+                        }
+                    }
+                }
+            });
+            return false;
+        }
+        });
 
         $("#comuna").select2({
             placeholder: 'Seleccione una comuna'
@@ -153,7 +214,6 @@
                 giro: "El campo actividad economica es obligatorio",
                 direccion: "El campo direccion es obligatorio",
                 comuna: "El campo comuna es obligatorio",
-
             },
 
             submitHandler: function(form) {
@@ -165,7 +225,8 @@
                     comuna: $('#comuna').val(),
                     telefono: $('#telefono').val(),
                     correcto_contacto: $('#correcto_contacto').val(),
-                    web: $('#web').val()
+                    web: $('#web').val(),
+                    sincronizar: ($('#sincronizar').is(':checked')==true)?1:0,
                 };
                 $.ajax({
                     type: "POST",

@@ -128,9 +128,9 @@ class ProductoController extends Controller
     public function store(Request $request){
         try{
             $validator = Validator::make($request->all(), [
-                'sku' => 'required',
+                'sku' => 'required||unique:tenant.productos',
                 'nombre' => 'required',
-                'descripcion' => 'required',
+                'descripcion' => 'nullable',
                 'categoria' => 'required',
                 'unidad' => 'required',
                 'es_afecto' => 'boolean',

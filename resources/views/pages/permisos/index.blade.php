@@ -123,6 +123,17 @@
                                                     <td><input class="form-check-input" type="checkbox"
                                                             id="eliminarOrdenCompra" name="eliminarOrdenCompra"></td>
                                                 </tr>
+                                                <tr modulename="proyectos">
+                                                    <td>Proyectos</td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="verProyecto" name="verProyecto"></td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="editarProyecto" name="editarProyecto"></td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="crearProyecto" name="crearProyecto"></td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="eliminarProyecto" name="eliminarProyecto"></td>
+                                                </tr>
                                             </tbody>
                                         </table>
                                         <button type="button" onclick="guardarPermisos()" class="mt-3 btn btn-primary btn-xs float-end">Guardar</button>
@@ -200,6 +211,7 @@
                 'proveedores': [tienePermiso('#verProveedor'),tienePermiso('#editarProveedor'),tienePermiso('#crearProveedor'),tienePermiso('#eliminarProveedor')],
                 'productos': [tienePermiso('#verProducto'),tienePermiso('#editarProducto'),tienePermiso('#crearProducto'),tienePermiso('#eliminarProducto')],
                 'ordenes_compra': [tienePermiso('#verOrdenCompra'),tienePermiso('#editarOrdenCompra'),tienePermiso('#crearOrdenCompra'),tienePermiso('#eliminarOrdenCompra')],
+                'proyectos': [tienePermiso('#verProyecto'),tienePermiso('#editarProyecto'),tienePermiso('#crearProyecto'),tienePermiso('#eliminarProyecto')],
             };
 
             $.post('/api/roles/' + selectedRol + '/permisos', {modulos:datos}).done(function(e){

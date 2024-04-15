@@ -32,7 +32,10 @@ class RolesPermisosSeeder extends Seeder
         15;Crear Orden de Compra;ordenes_compra;crear-orden-compra
         16;Eliminar Orden de Compra;ordenes_compra;eliminar-orden-compra
         17;Ver Administracion;administracion;ver-administracion
-        18;Editar Administracion;administracion;editar-administracion";
+        18;Ver Proyecto;proyectos;ver-proyecto
+        19;Editar Proyecto;proyectos;editar-proyecto
+        20;Crear Proyecto;proyectos;crear-proyecto
+        21;Eliminar Proyecto;proyectos;eliminar-proyecto";
 
         $rol = new Role();
         $rol->nombre = "Administrador";

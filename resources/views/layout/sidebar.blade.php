@@ -92,10 +92,10 @@
             </li>
             @endif
             @if(has_permission('ver-proyecto'))
-            <li class="nav-item {{ active_class(['apps/proyectos']) }}">
-                <a href="#" class="nav-link">
-                    <i class="link-icon" data-feather="message-square"></i>
-                    <span class="link-title">Proyectos</span>
+            <li class="nav-item {{ active_class(['ventas/proyectos*']) }}">
+                <a href="{{ url('ventas/proyectos') }}" class="nav-link">
+                    <i class="mdi mdi-file-document-arrow-right mdi-18"></i>
+                    <span class="link-title" style="margin-left: 12px;">Proyectos</span>
                 </a>
             </li>
             @endif

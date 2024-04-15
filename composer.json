@@ -14,6 +14,7 @@
         "laravel/sanctum": "^3.2",
         "laravel/tinker": "^2.7",
         "soluciontotal/corepdf": "dev-sgjapp",
+        "soluciontotal/coredte": "dev-php8",
         "spatie/laravel-multitenancy": "^3.0",
         "yajra/laravel-datatables": "^10.0"
     },
@@ -70,6 +71,10 @@
         {
             "type": "vcs",
             "url": "git@bitbucket.org:soluciontotal/corepdf.git"
+        },
+        {
+            "type": "vcs",
+            "url": "git@bitbucket.org:soluciontotal/coredte.git"
         }
     ]
 }

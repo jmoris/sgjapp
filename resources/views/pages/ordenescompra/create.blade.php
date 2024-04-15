@@ -221,24 +221,17 @@
                                                         <div class="row mx-1">
                                                             <div class="row mb-2">
                                                                 <label
-                                                                    class="col-sm-4 col-form-label col-form-label-sm">Nombre Obra/Proyecto</label>
-                                                                <div class="col-sm-6" id="inputProyecto">
-                                                                    <input type="text" name="nombre_proyecto" id="nombre_proyectoTxt"
-                                                                        placeholder="Proyecto XYZ"
-                                                                        class="form-control form-control-sm" style="display: none;">
-                                                                    <select class="form-control form-control-sm" id="nombre_proyecto" name="nombre_proyecto">
+                                                                    class="col-sm-4 col-form-label col-form-label-sm">Nombre
+                                                                    Obra/Proyecto</label>
+                                                                <div class="col-sm-8" id="inputProyecto">
+                                                                    <select class="form-control form-control-sm"
+                                                                        id="nombre_proyecto" name="nombre_proyecto">
                                                                         <option>Seleccione proyecto</option>
                                                                         @foreach ($proyectos as $proyecto)
-                                                                                <option value="{{ $proyecto->id }}">
-                                                                                    {{ $proyecto->nombre }}</option>
+                                                                            <option value="{{ $proyecto->id }}">
+                                                                                {{ $proyecto->nombre }}</option>
                                                                         @endforeach
                                                                     </select>
-                                                                </div>
-                                                                <div class="col-sm-2 pt-1">
-                                                                    <input class="form-check-input" type="checkbox" onchange="cambiarInputProyecto()" id="manualProyecto" >
-                                                                    <label class="form-check-label" for="manualProyecto">
-                                                                        Manual
-                                                                    </label>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -279,7 +272,7 @@
                                                                         </button>
                                                                     </div>
                                                                 </td>
-                                                                <td style="width:32%;padding:4px;">
+                                                                <td style="width:30%;padding:4px;">
                                                                     <input id="nombreTxt" type="text"
                                                                         class="form-control form-control-sm"
                                                                         placeholder="NOMBRE ITEM" />
@@ -307,11 +300,19 @@
                                                                 <td style="width:18%;padding:4px;"><span
                                                                         style="vertical-align: bottom; text-align:right;"
                                                                         id="lblSubtotal">$ 0</span></td>
-                                                                <td style="width:5%;padding:4px;">
+                                                                <td style="width:7%;padding:4px;">
                                                                     <button type="button" onclick="agregarDetalle()"
+                                                                        title="Agregar detalle a la lista"
                                                                         class="btn btn-sm btn-outline-primary"
-                                                                        style="padding:.25em .25em; float:right;">
+                                                                        style="padding:.25em .5em; float:right;">
                                                                         <span class="mdi mdi-plus"></span></button>
+                                                                    <button type="button"
+                                                                        onclick="agregarGuardarDetalle()"
+                                                                        class="btn btn-sm btn-outline-dark"
+                                                                        title="Guardar producto"
+                                                                        style="padding:.25em .5em; margin-right: 0.25em; float:right;">
+                                                                        <span
+                                                                            class="mdi mdi-content-save-plus"></span></button>
                                                                 </td>
                                                             </tr>
                                                             <tr id="rowDetalleAvanzado" class="noBorder"
@@ -510,7 +511,9 @@
 @endpush
 @push('plugin-scripts')
     <script src="{{ asset('assets/plugins/select2/select2.min.js') }}"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js" integrity="sha512-efAcjYoYT0sXxQRtxGY37CKYmqsFVOIwMApaEbrxJr4RwqVVGw8o+Lfh/+59TU07+suZn1BWq4fDl5fdgyCNkw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"
+        integrity="sha512-efAcjYoYT0sXxQRtxGY37CKYmqsFVOIwMApaEbrxJr4RwqVVGw8o+Lfh/+59TU07+suZn1BWq4fDl5fdgyCNkw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 @endpush
 
 @push('custom-scripts')
@@ -523,7 +526,12 @@
         var productos = [];
         // Aqui se inicializan las librerias
         $(document).ready(function() {
-            $("#precioTxt").inputmask('numeric', { prefix: '$ ', radixPoint:',', groupSeparator:'.', rightAlign: false });
+            $("#precioTxt").inputmask('numeric', {
+                prefix: '$ ',
+                radixPoint: ',',
+                groupSeparator: '.',
+                rightAlign: false
+            });
             $('#razon_social').select2();
             $('#productosTable').on('click', 'tbody tr', function(event) {
                 $(this).addClass('highlight').siblings().removeClass('highlight');
@@ -550,12 +558,12 @@
             });
         });
 
-        function cambiarInputProyecto(){
+        function cambiarInputProyecto() {
             var input = $('#manualProyecto').is(':checked');
-            if(input){
+            if (input) {
                 $('#nombre_proyecto').hide();
                 $('#nombre_proyectoTxt').show();
-            }else{
+            } else {
                 $('#nombre_proyecto').show();
                 $('#nombre_proyectoTxt').hide();
             }
@@ -572,15 +580,43 @@
 
         function procesarOrden(e) {
             e.preventDefault();
+
+            // Verificamos que se haya seleccionado un proveedor
+            var proveedorId = $('#razon_social').val();
+            if (proveedorId == '') {
+                $.toast({
+                    type: 'error',
+                    title: 'Error en formulario',
+                    subtitle: 'ahora',
+                    position: 'top-right',
+                    content: 'Debe seleccionar un proveedor para agregar items al documento.',
+                    delay: 15000
+                });
+                return;
+            }
+
             var switchProyecto = $('#manualProyecto').is(':checked');
-            var nombreProyecto = (switchProyecto) ? $('#nombre_proyectoTxt').val() : $('#nombre_proyecto option:selected').text();
-            if(nombreProyecto == 'Seleccione proyecto'){
+            var nombreProyecto = (switchProyecto) ? $('#nombre_proyectoTxt').val() : $('#nombre_proyecto option:selected')
+                .text();
+            if (nombreProyecto == 'Seleccione proyecto') {
                 $.toast({
                     type: 'error',
                     title: 'Error en formulario',
                     subtitle: 'ahora',
                     position: 'top-right',
                     content: 'Debe seleccionar/añadir un proyecto para generar el documento.',
+                    delay: 15000
+                });
+                return;
+            }
+
+            if (detalles.length  == 0) {
+                $.toast({
+                    type: 'error',
+                    title: 'Error en formulario',
+                    subtitle: 'ahora',
+                    position: 'top-right',
+                    content: 'Debe agregar productos al documento para poder procesarlo.',
                     delay: 15000
                 });
                 return;
@@ -612,9 +648,12 @@
                     $('#direccion').val(data.direccion);
                     $('#comuna').val(data.comuna.nombre);
 
-                    $.get('/api/proveedores/productos/' + proveedorId, function(resp){
+                    // Se vacia el contenido actual de la tabla buscador de productos
+                    $("#productosTable tbody").empty();
+                    // Se obtienen todos los productos del proveedor y se vuelve a llenar
+                    $.get('/api/proveedores/productos/' + proveedorId, function(resp) {
                         productos = resp;
-                        productos.forEach(function(producto, index){
+                        productos.forEach(function(producto, index) {
                             var row = `<tr>
                                 <td>${producto.sku}</td>
                                 <td>${producto.nombre}</td>
@@ -627,6 +666,67 @@
 
                 });
             }
+        }
+
+        function agregarGuardarDetalle() {
+            var data = {
+                sku: $('#skuTxt').val(),
+                nombre: $('#nombreTxt').val(),
+                descripcion: $('#descripcionTxt').val(),
+                categoria: 1,
+                unidad: $('#unidadTxt').val(),
+                es_afecto: 1,
+                se_vende: 1,
+                se_compra: 1,
+            };
+            $.ajax({
+                type: "POST",
+                url: '/api/productos',
+                data: data, // serializes the form's elements.
+                success: function(data) {
+                    if(data.success == true){
+                        var dataJson = {
+                            proveedor_id: $('#razon_social').val(),
+                            producto_id: data.data.id,
+                            precio: $('#precioTxt').inputmask('unmaskedvalue')
+                        };
+                        console.log("Precio proveedor : " + dataJson.precio);
+                        // Creamos peticion psot para agregar el precio de venta
+                        $.ajax({
+                            type: "POST",
+                            url: '/api/productos/precioproveedor',
+                            data: dataJson, // serializes the form's elements.
+                            success: function(data2) {
+                                if (data2.success == true) {
+                                    console.log("precio guardado");
+                                } else {
+                                    console.log("error al guardar el precio");
+                                }
+
+                            }
+                        });
+                        Swal.fire({
+                            title: "Producto guardado exitosamente",
+                            text: "La información ingresada es correcta y fue procesada exitosamente.",
+                            icon: "success"
+                        })
+                        .then((result) => {
+                            agregarDetalle();
+                            seleccionarProveedor();
+                        });
+                    }else{
+                        Swal.fire({
+                            title: "Producto no pudo ser guardado",
+                            text: "La información ingresada no es correcta, verifiquela y vuelva a intentarlo.",
+                            icon: "error"
+                        })
+                        .then((result) => {
+                            agregarDetalle();
+                        });
+                    }
+
+                }
+            });
         }
 
         function agregarDetalle() {

@@ -11,11 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('proyectos', function (Blueprint $table) {
+        Schema::create('domicilio_contribuyentes', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre');
-            $table->smallInteger('estado')->default(0);
-            //$table->foreignIdFor(\App\Cliente::class)->constrained();
+            $table->string('rut');
+            $table->string('direccion');
+            $table->string('comuna');
+            $table->string('region');
             $table->timestamps();
         });
     }
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('proyectos');
+        Schema::dropIfExists('domicilio_contribuyentes');
     }
 };
