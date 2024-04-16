@@ -22,8 +22,8 @@
                                     <label for="userEmail" class="form-label">RUT</label>
                                     <select class="form-control" onchange="selectEmpresa()" name="rut" id="userRut">
                                         <option>Seleccione una empresa</option>
-                                        @foreach($empresas as $empresa)
-                                        <option value="{{$empresa->id}}">{{ $empresa->name }}</option>
+                                        @foreach($empresas as $emp)
+                                        <option value="{{$emp->id}}" @if(isset($empresa)) @if($empresa->id == $emp->id) selected @endif @endif>{{ $emp->name }}</option>
                                         @endforeach
                                     </select>
                                     @error('rut')
@@ -92,15 +92,6 @@
             var empresa = $('#userRut :selected').val();
             location.href = "/login?empresa=" + empresa;
         }
-
-        $(document).ready(() => {
-            console.log("Documento listo");
-            let searchParams = new URLSearchParams(window.location.search);
-            let param = searchParams.get('empresa')
-
-            $('#userRut').find('option[value='+param+']').attr('selected', 'selected');
-
-        });
 
         $("#loginForm").validate({
             rules: {

@@ -24,7 +24,7 @@ class AuthController extends Controller
                     'rut' 	=> 'No existen empresas asociadas al RUT',
                 ])->withInput();
             }
-            return response(view('auth.login', ['empresas' => $tenants]))->cookie('tenant',encrypt($tenant->id));
+            return response(view('auth.login', ['empresas' => $tenants, 'empresa' => $tenant]))->cookie('tenant',encrypt($tenant->id));
         }
 	    return view('auth.login', ['empresas' => $tenants]);
 	}
