@@ -665,10 +665,27 @@
                     });
 
                 });
+            }else{
+                $('#rut').val('');
+                    $('#giro').val('');
+                    $('#direccion').val('');
+                    $('#comuna').val('');
             }
         }
 
         function agregarGuardarDetalle() {
+            var proveedorId = $('#razon_social').val();
+            if (proveedorId == '') {
+                $.toast({
+                    type: 'error',
+                    title: 'Error en formulario',
+                    subtitle: 'ahora',
+                    position: 'top-right',
+                    content: 'Debe seleccionar un proveedor para agregar items al documento.',
+                    delay: 15000
+                });
+                return;
+            }
             var data = {
                 sku: $('#skuTxt').val(),
                 nombre: $('#nombreTxt').val(),
@@ -690,6 +707,7 @@
                             producto_id: data.data.id,
                             precio: $('#precioTxt').inputmask('unmaskedvalue')
                         };
+                        $('#skuTxt').val(data.data.sku);
                         console.log("Precio proveedor : " + dataJson.precio);
                         // Creamos peticion psot para agregar el precio de venta
                         $.ajax({
@@ -786,7 +804,7 @@
                 var subtotal = producto.precio * producto.cantidad;
                 subtotalDoc += subtotal;
                 // Verificamos que el producto contenga información valida
-                if (producto.sku == '' || producto.nombre == '' || subtotal == 0) {
+                if (producto.nombre == '' || subtotal == 0) {
                     return;
                 }
                 // Se crea una fila con toda la información necesaria

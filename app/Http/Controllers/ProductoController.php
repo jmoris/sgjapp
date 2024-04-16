@@ -128,7 +128,7 @@ class ProductoController extends Controller
     public function store(Request $request){
         try{
             $validator = Validator::make($request->all(), [
-                'sku' => 'required||unique:tenant.productos',
+                'sku' => 'unique:tenant.productos',
                 'nombre' => 'required',
                 'descripcion' => 'nullable',
                 'categoria' => 'required',
@@ -147,7 +147,11 @@ class ProductoController extends Controller
             }
 
             $producto = new Producto();
-            $producto->sku = $request->sku;
+            if($request->sku==null){
+                $producto->sku = 'ITEM-'.(Producto::count()+1);
+            }else{
+                $producto->sku = $request->sku;
+            }
             $producto->nombre = $request->nombre;
             $producto->descripcion = $request->descripcion;
             $producto->categoria_id = $request->categoria;
