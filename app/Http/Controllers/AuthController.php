@@ -14,9 +14,18 @@ use Spatie\Multitenancy\Models\Tenant;
 
 class AuthController extends Controller
 {
-    public function showLogin(){
+    public function showLogin(Request $request){
         $tenants = Tenant::all();
-
+        if($request->empresa != null){
+            Cookie::forget('tenant');
+            $tenant = Tenant::whereId($request->empresa)->first();
+            if(!$tenant) {
+                return back()->withErrors([
+                    'rut' 	=> 'No existen empresas asociadas al RUT',
+                ])->withInput();
+            }
+            return response(view('auth.login', ['empresas' => $tenants]))->cookie('tenant',encrypt($tenant->id));
+        }
 	    return view('auth.login', ['empresas' => $tenants]);
 	}
 
@@ -26,12 +35,12 @@ class AuthController extends Controller
         Cookie::forget('tenant');
 		auth()->logout(); // logging out user
         session()->flush();
-		return Redirect::to('dashboard'); // redirection to login screen
+		return response()->redirectTo('login');
 	}
 
 	public function doLogin(Request $request){
         Cookie::forget('tenant');
-        $tenant = Tenant::whereRut($request->rut)->first();
+        $tenant = Tenant::whereId($request->rut)->first();
         if(!$tenant) {
             return back()->withErrors([
             'rut' 	=> 'No existen empresas asociadas al RUT',

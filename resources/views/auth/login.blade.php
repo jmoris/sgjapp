@@ -20,10 +20,10 @@
                                 @csrf
                                 <div class="mb-3">
                                     <label for="userEmail" class="form-label">RUT</label>
-                                    <select class="form-control" name="rut" id="userRut">
+                                    <select class="form-control" onchange="selectEmpresa()" name="rut" id="userRut">
                                         <option>Seleccione una empresa</option>
                                         @foreach($empresas as $empresa)
-                                        <option value="{{$empresa->rut}}">{{ $empresa->name }}</option>
+                                        <option value="{{$empresa->id}}">{{ $empresa->name }}</option>
                                         @endforeach
                                     </select>
                                     @error('rut')
@@ -87,6 +87,21 @@
 
 @push('custom-scripts')
     <script>
+
+        function selectEmpresa(){
+            var empresa = $('#userRut :selected').val();
+            location.href = "/login?empresa=" + empresa;
+        }
+
+        $(document).ready(() => {
+            console.log("Documento listo");
+            let searchParams = new URLSearchParams(window.location.search);
+            let param = searchParams.get('empresa')
+
+            $('#userRut').find('option[value='+param+']').attr('selected', 'selected');
+
+        });
+
         $("#loginForm").validate({
             rules: {
                 rut: {
