@@ -3,7 +3,7 @@
 @section('title', 'Gestión de Proveedores')
 
 @push('plugin-styles')
-  <link href="{{ asset('assets/plugins/select2/select2.min.css') }}" rel="stylesheet" />
+    <link href="{{ asset('assets/plugins/select2/select2.min.css') }}" rel="stylesheet" />
 @endpush
 
 @section('content')
@@ -34,30 +34,36 @@
                                                 <div class="mx-2">
                                                     <div class="mb-2">
                                                         <label class="form-label">R.U.T.</label>
-                                                        <input type="text" name="rut" id="rut" class="form-control"
+                                                        <input type="text" name="rut" id="rut"
+                                                            class="form-control"
                                                             placeholder="Ingrese el R.U.T del proveedor">
                                                     </div>
                                                     <div class="mb-2">
                                                         <label class="form-label">Razón social</label>
-                                                        <input type="text" name="razon_social" id="razon_social" class="form-control"
+                                                        <input type="text" name="razon_social" id="razon_social"
+                                                            class="form-control"
                                                             placeholder="Ingrese la razón social del proveedor">
                                                     </div>
                                                     <div class="mb-2">
                                                         <label class="form-label">Actividad Económica</label>
-                                                        <input type="text" name="giro" id="giro" class="form-control"
+                                                        <input type="text" name="giro" id="giro"
+                                                            class="form-control"
                                                             placeholder="Ingrese el giro del proveedor">
                                                     </div>
                                                     <div class="mb-2">
                                                         <label class="form-label">Dirección</label>
-                                                        <input type="text" name="direccion" id="direccion" class="form-control"
+                                                        <input type="text" name="direccion" id="direccion"
+                                                            class="form-control"
                                                             placeholder="Ingrese la dirección comercial del proveedor">
                                                     </div>
                                                     <div class="mb-4">
                                                         <label class="form-label">Comuna</label>
-                                                        <select id="comuna" name="comuna" class="js-example-basic-single form-select" data-width="100%">
+                                                        <select id="comuna" name="comuna"
+                                                            class="js-example-basic-single form-select" data-width="100%">
                                                             <option></option>
                                                             @foreach ($comunas as $comuna)
-                                                            <option value="{{ $comuna->id }}">{{ $comuna->nombre }}</option>
+                                                                <option value="{{ $comuna->id }}">{{ $comuna->nombre }}
+                                                                </option>
                                                             @endforeach
                                                         </select>
                                                     </div>
@@ -70,17 +76,20 @@
                                                 <div class="mx-2">
                                                     <div class="mb-2">
                                                         <label class="form-label">Teléfono</label>
-                                                        <input type="text" name="telefono" id="telefono" class="form-control"
+                                                        <input type="text" name="telefono" id="telefono"
+                                                            class="form-control"
                                                             placeholder="Ingrese el telefono de contacto del proveedor">
                                                     </div>
                                                     <div class="mb-2">
                                                         <label class="form-label">Correo de contacto</label>
-                                                        <input type="text" name="correo_contacto" id="correo_contacto" class="form-control"
+                                                        <input type="text" name="correo_contacto" id="correo_contacto"
+                                                            class="form-control"
                                                             placeholder="Ingrese el correo de contacto del proveedor">
                                                     </div>
                                                     <div class="mb-2">
                                                         <label class="form-label">Página web</label>
-                                                        <input type="text" name="web" id="web" class="form-control"
+                                                        <input type="text" name="web" id="web"
+                                                            class="form-control"
                                                             placeholder="Ingrese la página web del proveedor">
                                                     </div>
                                                 </div>
@@ -89,10 +98,11 @@
                                                 </div>
                                                 <div class="ms-3">
                                                     <div class="mb-2">
-                                                        <input class="form-check-input" type="checkbox" value="1" id="sincronizar" name="sincronizar" checked>
-                                                    <label class="form-check-label" for="sincronizar">
-                                                        Agregar información en todas las empresas
-                                                    </label>
+                                                        <input class="form-check-input" type="checkbox" value="1"
+                                                            id="sincronizar" name="sincronizar" checked>
+                                                        <label class="form-check-label" for="sincronizar">
+                                                            Agregar información en todas las empresas
+                                                        </label>
                                                     </div>
                                                 </div>
                                             </div>
@@ -102,7 +112,8 @@
                                             <button type="submit" class="btn btn-primary submit"><i
                                                     class="mdi mdi-content-save"></i> Guardar</button>
                                         </div>
-                                        <button type="button" class="btn btn-danger" onclick="location.href = '/proveedores'">
+                                        <button type="button" class="btn btn-danger"
+                                            onclick="location.href = '/proveedores'">
                                             <i class="mdi mdi-cancel"></i>
                                             Cancelar
                                         </button>
@@ -126,21 +137,32 @@
 @endsection
 
 @push('plugin-scripts')
-<script src="{{ asset('assets/plugins/jquery-validation/jquery.validate.min.js') }}"></script>
-<script src="{{ asset('assets/plugins/select2/select2.min.js') }}"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js" integrity="sha512-efAcjYoYT0sXxQRtxGY37CKYmqsFVOIwMApaEbrxJr4RwqVVGw8o+Lfh/+59TU07+suZn1BWq4fDl5fdgyCNkw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="{{ asset('assets/plugins/jquery-validation/jquery.validate.min.js') }}"></script>
+    <script src="{{ asset('assets/plugins/select2/select2.min.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"
+        integrity="sha512-efAcjYoYT0sXxQRtxGY37CKYmqsFVOIwMApaEbrxJr4RwqVVGw8o+Lfh/+59TU07+suZn1BWq4fDl5fdgyCNkw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 @endpush
 
 @push('custom-scripts')
     <script>
-        $('#rut').inputmask({mask: '99.999.999-[9|K]', definitions: {
-            'K': {
-                validator: "(k|K)",
-                casing: "upper"
+        $('#rut').inputmask({
+            mask: '99.999.999-[9|K]',
+            definitions: {
+                'K': {
+                    validator: "(k|K)",
+                    casing: "upper"
+                }
             }
-        }});
-        $('#rut').keypress(function (e) {
-        if (e.which == 13) {
+        });
+
+        $('#rut').keypress(function(e){
+            if(e.which == 13) {
+                return false;
+            }
+        });
+
+        $('#rut').change(function(e) {
             $('.modal').modal('show');
             $('#razon_social').val("");
             $('#giro').val("");
@@ -148,8 +170,8 @@
             $("#comuna").val(null);
             $('#comuna').trigger('change');
             var rut = $(this).inputmask('unmaskedvalue');
-            var dv = rut[rut.length-1];
-            var rutCompleto = rut.slice(0,-1) + '-' + dv;
+            var dv = rut[rut.length - 1];
+            var rutCompleto = rut.slice(0, -1) + '-' + dv;
             console.log(rutCompleto);
             $.ajax({
                 url: '/api/infodte/proveedores/' + rutCompleto,
@@ -162,26 +184,27 @@
                     $('#direccion').val(data.DIRECCION);
                     $("#comuna").val(data.COMUNA);
                     $('#comuna').trigger('change');
+                    validator.resetForm();
                     $('.modal').modal('hide');
                 },
                 error: function(response, status, error) {
                     if (response.status == 500) {
-                    this.tryCount++;
+                        this.tryCount++;
                         if (this.tryCount <= this.retryLimit) {
                             console.log('Peticion al SII fallida');
                             setTimeout(() => {
-                            console.log('Reintentando peticion');
-                            $.ajax(this);
+                                console.log('Reintentando peticion');
+                                $.ajax(this);
                             }, 1000);
                             return;
                         } else {
                             console.log('No se pudo obtener la informacion');
+                            $('.modal').modal('hide');
                         }
                     }
                 }
             });
             return false;
-        }
         });
 
         $("#comuna").select2({
@@ -190,7 +213,7 @@
         $(document).on('select2:open', () => {
             document.querySelector('.select2-search__field').focus();
         });
-        $("#storeForm").validate({
+        var validator = $("#storeForm").validate({
             rules: {
                 rut: {
                     required: true,
@@ -217,7 +240,7 @@
             },
 
             submitHandler: function(form) {
-                var data= {
+                var data = {
                     rut: $('#rut').inputmask('unmaskedvalue'),
                     razon_social: $('#razon_social').val(),
                     giro: $('#giro').val(),
@@ -226,13 +249,13 @@
                     telefono: $('#telefono').val(),
                     correcto_contacto: $('#correcto_contacto').val(),
                     web: $('#web').val(),
-                    sincronizar: ($('#sincronizar').is(':checked')==true)?1:0,
+                    sincronizar: ($('#sincronizar').is(':checked') == true) ? 1 : 0,
                 };
                 $.ajax({
                     type: "POST",
                     url: '/api/proveedores',
                     data: data, // serializes the form's elements.
-                    success: function(data){
+                    success: function(data) {
                         Swal.fire({
                             title: "Proveedor guardado exitosamente",
                             text: "La información ingresada es correcta y fue procesada exitosamente.",

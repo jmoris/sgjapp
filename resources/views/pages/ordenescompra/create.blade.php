@@ -477,7 +477,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-primary">Seleccionar</button>
+                    <button type="button" class="btn btn-primary" onclick="selectDetalle()">Seleccionar</button>
                 </div>
             </div>
         </div>
@@ -538,25 +538,41 @@
             });
 
             $('#productosTable').on('dblclick', 'tbody tr', function(event) {
-                var sku = $(this).find('td:eq(0)').text();
-                var nombre = $(this).find('td:eq(1)').text();
-                var descripcion = $(this).find('td:eq(3)').text();
-                var precio = parseInt($(this).find('td:eq(2)').text().replace(/[^0-9]/gi, ''));
-                selectedProducto = {
-                    sku,
-                    nombre,
-                    descripcion,
-                    precio
-                };
-                $('#skuTxt').val(sku);
-                $('#nombreTxt').val(nombre);
-                $('#descripcionTxt').val(descripcion);
-                $('#precioTxt').val(precio);
-                calcSubtotalFila();
-                $('#cantidadTxt').focus();
-                $("#staticBackdrop").modal('hide');
+                selectDetalle();
             });
         });
+
+        function selectDetalle(){
+            var item = $('#productosTable tbody tr.highlight');
+            var sku = $(item).find('td:eq(0)').text();
+            var nombre = $(item).find('td:eq(1)').text();
+            var descripcion = $(item).find('td:eq(3)').text();
+            var precio = parseInt($(item).find('td:eq(2)').text().replace(/[^0-9]/gi, ''));
+            if(sku == '' && nombre == '' && precio == ''){
+                $.toast({
+                    type: 'error',
+                    title: 'Error en formulario',
+                    subtitle: 'ahora',
+                    position: 'top-right',
+                    content: 'Debe seleccionar un producto para agregar al documento.',
+                    delay: 15000
+                });
+                return;
+            }
+            selectedProducto = {
+                sku,
+                nombre,
+                descripcion,
+                precio
+            };
+            $('#skuTxt').val(sku);
+            $('#nombreTxt').val(nombre);
+            $('#descripcionTxt').val(descripcion);
+            $('#precioTxt').val(precio);
+            calcSubtotalFila();
+            $('#cantidadTxt').focus();
+            $("#staticBackdrop").modal('hide');
+        }
 
         function cambiarInputProyecto() {
             var input = $('#manualProyecto').is(':checked');
