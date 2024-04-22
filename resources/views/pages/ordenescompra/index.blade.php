@@ -72,6 +72,7 @@
             language: {
                 url: '/assets/js/datatables/es-ES.json',
             },
+            order: [[0, 'desc']]
             columns: [
                 {
                     data: 'folio',
