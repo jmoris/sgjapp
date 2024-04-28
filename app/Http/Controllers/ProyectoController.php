@@ -6,6 +6,7 @@ use App\OrdenCompra;
 use App\Proyecto;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -27,7 +28,8 @@ class ProyectoController extends Controller
     public function detailProyecto($id){
         $proyecto = Proyecto::find($id);
         $ocs = OrdenCompra::where('proyecto', $proyecto->nombre)->with('proveedor')->get();
-        return view('pages.proyectos.detail', ['proyecto' => $proyecto, 'ocs' => $ocs]);
+        $total = OrdenCompra::where('proyecto', $proyecto->nombre)->sum('monto_total');
+        return view('pages.proyectos.detail', ['proyecto' => $proyecto, 'ocs' => $ocs, 'total' => $total]);
     }
 
     /*

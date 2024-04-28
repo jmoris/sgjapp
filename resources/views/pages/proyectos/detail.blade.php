@@ -27,6 +27,11 @@
                                                 <input type="text" name="nombre" id="nombre" class="form-control"
                                                     placeholder="Ingrese el nombre del proyecto" value="{{ $proyecto->nombre }}" disabled>
                                             </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Total Acumulado:</label>
+                                                <input type="text" name="total" id="total" class="form-control"
+                                                    value="$ {{ number_format($total, 0, ',', '.') }}" disabled>
+                                            </div>
                                     </div>
                                     <div class="col-md-9 border-start">
                                         <div class="d-flex justify-content-between align-items-baseline mb-3">
