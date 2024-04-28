@@ -76,6 +76,14 @@
     <script>
         $('#tabla').DataTable({
             lengthMenu: [5, 10, 20, 50],
+            responsive: true,
+            search: {
+                return: true
+            },
+            language: {
+                url: '/assets/js/datatables/es-ES.json',
+            },
+            order: [[0, 'desc']],
         });
         function vistaPreviaOC(id){
             location.href = '/api/compras/ordenescompra/vistaprevia/' + id;
