@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\OrdenCompra;
 use App\Proyecto;
 use Exception;
 use Illuminate\Http\Request;
@@ -21,6 +22,12 @@ class ProyectoController extends Controller
     public function editProyecto($id){
         $proyecto = Proyecto::find($id);
         return view('pages.proyectos.edit', ['proyecto' => $proyecto]);
+    }
+
+    public function detailProyecto($id){
+        $proyecto = Proyecto::find($id);
+        $ocs = OrdenCompra::where('proyecto', $proyecto->nombre)->with('proveedor')->get();
+        return view('pages.proyectos.detail', ['proyecto' => $proyecto, 'ocs' => $ocs]);
     }
 
     /*

@@ -67,6 +67,7 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
     Route::prefix('ventas')->group(function(){
         Route::prefix('proyectos')->middleware('tag:ver-proyecto')->group(function(){
             Route::get('/', [ProyectoController::class, 'index']);
+            Route::get('/{id}', [ProyectoController::class, 'detailProyecto'])->where('id', '[0-9]+');
             Route::get('/editar/{id}', [ProyectoController::class, 'editProyecto']);
             Route::get('/nuevo', [ProyectoController::class, 'newProyecto']);
         });

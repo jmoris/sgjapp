@@ -82,6 +82,10 @@
             location.href = '/ventas/proyectos/editar/' + id;
         }
 
+        function verProyecto(id){
+            location.href = '/ventas/proyectos/' + id;
+        }
+
         proyectosTable = new DataTable('#example', {
             responsive: true,
             ajax: '/api/ventas/proyectos',
@@ -103,10 +107,8 @@
                     responsivePriority: 1,
                     render: function(data, type, row) {
                         console.log(row);
-                        var html = '<div class="float-end me-2">' +
-                            ((currentUserId == row.id) ? '': '<button type="button" title="Editar Usuario" onclick="editProyecto('+row.id+')" class="btn btnxs px-1 py-0"><i class="mdi mdi-pencil"></i></button>' +
-                            '<button type="button" onclick="deleteProyecto('+row.id+')" title="Eliminar Usuario" class="btn btnxs px-1 py-0"><i class="mdi mdi-trash-can"></i></button>') +
-                            '</div>';
+                        var html = '<div class="float-end me-2"><button type="button" title="Ver Proyeccto" onclick="verProyecto('+row.id+')" class="btn btnxs px-1 py-0"><i class="mdi mdi-magnify"></i></button>' +
+                            '<button type="button" onclick="deleteProyecto('+row.id+')" title="Eliminar Usuario" class="btn btnxs px-1 py-0"><i class="mdi mdi-trash-can"></i></button></div>';
                         return html;
                     }
                 },
