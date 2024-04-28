@@ -70,7 +70,7 @@
 @push('custom-scripts')
     <script>
         $('#tabla').DataTable({
-
+            lengthMenu: [5, 10, 20, 50],
         });
         function vistaPreviaOC(id){
             location.href = '/api/compras/ordenescompra/vistaprevia/' + id;
