@@ -37,7 +37,7 @@
                                         <div class="d-flex justify-content-between align-items-baseline mb-3">
                                             <h4 class="card-title mb-0">ORDENES DE COMPRA ASOCIADAS</h4>
                                         </div>
-                                        <table id="tabla" class="ml-2 table">
+                                        <table id="tabla" class="ms-2 table" style="width:100%;">
                                             <thead>
                                                 <th>Folio</th>
                                                 <th>Fecha</th>
@@ -84,6 +84,7 @@
                 url: '/assets/js/datatables/es-ES.json',
             },
             order: [[0, 'desc']],
+            fixedColumns: true,
         });
         function vistaPreviaOC(id){
             location.href = '/api/compras/ordenescompra/vistaprevia/' + id;

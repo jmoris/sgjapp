@@ -58,8 +58,9 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
 
     Route::prefix('compras')->group(function(){
         Route::get('ordenescompra', [OrdenCompraController::class, 'getAll']);
-        Route::get('ordenescompra/vistaprevia/{folio}', [OrdenCompraController::class, 'vistaPreviaOC']);
+        Route::get('ordenescompra/vistaprevia/{folio}/{rev?}', [OrdenCompraController::class, 'vistaPreviaOC']);
         Route::post('ordenescompra', [OrdenCompraController::class, 'store']);
+        Route::post('ordenescompra/editar/{id}', [OrdenCompraController::class, 'update']);
     });
 
     Route::prefix('ventas')->group(function(){

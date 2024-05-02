@@ -34,15 +34,19 @@ class OrdenCompraController extends Controller
     }
 
     public function editOC($id){
-        $oc = OrdenCompra::find($id);
+        $oc = OrdenCompra::with('proveedor')->find($id);
+        $emisor = Ajustes::getEmisor();
         $comunas = Comuna::all();
-        return view('pages.ordenescompra.edit', ['oc' => $oc, 'comunas' => $comunas]);
+        $proveedores = Proveedor::all();
+        $unidades = Unidad::all();
+        $proyectos = Proyecto::where('estado', 0)->get();
+        return view('pages.ordenescompra.edit', ['oc' => $oc, 'proveedores' => $proveedores, 'unidades' => $unidades,'comunas' => $comunas, 'emisor' => $emisor, 'proyectos' => $proyectos]);
     }
     /*
         DESDE AQUI HACIA ABAJO ESTARAN LAS FUNCIONES DE LA API
     */
     public function getAll(){
-        $data = OrdenCompra::with('proveedor');
+        $data = OrdenCompra::where('rev_activa', true)->with('proveedor');
         return DataTables::eloquent($data)->toJson();
     }
 
@@ -81,10 +85,13 @@ class OrdenCompraController extends Controller
             }
             $oc = new OrdenCompra();
             $oc->folio = $folio+1;
-            $oc->fecha_emision = date('Y-m-d h:i', strtotime($request->fecha_emision));
+            $str = date('Y-m-d', strtotime($request->fecha_emision)).' '.date('H:i');
+            Log::info($str);
+            $oc->fecha_emision = date('Y-m-d H:i', strtotime($str));
             $oc->proveedor_id = $request->proveedor;
             $oc->user_id = auth()->user()->id;
-            $oc->proyecto = $request->proyecto;
+            $oc->proyecto_id = $request->proyecto;
+            $oc->rev_activa = true;
             $oc->tipo_pago = $request->tipo_pago;
             $oc->descuento = 1;
             $oc->monto_neto = 0;
@@ -133,27 +140,74 @@ class OrdenCompraController extends Controller
 
     public function update(Request $request, $id){
         try{
-            $validator = Validator::make($request->all(), [
-                'folio' => 'required'
-            ]);
-
-            if($validator->fails()){
-                return response()->json([
-                    'success' => 'false',
-                    'msg' => 'La información ingresada no es suficiente para completar el registro',
-                    'error' => $validator->errors()
+                $validator = Validator::make($request->all(), [
+                    'fecha_emision' => 'required',
+                    'proveedor' => 'required',
+                    'tipo_pago' => 'required',
+                    'items' => 'required|array',
+                    'proyecto' => 'required',
+                    'glosa' => 'nullable'
                 ]);
-            }
 
-            $oc = OrdenCompra::findOrFail($id);
-            $oc->folio = $request->folio;
-            $oc->save();
+                if($validator->fails()){
+                    return response()->json([
+                        'success' => 'false',
+                        'msg' => 'La información ingresada no es suficiente para completar el registro',
+                        'error' => $validator->errors()
+                    ]);
+                }
+                $first_oc = OrdenCompra::findOrFail($id);
 
-            return response()->json([
-                'success' => true,
-                'msg' => 'Información actualizada exitosamente',
-                'data' => $oc
-            ]);
+                OrdenCompra::where('folio', $first_oc->folio)->update(['rev_activa' => false]);
+
+                $oc = new OrdenCompra();
+                $oc->folio = $first_oc->folio;
+                $str = date('Y-m-d', strtotime($request->fecha_emision)).' '.date('H:i');
+                $oc->fecha_emision = date('Y-m-d H:i', strtotime($str));
+                $oc->proveedor_id = $request->proveedor;
+                $oc->user_id = auth()->user()->id;
+                $oc->proyecto_id = $request->proyecto;
+                $oc->tipo_pago = $request->tipo_pago;
+                $oc->rev = (OrdenCompra::orderBy('rev', 'desc')->where('folio', $first_oc->folio)->first())->rev + 1;
+                $oc->rev_activa = true;
+                $oc->descuento = 1;
+                $oc->monto_neto = 0;
+                $oc->monto_iva = 0;
+                $oc->monto_total = 0;
+                if(isset($request->glosa)){
+                    $oc->glosa = str_replace('///', '<br>', $request->glosa);
+                }
+                $oc->tipo_pago = $request->tipo_pago;
+                $oc->save();
+                // Se recorre listado de productos OC y se almacenan
+                $subtotal = 0;
+                foreach($request->items as $item){
+                    $linea = new LineaOC();
+                    $linea->sku = $item['sku'];
+                    $linea->nombre = $item['nombre'];
+                    $linea->descripcion = ((!array_key_exists('descripcion', $item))?'':$item['descripcion']);
+                    $linea->cantidad = $item['cantidad'];
+                    $linea->unidad = Unidad::find($item['unidad'])->abreviacion;
+                    $linea->precio_unitario = $item['precio'];
+                    $linea->descuento = ((!array_key_exists('descuento', $item))?0:$item['descuento']);
+                    $linea->orden_compra_id = $oc['id'];
+                    $linea->save();
+                    $subtotal += intval($linea->precio_unitario * $linea->cantidad);
+                }
+                $neto = $subtotal;
+                $iva = intval($neto * 0.19);
+                $total = $neto + $iva;
+
+                OrdenCompra::where('id', $oc->id)->update([
+                    'monto_neto' => $neto,
+                    'monto_iva' => $iva,
+                    'monto_total' => $total
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'msg' => 'Información guardada exitosamente',
+                ]);
         }catch(Exception $ex){
             return $ex;
         }
@@ -173,10 +227,10 @@ class OrdenCompraController extends Controller
         }
     }
 
-    public function vistaPreviaOC(Request $request, $folio){
+    public function vistaPreviaOC(Request $request, $folio, $rev = 1){
         try{
             $emisor = Ajustes::getEmisor();
-            $oc = OrdenCompra::with('proveedor', 'proveedor.comuna')->where('folio', $folio)->first();
+            $oc = OrdenCompra::with('proveedor', 'proveedor.comuna')->where('folio', $folio)->where('rev', $rev)->first();
             $dte = [
                 'Encabezado' => [
                     'IdDoc' => [
@@ -232,7 +286,8 @@ class OrdenCompraController extends Controller
             $pdf->setMail("contacto@joremet.cl");
             $pdf->setMarcaAgua('https://i.imgur.com/oWL7WBw.jpeg');
             $pdf->setGlosa($oc->glosa);
-            $pdf->setObra($oc->proyecto);
+            $pdf->setObra($oc->proyecto->nombre);
+            $pdf->setLeyendaImpresion("Rev. ". $rev);
             $pdf->setFirmaDerecha("Validado por", "");
             $pdf->setFirmaIzquierda($oc->usuario->cargo, $oc->usuario->name.' '.$oc->usuario->lastname);
             //$pdf->setFirmaIzquierda($oc->usuario->cargo, "<img style='height: 80px;' src='https://i.postimg.cc/j29cg3BZ/Jesus-Moris.png'>");

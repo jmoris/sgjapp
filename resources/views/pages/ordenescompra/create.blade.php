@@ -612,8 +612,9 @@
             }
 
             var switchProyecto = $('#manualProyecto').is(':checked');
-            var nombreProyecto = (switchProyecto) ? $('#nombre_proyectoTxt').val() : $('#nombre_proyecto option:selected')
-                .text();
+            var nombreProyecto = $('#nombre_proyecto option:selected').text();
+            var idProyecto = $('#nombre_proyecto option:selected').val();
+
             if (nombreProyecto == 'Seleccione proyecto') {
                 $.toast({
                     type: 'error',
@@ -642,7 +643,7 @@
                 fecha_emision: $('#fecha_emision').val(),
                 tipo_pago: $('#tipo_pago').val(),
                 items: detalles,
-                proyecto: nombreProyecto,
+                proyecto: idProyecto,
                 glosa: $('#glosaTxt').val(),
                 _token: $('meta[name="_token"]').attr('content')
             };
@@ -856,9 +857,9 @@
         }
 
         function eliminarDetalle(index) {
-            var subtotal = detalles[index].precio * detalles[index].cantidad;
-            subtotalDoc -= subtotal;
+            detalles.splice(index, 1);
             $('#tablaDetalle tr[detindex="' + index + '"]').remove();
+            // Se calculan los totales y se aumenta el indice
             calcularTotales();
         }
 

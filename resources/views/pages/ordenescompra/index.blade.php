@@ -55,12 +55,12 @@
         var ocsTable = null;
         var currentUserId = {{auth()->user()->id}};
 
-        function editProveedor(id){
-            location.href = '/proveedores/editar/' + id
+        function editarOC(id){
+            location.href = '/compras/ordenescompra/editar/' + id
         }
 
-        function vistaPreviaOC(id){
-            location.href = '/api/compras/ordenescompra/vistaprevia/' + id;
+        function vistaPreviaOC(id, rev){
+            location.href = '/api/compras/ordenescompra/vistaprevia/' + id + '/' + rev;
         }
 
         ocsTable = new DataTable('#example', {
@@ -116,7 +116,10 @@
                     data: null,
                     orderable:false,
                     render: function(data, type, row) {
-                        var html = '<button type="button" title="Ver Orden de Compra" onclick="vistaPreviaOC('+row.folio+')" class="btn btn-outline-primary btnxs px-1 py-0"><i class="mdi mdi-18 mdi-magnify"></i></button>';
+                        var html = '<div><button type="button" title="Editar Orden de Compra" onclick="editarOC('+row.id+')" class="btn btn-outline-primary btnxs px-1 py-0"><i class="mdi mdi-18 mdi-pencil"></i></button>' +
+                            '<button type="button" title="Ver Orden de Compra" onclick="vistaPreviaOC('+row.folio+', '+row.rev+')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-magnify"></i></button>' +
+                            '</div>';
+                        //var html = '';
                         return html;
                     }
                 },

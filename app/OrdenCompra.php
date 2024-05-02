@@ -18,6 +18,10 @@ class OrdenCompra extends Model
         return $this->hasOne(Proveedor::class, 'id', 'proveedor_id');
     }
 
+    public function proyecto(){
+        return $this->hasOne(Proyecto::class, 'id', 'proyecto_id');
+    }
+
     public function lineas(){
         return $this->hasMany(LineaOC::class);
     }

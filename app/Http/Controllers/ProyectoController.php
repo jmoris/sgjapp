@@ -27,8 +27,8 @@ class ProyectoController extends Controller
 
     public function detailProyecto($id){
         $proyecto = Proyecto::find($id);
-        $ocs = OrdenCompra::where('proyecto', $proyecto->nombre)->with('proveedor')->get();
-        $total = OrdenCompra::where('proyecto', $proyecto->nombre)->sum('monto_total');
+        $ocs = OrdenCompra::where('proyecto_id', $proyecto->id)->with('proveedor')->get();
+        $total = OrdenCompra::where('proyecto_id', $proyecto->id)->sum('monto_total');
         return view('pages.proyectos.detail', ['proyecto' => $proyecto, 'ocs' => $ocs, 'total' => $total]);
     }
 

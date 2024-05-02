@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('proveedor_id');
             $table->dateTime('fecha_emision');
             $table->smallInteger('tipo_pago');
-            $table->string('proyecto');
+            $table->unsignedBigInteger('proyecto_id');
             $table->smallInteger('estado')->default(0);
             $table->smallInteger('tipo_descuento')->nullable();
             $table->bigInteger('descuento')->default(0);
