@@ -22,16 +22,17 @@
                                         <div class="d-flex justify-content-between align-items-baseline mb-3">
                                             <h4 class="card-title mb-0">DETALLES DEL PROYECTO</h4>
                                         </div>
-                                            <div class="mb-3">
-                                                <label class="form-label">Nombre</label>
-                                                <input type="text" name="nombre" id="nombre" class="form-control"
-                                                    placeholder="Ingrese el nombre del proyecto" value="{{ $proyecto->nombre }}" disabled>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label">Total Acumulado:</label>
-                                                <input type="text" name="total" id="total" class="form-control"
-                                                    value="$ {{ number_format($total, 0, ',', '.') }}" disabled>
-                                            </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Nombre</label>
+                                            <input type="text" name="nombre" id="nombre" class="form-control"
+                                                placeholder="Ingrese el nombre del proyecto" value="{{ $proyecto->nombre }}"
+                                                disabled>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Total Acumulado:</label>
+                                            <input type="text" name="total" id="total" class="form-control"
+                                                value="$ {{ number_format($total, 0, ',', '.') }}" disabled>
+                                        </div>
                                     </div>
                                     <div class="col-md-9 border-start">
                                         <div class="d-flex justify-content-between align-items-baseline mb-3">
@@ -46,14 +47,17 @@
                                                 <th></th>
                                             </thead>
                                             <tbody>
-                                                @foreach($ocs as $oc)
-                                                <tr>
-                                                    <td>{{$oc->folio}}</td>
-                                                    <td>{{ date('d/m/Y', strtotime($oc->fecha_emision)) }}</td>
-                                                    <td>{{$oc->proveedor->razon_social}}</td>
-                                                    <td>$ {{ number_format($oc->monto_total, 0, ',', '.') }}</td>
-                                                    <td><button type="button" title="Ver Orden de Compra" onclick="vistaPreviaOC({{$oc->folio}})" class="btn btn-outline-primary btnxs px-1 py-0"><i class="mdi mdi-18 mdi-magnify"></i></button></td>
-                                                </tr>
+                                                @foreach ($ocs as $oc)
+                                                    <tr>
+                                                        <td>{{ $oc->folio }}</td>
+                                                        <td>{{ date('d/m/Y', strtotime($oc->fecha_emision)) }}</td>
+                                                        <td>{{ $oc->proveedor->razon_social }}</td>
+                                                        <td>{{ $oc->monto_total }}</td>
+                                                        <td><button type="button" title="Ver Orden de Compra"
+                                                                onclick="vistaPreviaOC({{ $oc->folio }})"
+                                                                class="btn btn-outline-primary btnxs px-1 py-0"><i
+                                                                    class="mdi mdi-18 mdi-magnify"></i></button></td>
+                                                    </tr>
                                                 @endforeach
                                             </tbody>
                                         </table>
@@ -75,6 +79,16 @@
 @push('custom-scripts')
     <script>
         $('#tabla').DataTable({
+            layout: {
+                topStart: {
+                    buttons: [{
+                        text: 'Excel Resumen',
+                        action: function(e, dt, node, config) {
+                            location.href = "/api/reportes/excel/proyecto/{{ $proyecto->id }}/0"
+                        }
+                    }]
+                }
+            },
             lengthMenu: [5, 10, 20, 50],
             responsive: true,
             search: {
@@ -82,11 +96,19 @@
             },
             language: {
                 url: '/assets/js/datatables/es-ES.json',
+                thousands: '.'
             },
-            order: [[0, 'desc']],
+            columnDefs: [{
+                target: 3,
+                render: DataTable.render.number('.', ',', 0, '$')
+            }],
+            order: [
+                [0, 'desc']
+            ],
             fixedColumns: true,
         });
-        function vistaPreviaOC(id){
+
+        function vistaPreviaOC(id) {
             location.href = '/api/compras/ordenescompra/vistaprevia/' + id;
         }
     </script>

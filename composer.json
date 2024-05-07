@@ -13,8 +13,9 @@
         "laravel/framework": "^10.0",
         "laravel/sanctum": "^3.2",
         "laravel/tinker": "^2.7",
-        "soluciontotal/corepdf": "dev-sgjapp",
+        "phpoffice/phpspreadsheet": "^1.29",
         "soluciontotal/coredte": "dev-php8",
+        "soluciontotal/corepdf": "dev-sgjapp",
         "spatie/laravel-multitenancy": "^3.0",
         "yajra/laravel-datatables": "^10.0"
     },

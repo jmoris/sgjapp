@@ -8,6 +8,7 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\ProyectoController;
+use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use SolucionTotal\CoreDTE\Sii;
@@ -26,6 +27,15 @@ use SolucionTotal\CoreDTE\Sii;
 Route::middleware(['auth:web', 'tenant'])->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
+    });
+
+    Route::prefix('reportes')->group(function(){
+        Route::prefix('excel')->group(function(){
+            Route::get('proyecto/{id}/{detallado?}', [ReporteController::class, 'getReporteProyecto']);
+        });
+        Route::prefix('pdf')->group(function(){
+
+        });
     });
 
     Route::get('/usuarios', [UserController::class, 'getAll']);
