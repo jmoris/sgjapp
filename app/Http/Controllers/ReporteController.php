@@ -15,7 +15,7 @@ class ReporteController extends Controller
     public function getReporteProyecto($id, $detallado = 0){
         try{
             $proyecto = Proyecto::findOrFail($id);
-            $ocs = OrdenCompra::where('proyecto_id', $proyecto->id)->with('proveedor')->get();
+            $ocs = OrdenCompra::where('proyecto_id', $proyecto->id)->where('rev_activa', true)->where('estado', '!=', -1)->with('proveedor')->get();
             $spreadsheet = new Spreadsheet();
             $activeWorksheet = $spreadsheet->getActiveSheet();
             $activeWorksheet->setTitle('Reporte');
