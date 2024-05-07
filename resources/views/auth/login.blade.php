@@ -93,50 +93,5 @@
             location.href = "/login?empresa=" + empresa;
         }
 
-        $("#loginForm").validate({
-            rules: {
-                rut: {
-                    required: true,
-                },
-                email: {
-                    required: true,
-                    email: true
-                },
-                password: {
-                    required: true,
-                }
-            },
-            messages: {
-                rut: "Debe seleccionar una empresa",
-                email: {
-                    required: "El campo correo es obligatorio",
-                    email: "El campo correo no cumple con el formato solicitado a@b.cl"
-                },
-                password: "El campo contraseña es obligatorio",
-            },
-            errorPlacement: function(error, element) {
-                error.addClass("invalid-feedback");
-
-                if (element.parent('.input-group').length) {
-                    error.insertAfter(element.parent());
-                } else if (element.prop('type') === 'radio' && element.parent('.radio-inline').length) {
-                    error.insertAfter(element.parent().parent());
-                } else if (element.prop('type') === 'checkbox' || element.prop('type') === 'radio') {
-                    error.appendTo(element.parent().parent());
-                } else {
-                    error.insertAfter(element);
-                }
-            },
-            highlight: function(element, errorClass) {
-                if ($(element).prop('type') != 'checkbox' && $(element).prop('type') != 'radio') {
-                    $(element).addClass("is-invalid").removeClass("is-valid");
-                }
-            },
-            unhighlight: function(element, errorClass) {
-                if ($(element).prop('type') != 'checkbox' && $(element).prop('type') != 'radio') {
-                    $(element).addClass("is-valid").removeClass("is-invalid");
-                }
-            }
-        });
     </script>
 @endpush

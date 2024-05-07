@@ -46,7 +46,7 @@ class OrdenCompraController extends Controller
         DESDE AQUI HACIA ABAJO ESTARAN LAS FUNCIONES DE LA API
     */
     public function getAll(){
-        $data = OrdenCompra::where('rev_activa', true)->with('proveedor');
+        $data = OrdenCompra::where('rev_activa', true)->where('estado', '!=', -1)->with('proveedor');
         return DataTables::eloquent($data)->toJson();
     }
 
@@ -216,10 +216,11 @@ class OrdenCompraController extends Controller
     public function delete(Request $request, $id){
         try{
             $oc = OrdenCompra::find($id);
-            $oc->delete();
+            $oc->estado = -1;
+            $oc->save();
             return response()->json([
                 'success' => true,
-                'msg' => 'Información eliminada exitosamente',
+                'msg' => 'Información anulada exitosamente',
                 'data' => $oc
             ]);
         }catch(Exception $ex){

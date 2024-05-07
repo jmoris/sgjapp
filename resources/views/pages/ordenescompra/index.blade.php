@@ -102,7 +102,9 @@
                     responsivePriority: 3,
                     render: function(data, type, row) {
                         var html = '';
-                        if(row.estado == 0){
+                        if(row.estado == -1){
+                            html = '<span class="badge bg-danger">ANULADA</span>';
+                        }else if(row.estado == 0){
                             html = '<span class="badge bg-warning">EN PROCESO</span>';
                         }else if(row.estado == 1){
                             html = '<span class="badge bg-warning">ENVIADA</span>';
@@ -116,9 +118,13 @@
                     data: null,
                     orderable:false,
                     render: function(data, type, row) {
-                        var html = '<div><button type="button" title="Editar Orden de Compra" onclick="editarOC('+row.id+')" class="btn btn-outline-primary btnxs px-1 py-0"><i class="mdi mdi-18 mdi-pencil"></i></button>' +
-                            '<button type="button" title="Ver Orden de Compra" onclick="vistaPreviaOC('+row.folio+', '+row.rev+')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-magnify"></i></button>' +
-                            '</div>';
+                        var html = '';
+                        if(row.estado != -1){
+                            html = '<div>';
+                            html += '<button type="button" title="Editar Orden de Compra" onclick="editarOC('+row.id+')" class="btn btn-outline-primary btnxs px-1 py-0"><i class="mdi mdi-18 mdi-pencil"></i></button>';
+                            html += '<button type="button" title="Ver Orden de Compra" onclick="vistaPreviaOC('+row.folio+', '+row.rev+')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-magnify"></i></button>';
+                            html += '</div>';
+                        }
                         //var html = '';
                         return html;
                     }

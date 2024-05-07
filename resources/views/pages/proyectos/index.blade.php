@@ -101,7 +101,7 @@
                     responsivePriority: 1,
                     width: '80%',
                     render: function(data, type, row){
-                        return '<a href="javascript:void(0);" onclick="verProyecto('+row.id+')">'+row.nombre+'</a>'
+                        return '<a href="javascript:void(0);" class="text-decoration-none text-black" onclick="verProyecto('+row.id+')">'+row.nombre+'</a>'
                     }
                 },
                 {
@@ -111,7 +111,7 @@
                     render: function(data, type, row) {
                         console.log(row);
                         var html = '<div class="float-end me-2">' +
-                            '<button type="button" onclick="deleteProyecto('+row.id+')" title="Eliminar Usuario" class="btn btnxs px-1 py-0"><i class="mdi mdi-trash-can"></i></button></div>';
+                            '<button type="button" onclick="deleteProyecto('+row.id+')" title="Eliminar Proyecto" class="btn btnxs px-1 py-0"><i class="mdi mdi-trash-can"></i></button></div>';
                         return html;
                     }
                 },

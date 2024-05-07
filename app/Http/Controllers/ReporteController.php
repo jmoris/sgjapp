@@ -18,25 +18,34 @@ class ReporteController extends Controller
             $ocs = OrdenCompra::where('proyecto_id', $proyecto->id)->with('proveedor')->get();
             $spreadsheet = new Spreadsheet();
             $activeWorksheet = $spreadsheet->getActiveSheet();
-            $activeWorksheet->getHeaderFooter()->setOddHeader('&RTipo Reporte:'.(($detallado==0)?'Resúmen': 'Detallado').'      Fecha Reporte: '.date('d/m/Y h:i'));
-            $activeWorksheet->getHeaderFooter()->setOddFooter('&L&B' . $spreadsheet->getProperties()->getTitle() . '&RPage &P of &N');
+            $activeWorksheet->setTitle('Reporte');
+            $activeWorksheet->getHeaderFooter()->setOddHeader('&RTipo Reporte: '.(($detallado==0)?'Resúmen': 'Detallado').'      Fecha Reporte: '.date('d/m/Y h:i'));
+            $activeWorksheet->getHeaderFooter()->setOddFooter('&L&B' . strtoupper($proyecto->nombre) . '&RPágina &P de &N');
             if($detallado == 0){
                 $activeWorksheet->mergeCells('B2:F2');
+                $activeWorksheet->mergeCells('B3:F3');
                 $activeWorksheet->setCellValue('B2', 'Reporte de Proyecto - ' . $proyecto->nombre);
                 $activeWorksheet->getStyle('B2')->getFont()->setBold( true );
                 $activeWorksheet->getStyle('B2')->getAlignment()->setHorizontal('center');
-
-                $inicial = 4;
+                $activeWorksheet->getStyle('B2')->getFont()->setSize(14);
+                $activeWorksheet->setCellValue('B3', 'Ordenes de Compra Asociadas');
+                $activeWorksheet->getStyle('B3')->getAlignment()->setHorizontal('center');
+                $activeWorksheet->getStyle('B3')->getFont()->setSize(14);
+                $inicial = 5;
                 $startIndex = $inicial;
 
                 $activeWorksheet->setCellValue('B'.$startIndex, 'Folio');
                 $activeWorksheet->getStyle('B'.$startIndex)->getFont()->setBold( true );
+                $activeWorksheet->getStyle('B'.$startIndex)->getFont()->setSize(14);
                 $activeWorksheet->setCellValue('C'.$startIndex, 'Razón Social');
                 $activeWorksheet->getStyle('C'.$startIndex)->getFont()->setBold( true );
+                $activeWorksheet->getStyle('C'.$startIndex)->getFont()->setSize(14);
                 $activeWorksheet->setCellValue('D'.$startIndex, 'Fecha Emisión');
                 $activeWorksheet->getStyle('D'.$startIndex)->getFont()->setBold( true );
+                $activeWorksheet->getStyle('D'.$startIndex)->getFont()->setSize(14);
                 $activeWorksheet->setCellValue('E'.$startIndex, 'Monto Total');
                 $activeWorksheet->getStyle('E'.$startIndex)->getFont()->setBold( true );
+                $activeWorksheet->getStyle('E'.$startIndex)->getFont()->setSize(14);
                 $startIndex++;
 
                 foreach($ocs as $oc){
@@ -45,13 +54,19 @@ class ReporteController extends Controller
                     $activeWorksheet->setCellValue('D'.$startIndex, date('d-m-Y', strtotime($oc->fecha_emision)));
                     $activeWorksheet->setCellValue('E'.$startIndex, $oc->monto_total);
                     $activeWorksheet->getStyle('E'.$startIndex)->getNumberFormat()->setFormatCode('$ #,###0_-');
+
+                    $activeWorksheet->getStyle('B'.$startIndex)->getFont()->setSize(14);
+                    $activeWorksheet->getStyle('C'.$startIndex)->getFont()->setSize(14);
+                    $activeWorksheet->getStyle('D'.$startIndex)->getFont()->setSize(14);
+                    $activeWorksheet->getStyle('E'.$startIndex)->getFont()->setSize(14);
                     $startIndex++;
                 }
                 $activeWorksheet->getCell('E'.$startIndex)->setValueExplicit('=SUM(E'.$inicial.':E'.($startIndex-1).')', DataType::TYPE_FORMULA);
                 //$activeWorksheet->setCellValue('E'.$startIndex, '=SUMA(E'.$inicial.':E'.($startIndex-1).')');
                 $activeWorksheet->getStyle('E'.$startIndex)->getNumberFormat()->setFormatCode('$ #,###0_-');
                 $activeWorksheet->getStyle('E'.$startIndex)->getFont()->setBold( true );
-                $activeWorksheet->getPageSetup()->setFitToPage(true);
+                $activeWorksheet->getStyle('E'.$startIndex)->getFont()->setSize(14);
+
                 $activeWorksheet->getPageSetup()->setFitToWidth(1);
                 $activeWorksheet->getPageSetup()->setFitToHeight(0);
                 foreach (range('B', 'E') as $col) {

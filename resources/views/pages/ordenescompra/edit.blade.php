@@ -24,6 +24,9 @@
         <div>
             <h4 class="mb-3 mb-md-0">Edición de Orden de Compra <small style="font-size:.75em;color: grey;">#{{ str_pad($oc->folio, 5, '0', STR_PAD_LEFT); }}</small></h4>
         </div>
+        <div class="align-end">
+            <button class="btn btn-danger" onclick="anularOC({{$oc->id}})"><i class="mdi mdi-trash-can"></i>&nbsp;&nbsp; Anular O/C</button>
+        </div>
     </div>
     <div class="row">
         <div class="col-12 col-xl-12 stretch-card">
@@ -909,6 +912,30 @@
             $('#tablaDetalle tr[detindex="' + index + '"]').remove();
             // Se calculan los totales y se aumenta el indice
             calcularTotales();
+        }
+
+        function anularOC(id){
+            $.ajax({
+                            type: "POST",
+                            url: '/api/compras/ordenescompra/anular/' + id,
+                            data: {}, // serializes the form's elements.
+                            success: function(data2) {
+                                if (data2.success == true) {
+                                    console.log("precio guardado");
+                                } else {
+                                    console.log("error al guardar el precio");
+                                }
+
+                            }
+                        });
+                        Swal.fire({
+                            title: "Orden de Compra anulada exitosamente",
+                            text: "Orden de Compra anulada correctamente, recuerde que los cambios realizados no son reversibles.",
+                            icon: "error"
+                        })
+                        .then((result) => {
+                            location.href = "/compras/ordenescompra";
+                        });
         }
 
         function calcularTotales() {

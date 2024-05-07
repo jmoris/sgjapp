@@ -71,6 +71,8 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
         Route::get('ordenescompra/vistaprevia/{folio}/{rev?}', [OrdenCompraController::class, 'vistaPreviaOC']);
         Route::post('ordenescompra', [OrdenCompraController::class, 'store']);
         Route::post('ordenescompra/editar/{id}', [OrdenCompraController::class, 'update']);
+        Route::post('ordenescompra/anular/{id}', [OrdenCompraController::class, 'delete']);
+
     });
 
     Route::prefix('ventas')->group(function(){
