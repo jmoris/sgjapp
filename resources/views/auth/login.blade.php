@@ -16,7 +16,7 @@
                             </div>
                             <hr>
                             <h5 class="text-muted fw-normal mb-4">Complete el formulario para iniciar sesión</h5>
-                            <form id="loginForm" class="forms-sample" method="post" action="/login">
+                            <form id="loginForm" class="forms-sample" method="post" action="/login" autocomplete="on">
                                 @csrf
                                 <div class="mb-3">
                                     <label for="userEmail" class="form-label">RUT</label>
@@ -43,7 +43,7 @@
                                 <div class="mb-3">
                                     <label for="userPassword" class="form-label">Password</label>
                                     <input type="password" class="form-control" name="password" id="userPassword"
-                                        autocomplete="current-password" placeholder="Ingrese su contraseña">
+                                        placeholder="Ingrese su contraseña">
                                     @error('password')
                                         <small class="text-danger">{{ $message }}</small>
                                     @enderror
