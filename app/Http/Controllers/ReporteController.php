@@ -28,8 +28,8 @@ class ReporteController extends Controller
             $drawing->setHeight(48);
             $activeWorksheet->getHeaderFooter()->addImage($drawing, \PhpOffice\PhpSpreadsheet\Worksheet\HeaderFooter::IMAGE_HEADER_LEFT);
 
-            $activeWorksheet->getHeaderFooter()->setOddHeader('&L&G&RTipo Reporte: '.(($detallado==0)?'Resúmen': 'Detallado').'      Fecha Reporte: &D &T');
-            $activeWorksheet->getHeaderFooter()->setOddFooter('&L&BProyecto ' . strtoupper($proyecto->nombre) . '&RPágina &P de &N');
+            $activeWorksheet->getHeaderFooter()->setOddHeader('&16&L&G&RTipo Reporte: '.(($detallado==0)?'Resúmen': 'Detallado').'      Fecha Reporte: &D &T');
+            $activeWorksheet->getHeaderFooter()->setOddFooter('&16&L&BProyecto ' . strtoupper($proyecto->nombre) . '&RPágina &P de &N');
             if($detallado == 0){
                 $activeWorksheet->mergeCells('B2:F2');
                 $activeWorksheet->mergeCells('B3:F3');
@@ -78,9 +78,12 @@ class ReporteController extends Controller
                     $activeWorksheet->getStyle('D'.$startIndex)->getAlignment()->setHorizontal('center');
                     $activeWorksheet->getStyle('E'.$startIndex)->getFont()->setSize(16);
                     $startIndex++;
+
+
                 }
                 $activeWorksheet->getCell('E'.$startIndex)->setValueExplicit('=SUM(E'.$inicial.':E'.($startIndex-1).')', DataType::TYPE_FORMULA);
-                //$activeWorksheet->setCellValue('E'.$startIndex, '=SUMA(E'.$inicial.':E'.($startIndex-1).')');
+
+
                 $activeWorksheet->getStyle('E'.$startIndex)->getNumberFormat()->setFormatCode('$ #,###0_-');
                 $activeWorksheet->getStyle('E'.$startIndex)->getFont()->setBold( true );
                 $activeWorksheet->getStyle('E'.$startIndex)->getFont()->setSize(16);
@@ -93,7 +96,98 @@ class ReporteController extends Controller
 
             }else if($detallado == 1){
                 $activeWorksheet->mergeCells('B2:F2');
+                $activeWorksheet->mergeCells('B3:F3');
                 $activeWorksheet->setCellValue('B2', 'Reporte de Proyecto - ' . $proyecto->nombre);
+                $activeWorksheet->getStyle('B2')->getFont()->setBold( true );
+                $activeWorksheet->getStyle('B2')->getAlignment()->setHorizontal('center');
+                $activeWorksheet->getStyle('B2')->getFont()->setSize(18);
+                $activeWorksheet->setCellValue('B3', 'Ordenes de Compra Asociadas');
+                $activeWorksheet->getStyle('B3')->getAlignment()->setHorizontal('center');
+                $activeWorksheet->getStyle('B3')->getFont()->setSize(18);
+                $inicial = 5;
+                $startIndex = $inicial;
+
+                $activeWorksheet->setCellValue('B'.$startIndex, 'Folio');
+                $activeWorksheet->getStyle('B'.$startIndex)->getFont()->setBold( true );
+                $activeWorksheet->getStyle('B'.$startIndex)->getFont()->setSize(16);
+                $activeWorksheet->getStyle('B'.$startIndex)->getAlignment()->setHorizontal('center');
+                $activeWorksheet->setCellValue('C'.$startIndex, 'Razón Social');
+                $activeWorksheet->getStyle('C'.$startIndex)->getFont()->setBold( true );
+                $activeWorksheet->getStyle('C'.$startIndex)->getFont()->setSize(16);
+                $activeWorksheet->setCellValue('D'.$startIndex, 'Fecha Emisión');
+                $activeWorksheet->getStyle('D'.$startIndex)->getFont()->setBold( true );
+                $activeWorksheet->getStyle('D'.$startIndex)->getFont()->setSize(16);
+                $activeWorksheet->getStyle('D'.$startIndex)->getAlignment()->setHorizontal('center');
+                $activeWorksheet->setCellValue('E'.$startIndex, 'Monto Total');
+                $activeWorksheet->getStyle('E'.$startIndex)->getFont()->setBold( true );
+                $activeWorksheet->getStyle('E'.$startIndex)->getFont()->setSize(16);
+                $activeWorksheet->getStyle('E'.$startIndex)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
+                $startIndex++;
+                $activeWorksheet->getStyle('B'.$startIndex)->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THIN)->setColor(new Color('DCDCDC'));
+                $activeWorksheet->setCellValue('C'.$startIndex, 'Item');
+                $activeWorksheet->getStyle('C'.$startIndex)->getFont()->setBold( true );
+                $activeWorksheet->getStyle('C'.$startIndex)->getFont()->setSize(16);
+                $activeWorksheet->getStyle('C'.$startIndex)->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THIN)->setColor(new Color('DCDCDC'));
+                $activeWorksheet->setCellValue('D'.$startIndex, 'Cantidad');
+                $activeWorksheet->getStyle('D'.$startIndex)->getFont()->setBold( true );
+                $activeWorksheet->getStyle('D'.$startIndex)->getFont()->setSize(16);
+                $activeWorksheet->getStyle('D'.$startIndex)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
+                $activeWorksheet->getStyle('D'.$startIndex)->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THIN)->setColor(new Color('DCDCDC'));
+                $activeWorksheet->setCellValue('E'.$startIndex, 'Subtotal');
+                $activeWorksheet->getStyle('E'.$startIndex)->getFont()->setBold( true );
+                $activeWorksheet->getStyle('E'.$startIndex)->getFont()->setSize(16);
+                $activeWorksheet->getStyle('E'.$startIndex)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
+                $activeWorksheet->getStyle('E'.$startIndex)->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THIN)->setColor(new Color('DCDCDC'));
+                $startIndex++;
+                $celdasTotales = [];
+                foreach($ocs as $oc){
+                    $activeWorksheet->setCellValue('B'.$startIndex, $oc->folio);
+                    $activeWorksheet->setCellValue('C'.$startIndex, $oc->proveedor->razon_social);
+                    $activeWorksheet->setCellValue('D'.$startIndex, date('d-m-Y', strtotime($oc->fecha_emision)));
+                    $activeWorksheet->setCellValue('E'.$startIndex, $oc->monto_total);
+                    $activeWorksheet->getStyle('E'.$startIndex)->getNumberFormat()->setFormatCode('$ #,###0_-');
+                    array_push($celdasTotales, 'E'.$startIndex);
+                    $activeWorksheet->getStyle('B'.$startIndex)->getFont()->setSize(16);
+                    $activeWorksheet->getStyle('B'.$startIndex)->getAlignment()->setHorizontal('center');
+                    $activeWorksheet->getStyle('C'.$startIndex)->getFont()->setSize(16);
+                    $activeWorksheet->getStyle('D'.$startIndex)->getFont()->setSize(16);
+                    $activeWorksheet->getStyle('D'.$startIndex)->getAlignment()->setHorizontal('center');
+                    $activeWorksheet->getStyle('E'.$startIndex)->getFont()->setSize(16);
+                    $startIndex++;
+
+                    foreach($oc->lineas as $linea){
+                        $activeWorksheet->setCellValue('C'.$startIndex, $linea->nombre );
+                        $activeWorksheet->setCellValue('D'.$startIndex, $linea->cantidad.' '.$linea->unidad);
+                        $activeWorksheet->setCellValue('E'.$startIndex, ($linea->precio_unitario*$linea->cantidad)*1.19);
+                        $activeWorksheet->getStyle('E'.$startIndex)->getNumberFormat()->setFormatCode('$ #,###0_-');
+                        $activeWorksheet->getStyle('B'.$startIndex)->getFont()->setItalic( true );
+                        $activeWorksheet->getStyle('B'.$startIndex)->getFont()->setSize(14);
+                        $activeWorksheet->getStyle('B'.$startIndex)->getAlignment()->setHorizontal('center');
+                        $activeWorksheet->getStyle('C'.$startIndex)->getFont()->setSize(14);
+                        $activeWorksheet->getStyle('C'.$startIndex)->getFont()->setItalic( true );
+                        $activeWorksheet->getStyle('D'.$startIndex)->getFont()->setSize(14);
+                        $activeWorksheet->getStyle('D'.$startIndex)->getFont()->setItalic( true );
+                        $activeWorksheet->getStyle('D'.$startIndex)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
+                        $activeWorksheet->getStyle('E'.$startIndex)->getFont()->setSize(14);
+                        $activeWorksheet->getStyle('E'.$startIndex)->getFont()->setItalic( true );
+                        $startIndex++;
+                    }
+                    $activeWorksheet->getStyle('B'.$startIndex-1)->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THIN)->setColor(new Color('DCDCDC'));
+                    $activeWorksheet->getStyle('C'.$startIndex-1)->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THIN)->setColor(new Color('DCDCDC'));
+                    $activeWorksheet->getStyle('D'.$startIndex-1)->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THIN)->setColor(new Color('DCDCDC'));
+                    $activeWorksheet->getStyle('E'.$startIndex-1)->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THIN)->setColor(new Color('DCDCDC'));
+                }
+                $activeWorksheet->getCell('E'.$startIndex)->setValueExplicit('='.implode('+', $celdasTotales), DataType::TYPE_FORMULA);
+                //$activeWorksheet->setCellValue('E'.$startIndex, '=SUMA(E'.$inicial.':E'.($startIndex-1).')');
+                $activeWorksheet->getStyle('E'.$startIndex)->getNumberFormat()->setFormatCode('$ #,###0_-');
+                $activeWorksheet->getStyle('E'.$startIndex)->getFont()->setBold( true );
+                $activeWorksheet->getStyle('E'.$startIndex)->getFont()->setSize(16);
+
+                $activeWorksheet->getPageSetup()->setFitToWidth(1);
+                $activeWorksheet->getPageSetup()->setFitToHeight(0);
+                foreach (range('B', 'E') as $col) {
+                    $activeWorksheet->getColumnDimension($col)->setAutoSize(true);
+                }
 
             }
             $writer = new Xlsx($spreadsheet);
@@ -108,6 +202,5 @@ class ReporteController extends Controller
                 'msg' => 'El reporte no pudo ser generado, comuniquese con soporte.',
             ]);
         }
-
     }
 }
