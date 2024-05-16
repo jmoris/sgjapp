@@ -86,6 +86,12 @@
                         action: function(e, dt, node, config) {
                             location.href = "/api/reportes/excel/proyecto/{{ $proyecto->id }}/0"
                         }
+                    },
+                    {
+                        text: 'Excel Detallado',
+                        action: function(e, dt, node, config) {
+                            location.href = "/api/reportes/excel/proyecto/{{ $proyecto->id }}/1"
+                        }
                     }]
                 }
             },
