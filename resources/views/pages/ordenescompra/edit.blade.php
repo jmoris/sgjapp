@@ -355,7 +355,7 @@
                                                             <h5>Glosa documento</h5>
                                                         </div>
                                                         <div class="col-md-12">
-                                                            <textarea id="glosaTxt" maxlength="250" class="form-control mt-3" rows="5"></textarea>
+                                                            <textarea id="glosaTxt" maxlength="250" class="form-control mt-3" rows="5">{{ $oc->glosa }}</textarea>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-5">
