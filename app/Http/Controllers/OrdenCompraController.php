@@ -286,7 +286,8 @@ class OrdenCompraController extends Controller
             $pdf->setWeb('www.joremet.cl');
             $pdf->setMail("contacto@joremet.cl");
             $pdf->setMarcaAgua('https://i.imgur.com/oWL7WBw.jpeg');
-            $pdf->setGlosa($oc->glosa);
+            $glosa = str_replace('//', '<br>', $oc->glosa);
+            $pdf->setGlosa($glosa);
             $pdf->setObra($oc->proyecto->nombre);
             $pdf->setLeyendaImpresion("Rev. ". $rev);
             $pdf->setFirmaDerecha("Validado por", "");
