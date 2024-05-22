@@ -54,7 +54,7 @@
                                                         <td>{{ $oc->proveedor->razon_social }}</td>
                                                         <td>{{ $oc->monto_total }}</td>
                                                         <td><button type="button" title="Ver Orden de Compra"
-                                                                onclick="vistaPreviaOC({{ $oc->folio }})"
+                                                                onclick="vistaPreviaOC({{ $oc->folio }}, {{$oc->rev}})"
                                                                 class="btn btn-outline-primary btnxs px-1 py-0"><i
                                                                     class="mdi mdi-18 mdi-magnify"></i></button></td>
                                                     </tr>
@@ -114,8 +114,8 @@
             fixedColumns: true,
         });
 
-        function vistaPreviaOC(id) {
-            location.href = '/api/compras/ordenescompra/vistaprevia/' + id;
+        function vistaPreviaOC(id, rev) {
+            location.href = '/api/compras/ordenescompra/vistaprevia/' + id + '/' + rev;
         }
     </script>
 @endpush
