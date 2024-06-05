@@ -1,6 +1,6 @@
 @extends('layout.master')
 
-@section('title', 'Emisión de Orden de Compra')
+@section('title', 'Emisión de Factura Electrónica')
 
 @push('style')
     <style>
@@ -22,7 +22,7 @@
 @section('content')
     <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
         <div>
-            <h4 class="mb-3 mb-md-0">Emisión de Orden de Compra</h4>
+            <h4 class="mb-3 mb-md-0">Emisión de Factura Electrónica</h4>
         </div>
     </div>
     <div class="row">
@@ -32,7 +32,7 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-baseline">
-                                <h4 class="card-title mb-0">FORMULARIO DE NUEVA ORDEN DE COMPRA</h4>
+                                <h4 class="card-title mb-0">FORMULARIO DE NUEVA FACTURA ELECTRÓNICA</h4>
                             </div>
                             <div class="row mx-3">
                                 <div style="width:100%; margin-top:24px;"></div>
@@ -216,18 +216,17 @@
                                                             </div>
                                                         </div>
                                                         <div class="mb-2 border-bottom">
-                                                            <h5>Información de obra</h5>
+                                                            <h5>Información Comercial</h5>
                                                         </div>
                                                         <div class="row mx-1">
                                                             <div class="row mb-2">
                                                                 <label
-                                                                    class="col-sm-4 col-form-label col-form-label-sm">Nombre
-                                                                    Obra/Proyecto</label>
+                                                                    class="col-sm-4 col-form-label col-form-label-sm">Lista de Precios</label>
                                                                 <div class="col-sm-8" id="inputProyecto">
                                                                     <select class="form-control form-control-sm"
                                                                         id="nombre_proyecto" name="nombre_proyecto">
-                                                                        <option>Seleccione proyecto</option>
-                                                                        @foreach ($proyectos as $proyecto)
+                                                                        <option>Seleccione Lista</option>
+                                                                        @foreach ([] as $proyecto)
                                                                             <option value="{{ $proyecto->id }}">
                                                                                 {{ $proyecto->nombre }}</option>
                                                                         @endforeach

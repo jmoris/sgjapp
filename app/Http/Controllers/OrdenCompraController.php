@@ -21,7 +21,7 @@ use Yajra\DataTables\Facades\DataTables;
 class OrdenCompraController extends Controller
 {
     public function index(){
-        return view('pages.ordenescompra.index');
+        return view('pages.compras.ordenescompra.index');
     }
 
     public function newOC(){
@@ -30,7 +30,7 @@ class OrdenCompraController extends Controller
         $proveedores = Proveedor::all();
         $unidades = Unidad::all();
         $proyectos = Proyecto::where('estado', 0)->get();
-        return view('pages.ordenescompra.create', ['proveedores' => $proveedores, 'unidades' => $unidades,'comunas' => $comunas, 'emisor' => $emisor, 'proyectos' => $proyectos]);
+        return view('pages.compras.ordenescompra.create', ['proveedores' => $proveedores, 'unidades' => $unidades,'comunas' => $comunas, 'emisor' => $emisor, 'proyectos' => $proyectos]);
     }
 
     public function editOC($id){
@@ -40,7 +40,7 @@ class OrdenCompraController extends Controller
         $proveedores = Proveedor::all();
         $unidades = Unidad::all();
         $proyectos = Proyecto::where('estado', 0)->get();
-        return view('pages.ordenescompra.edit', ['oc' => $oc, 'proveedores' => $proveedores, 'unidades' => $unidades,'comunas' => $comunas, 'emisor' => $emisor, 'proyectos' => $proyectos]);
+        return view('pages.compras.ordenescompra.edit', ['oc' => $oc, 'proveedores' => $proveedores, 'unidades' => $unidades,'comunas' => $comunas, 'emisor' => $emisor, 'proyectos' => $proyectos]);
     }
     /*
         DESDE AQUI HACIA ABAJO ESTARAN LAS FUNCIONES DE LA API

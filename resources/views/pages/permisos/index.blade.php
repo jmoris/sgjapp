@@ -101,6 +101,17 @@
                                                     <td><input class="form-check-input" type="checkbox"
                                                             id="eliminarProveedor" name="eliminarProveedor"></td>
                                                 </tr>
+                                                <tr modulename="clientes">
+                                                    <td>Clientes</td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="verCliente" name="verCliente"></td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="editarCliente" name="editarCliente"></td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="crearCliente" name="crearCliente"></td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="eliminarCliente" name="eliminarCliente"></td>
+                                                </tr>
                                                 <tr modulename="productos">
                                                     <td>Productos</td>
                                                     <td><input class="form-check-input" type="checkbox"
@@ -133,6 +144,17 @@
                                                             id="crearProyecto" name="crearProyecto"></td>
                                                     <td><input class="form-check-input" type="checkbox"
                                                             id="eliminarProyecto" name="eliminarProyecto"></td>
+                                                </tr>
+                                                <tr modulename="facturas">
+                                                    <td>Facturas</td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="verFactura" name="verFactura"></td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="editarFactura" name="editarFactura"></td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="crearFactura" name="crearFactura"></td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="eliminarFactura" name="eliminarFactura"></td>
                                                 </tr>
                                             </tbody>
                                         </table>

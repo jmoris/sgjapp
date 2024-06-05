@@ -1,6 +1,6 @@
 @extends('layout.master')
 
-@section('title', 'Gestión de Proveedores')
+@section('title', 'Gestión de Clientes')
 
 @push('plugin-styles')
     <link href="{{ asset('assets/plugins/select2/select2.min.css') }}" rel="stylesheet" />
@@ -9,7 +9,7 @@
 @section('content')
     <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
         <div>
-            <h4 class="mb-3 mb-md-0">Gestión de Proveedores</h4>
+            <h4 class="mb-3 mb-md-0">Gestión de Clientes</h4>
         </div>
     </div>
     <div class="row">
@@ -19,7 +19,7 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-baseline">
-                                <h4 class="card-title mb-0">FORMULARIO DE NUEVO PROVEEDOR</h4>
+                                <h4 class="card-title mb-0">FORMULARIO DE NUEVO CLIENTE</h4>
                             </div>
                             <div class="row mx-2">
                                 <div style="width:100%; margin-top:24px;"></div>
@@ -56,7 +56,7 @@
                                                             class="form-control"
                                                             placeholder="Ingrese la dirección comercial del proveedor">
                                                     </div>
-                                                    <div class="mb-4">
+                                                    <div class="mb-2">
                                                         <label class="form-label">Comuna</label>
                                                         <select id="comuna" name="comuna"
                                                             class="js-example-basic-single form-select" data-width="100%">
@@ -66,6 +66,12 @@
                                                                 </option>
                                                             @endforeach
                                                         </select>
+                                                    </div>
+                                                    <div class="mb-4">
+                                                        <label class="form-label">Correo Intercambio</label>
+                                                        <input type="text" name="correo_dte" id="correo_dte"
+                                                            class="form-control"
+                                                            placeholder="Ingrese el correo de intercambio de XML">
                                                     </div>
                                                 </div>
                                             </div>
@@ -113,7 +119,7 @@
                                                     class="mdi mdi-content-save"></i> Guardar</button>
                                         </div>
                                         <button type="button" class="btn btn-danger"
-                                            onclick="location.href = '/proveedores'">
+                                            onclick="location.href = '/clientes'">
                                             <i class="mdi mdi-cancel"></i>
                                             Cancelar
                                         </button>
@@ -163,7 +169,7 @@
         });
 
         $('#rut').change(function(e) {
-            if($(this).val() == ''||$(this.val.length < 9))
+            if($(this).val() == '' || $(this.val.length < 9))
                 return false;
             $('.modal').modal('show');
             $('#razon_social').val("");
@@ -171,6 +177,7 @@
             $('#direccion').val("");
             $("#comuna").val(null);
             $('#comuna').trigger('change');
+            $('#correo_dte').val("");
             var rut = $(this).inputmask('unmaskedvalue');
             var dv = rut[rut.length - 1];
             var rutCompleto = rut.slice(0, -1) + '-' + dv;
@@ -186,6 +193,7 @@
                     $('#direccion').val(data.DIRECCION);
                     $("#comuna").val(data.COMUNA);
                     $('#comuna').trigger('change');
+                    $('#correo_dte').val(data.CORREO);
                     validator.resetForm();
                     $('.modal').modal('hide');
                 },
@@ -231,6 +239,9 @@
                 },
                 comuna: {
                     required: true,
+                },
+                correo_dte: {
+                    required: true,
                 }
             },
             messages: {
@@ -239,6 +250,7 @@
                 giro: "El campo actividad economica es obligatorio",
                 direccion: "El campo direccion es obligatorio",
                 comuna: "El campo comuna es obligatorio",
+                correo_dte: "El correo de intercambio es obligatorio"
             },
 
             submitHandler: function(form) {
@@ -248,6 +260,7 @@
                     giro: $('#giro').val(),
                     direccion: $('#direccion').val(),
                     comuna: $('#comuna').val(),
+                    correo_dte: $('#correo_dte').val(),
                     telefono: $('#telefono').val(),
                     correcto_contacto: $('#correcto_contacto').val(),
                     web: $('#web').val(),
@@ -255,15 +268,16 @@
                 };
                 $.ajax({
                     type: "POST",
-                    url: '/api/proveedores',
+                    url: '/api/clientes',
                     data: data, // serializes the form's elements.
                     success: function(data) {
+                        console.log(data);
                         Swal.fire({
-                            title: "Proveedor guardado exitosamente",
+                            title: "Cliente guardado exitosamente",
                             text: "La información ingresada es correcta y fue procesada exitosamente.",
                             icon: "success"
                         }).then((result) => {
-                            location.href = '/proveedores';
+                            location.href = '/clientes';
                         });
                     }
                 });

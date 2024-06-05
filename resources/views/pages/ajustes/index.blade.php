@@ -81,30 +81,53 @@
                                                         <h6 class="card-title mb-3">Información del certificado</h6>
                                                     </div>
                                                     <div class="row mx-1">
+                                                        @php
+                                                            $estado = \App\Helpers\SII::statusCert();
+                                                        @endphp
                                                         <div>
-                                                            <span>ESTADO DEL CERTIFICADO:</span>
-                                                            <span class="badge bg-success">VIGENTE</span>
+                                                            <span class="fw-bold">ESTADO DEL CERTIFICADO: </span>
+                                                            {!! ($estado['valido'])? '<span class="badge bg-success">VIGENTE</span>':'<span class="badge bg-danger">INVALIDO</span>'  !!}
                                                         </div>
+                                                        <div>
+                                                            <span class="fw-bold">DESDE:</span>
+                                                            {{ $estado['desde']}}
+                                                        </div>
+                                                        <div>
+                                                            <span class="fw-bold">HASTA:</span>
+                                                            {{ $estado['hasta']}}
+                                                        </div>
+                                                        @php
+                                                            $date1 = new DateTime($estado['desde']);
+                                                            $date2 = new DateTime($estado['hasta']);
+                                                            $diferencia = $date1->diff($date2);
+                                                        @endphp
+                                                        <small class="text-muted mt-2">* Quedan {{$diferencia->days}} dias para el vencimiento del certificado.</small>
                                                         <div
-                                                            style="margin-top:1em; margin-bottom: 1em; width:100%; border-bottom: 1px solid gainsboro;">
+                                                            style="margin-top:.5em; margin-bottom: 1em; width:100%; border-bottom: 1px solid gainsboro;">
                                                         </div>
-                                                        <div class="mb-3">
-                                                            <label for="formFileSm" class="form-label">CERTIFICADO
-                                                                DIGITAL</label>
-                                                            <input class="form-control form-control-sm" id="formFileSm"
-                                                                type="file">
-                                                        </div>
-                                                        <div class="mb-3">
-                                                            <label for="formFileSm" class="form-label">CONTRASEÑA
-                                                                CERTIFICADO</label>
-                                                            <input class="form-control form-control-sm" id="formFileSm"
-                                                                type="text">
-                                                        </div>
-                                                        <div class="w-100">
-                                                            <button type="button"
-                                                                class="float-end btn btn-sm btn-primary">CARGAR
-                                                                CERTIFICADO</button>
-                                                        </div>
+                                                        <form method="POST" enctype="multipart/form-data" action="/api/config/certificado">
+                                                            @csrf
+                                                            <div class="mb-3">
+                                                                <label for="formFileSm" class="form-label">CERTIFICADO
+                                                                    DIGITAL</label>
+                                                                <input class="form-control form-control-sm" id="cert"
+                                                                    type="file" name="cert">
+                                                            </div>
+                                                            <div class="mb-3">
+                                                                <label for="formFileSm" class="form-label">CONTRASEÑA
+                                                                    CERTIFICADO</label>
+                                                                <input class="form-control form-control-sm" id="password" name="password"
+                                                                    type="text">
+                                                            </div>
+                                                            <div class="w-100">
+                                                                <button type="submit"
+                                                                    class="float-end btn btn-sm btn-primary">CARGAR
+                                                                    CERTIFICADO</button>
+                                                                    @if($errors->has('certificado'))
+                                                                        <small class="text-red">El certificado no es valido o contiene errores</small>
+                                                                    @endif
+                                                            </div>
+                                                        </form>
                                                     </div>
                                                 </div>
                                             </div>

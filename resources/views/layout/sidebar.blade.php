@@ -51,7 +51,7 @@
             </li>
             @endif
             @if(has_permission('ver-cliente'))
-            <li class="nav-item {{ active_class(['clientes']) }}">
+            <li class="nav-item {{ active_class(['clientes*']) }}">
                 <a href="{{ url('/clientes') }}" class="nav-link">
                     <i class="mdi mdi-account-group mdi-18"></i>
                     <span class="link-title" style="margin-left: 12px;">Clientes</span>
@@ -83,6 +83,14 @@
             </li>
             @endif
             <li class="nav-item nav-category">VENTAS</li>
+            @if(has_permission('ver-factura'))
+            <li class="nav-item {{ active_class(['ventas/facturas']) }}">
+                <a href="{{ url('/ventas/facturas') }}" class="nav-link">
+                    <i class="link-icon" data-feather="message-square"></i>
+                    <span class="link-title">Facturas</span>
+                </a>
+            </li>
+            @endif
             @if(has_permission('ver-presupuesto'))
             <li class="nav-item {{ active_class(['apps/presupuestos']) }}">
                 <a href="#" class="nav-link">

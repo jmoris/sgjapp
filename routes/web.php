@@ -14,6 +14,8 @@
 use App\DomicilioContribuyente;
 use App\Http\Controllers\AjusteController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\OrdenCompraController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProductoController;
@@ -50,6 +52,12 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
         Route::get('/nuevo', [ProveedorController::class, 'newProveedor']);
     });
 
+    Route::prefix('clientes')->middleware('tag:ver-cliente')->group(function(){
+        Route::get('/', [ClienteController::class, 'index']);
+        Route::get('/editar/{id}', [ClienteController::class, 'editCliente']);
+        Route::get('/nuevo', [ClienteController::class, 'newCliente']);
+    });
+
     Route::prefix('productos')->middleware('tag:ver-producto')->group(function(){
         Route::get('/', [ProductoController::class, 'index']);
         Route::get('/editar/{id}', [ProductoController::class, 'editProducto']);
@@ -65,6 +73,10 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
     });
 
     Route::prefix('ventas')->group(function(){
+        Route::prefix('facturas')->middleware('tag:ver-factura')->group(function(){
+            Route::get('/', [FacturaController::class, 'index']);
+            Route::get('/nuevo', [FacturaController::class, 'newFactura']);
+        });
         Route::prefix('proyectos')->middleware('tag:ver-proyecto')->group(function(){
             Route::get('/', [ProyectoController::class, 'index']);
             Route::get('/{id}', [ProyectoController::class, 'detailProyecto'])->where('id', '[0-9]+');
@@ -83,82 +95,10 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
 
     Route::get('auth/logout', [AuthController::class, 'doLogout']);
 
-    Route::get('prueba', function(){
-        $dte = [
-            'Encabezado' => [
-                'IdDoc' => [
-                    'TipoDTE' => 801,
-                    'Folio' => 1,
-                    'FchEmis' => date('Y-m-d'),
-                    'FchVenc' => date('Y-m-d'),
-                    'FmaPago' => 1,
-                    'MedioPago' => 'REDCOMPRA'
-                ],
-                'Emisor' => [
-                    'RUTEmisor' => '76737584-0',
-                    'RznSoc' => 'CONSTRUCTORA JOREMET LIMITADA',
-                    'GiroEmis' => 'FABRICACION DE PRODUCTOS METALICOS PARA USO ESTRUCTURAL',
-                    'Acteco' => 251100,
-                    'DirOrigen' => 'BELLAVISTA 519',
-                    'CmnaOrigen' => 'TENO',
-                ],
-                'Receptor' => [
-                    'RUTRecep' => '77192227-9',
-                    'RznSocRecep' => 'INGENIERIA Y CONSTRUCCIÓN SOLUCIONTOTAL CHILE LIMITADA',
-                    'GiroRecep' => 'SEGURIDAD, TELECOMUNICACIONES Y SERVICIOS INFORMATICOS',
-                    'DirRecep' => 'LAS ARAUCARIAS 025',
-                    'CmnaRecep' => 'TENO',
-                    'CdgIntRecep' => 'CASA MATRIZ'
-                ],
-                'Totales' => [
-                    'MntNeto' => 113500,
-                    'IVA' => 21565,
-                    'MntTotal' => 135065,
-                ]
-            ],
-            'Detalle' => [
-                [
-                    'NmbItem' => 'PRODUCTO DE PRUEBA',
-                    'DscItem' => "<p><strong>Primera parte</strong></p>
-                    <p>Texto descripcion 1 <br />Texto descripcion 2 <br />Texto descripcion 3</p>
-                    <p><strong>Segunda parte</strong></p>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam magna felis, ultrices vel suscipit ac, malesuada bibendum turpis. Aenean vitae feugiat lorem. Mauris volutpat consequat neque non auctor. Quisque turpis ex, mollis eget vulputate eget, tincidunt non velit. Duis et nisi dolor. In placerat consequat lacus tincidunt sollicitudin. Donec vestibulum.
-                    </p>",
-                    'QtyItem' => 1,
-                    'PrcItem' => 113500,
-                    'MontoItem' => 113500,
-                    'UnmdItem' => 'Und'
-                ]
-            ],
-        ];
-
-        $pdf = new \SolucionTotal\CorePDF\PDF($dte, 1, 'https://i.imgur.com/oWL7WBw.jpeg', 2);
-        $pdf->setCedible(false);
-        //$pdf->setLeyendaImpresion('Sistema de facturacion por SoluciónTotal');
-        $pdf->setTelefono("75 2 412060");
-        $pdf->setWeb('www.joremet.cl');
-        $pdf->setMail("contacto@joremet.cl");
-        $pdf->setMarcaAgua('https://i.imgur.com/oWL7WBw.jpeg');
-        $pdf->setGlosa("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin id convallis leo. Ut malesuada ex dui. Curabitur mauris turpis, accumsan non elit nec, tincidunt pretium odio. Aenean a pulvinar augue. Suspendisse sodales neque eu mauris sagittis tempor. Sed purus sem, sollicitudin a viverra ac, malesuada iaculis quam. Sed facilisis neque et pellentesque congue. Donec non lacinia sapien.");
-        $pdf->setFirmaDerecha("Validado por");
-        $pdf->setFirmaIzquierda("Encargado de Adquisiciones");
-        $pdf->construir();
-        $pdf->generar(1);
-
-    });
-
 });
 
-Route::get('test22', function(){
-    return response()->json(Producto::with('precios')->get());
-});
-
-
-
-
-
-
-
+//////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 
 
 Route::group(['prefix' => 'email'], function(){

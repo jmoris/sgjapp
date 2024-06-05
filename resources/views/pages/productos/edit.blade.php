@@ -32,101 +32,15 @@
                                 <h4 class="card-title mb-0">FORMULARIO DE EDICIÓN DE PRODUCTO</h4>
                             </div>
                             <div class="row mx-2">
-                                <div style="width:100%; margin-top:24px;"></div>
-                                <form class="form" id="storeForm">
-                                    @csrf
-                                    <div class="row">
-                                        <div class="col-sm-6">
-                                            <div class="mb-3 border-bottom">
-                                                <h5>Información general</h5>
-                                            </div>
-                                            <div class="mx-2">
-                                                <div class="mb-2">
-                                                    <label class="form-label">SKU</label>
-                                                    <input type="text" name="sku" id="sku" class="form-control"
-                                                        placeholder="Ingrese el SKU o código interno del producto"
-                                                        value="{{ $producto->sku }}">
-                                                </div>
-                                                <div class="mb-2">
-                                                    <label class="form-label">Nombre</label>
-                                                    <input type="text" name="nombre" id="nombre" class="form-control"
-                                                        placeholder="Ingrese el nombre del producto"
-                                                        value="{{ $producto->nombre }}">
-                                                </div>
-                                                <div class="mb-2">
-                                                    <label class="form-label">Descripción</label>
-                                                    <textarea id="descripcion" name="descripcion" placeholder="Ingrese una descripción del producto" class="form-control"
-                                                        cols="40">{{ $producto->descripcion }}</textarea>
-                                                </div>
-                                                <div class="mb-2">
-                                                    <label class="form-label">Categoria</label>
-                                                    <select class="form-control" id="categoria" name="categoria">
-                                                        <option>Seleccionar categoria</option>
-                                                        @foreach ($categorias as $categoria)
-                                                            <option value="{{ $categoria->id }}"
-                                                                @if ($producto->categoria_id == $categoria->id) selected @endif>
-                                                                {{ $categoria->nombre }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                                <div class="mb-4">
-                                                    <label class="form-label">Unidad</label>
-                                                    <select class="form-control" id="unidad" name="unidad">
-                                                        <option>Seleccionar unidad</option>
-                                                        @foreach ($unidades as $unidad)
-                                                            <option value="{{ $unidad->id }}"
-                                                                @if ($producto->unidad_id == $unidad->id) selected @endif>
-                                                                {{ $unidad->nombre }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="mb-4 border-bottom">
-                                                <h5>Información contable</h5>
-                                            </div>
-                                            <div class="mb-2">
-                                                <input class="form-check-input" type="checkbox" value="1"
-                                                    id="es_afecto" name="es_afecto"
-                                                    @if ($producto->es_afecto) checked @endif>
-                                                <label class="form-check-label" for="es_afecto">
-                                                    El producto es afecto
-                                                </label>
-                                            </div>
-                                            <div class="mb-2">
-                                                <input class="form-check-input" type="checkbox" value="1"
-                                                    id="se_vende" name="se_vende"
-                                                    @if ($producto->se_vende) checked @endif>
-                                                <label class="form-check-label" for="se_vende">
-                                                    El producto se puede vender
-                                                </label>
-                                            </div>
-                                            <div class="mb-2">
-                                                <input class="form-check-input" type="checkbox" value="1"
-                                                    id="se_compra" name="se_compra"
-                                                    @if ($producto->se_compra) checked @endif>
-                                                <label class="form-check-label" for="se_compra">
-                                                    El producto se puede comprar
-                                                </label>
-                                            </div>
-                                        </div>
-                                    </div>
-
-
-                                    <div class="float-end">
-                                        <button type="submit" class="btn btn-primary submit"><i
-                                                class="mdi mdi-content-save"></i> Guardar</button>
-                                    </div>
-                                    <button type="button" class="btn btn-danger" onclick="location.href = '/productos'">
-                                        <i class="mdi mdi-cancel"></i>
-                                        Cancelar
-                                    </button>
-                                </form>
-                                <div style="width: 100%; margin: 16px 0px; border-bottom: 1px solid gainsboro;"></div>
+                                <div style="width:100%; margin-top:12px;"></div>
                                 <ul class="nav nav-tabs">
                                     <li class="nav-item">
                                         <button class="nav-link active" id="venta-tab" data-bs-toggle="tab"
+                                            data-bs-target="#informacion" type="button" role="tab"
+                                            aria-selected="true">Información general</button>
+                                    </li>
+                                    <li class="nav-item">
+                                        <button class="nav-link" id="venta-tab" data-bs-toggle="tab"
                                             data-bs-target="#venta" type="button" role="tab"
                                             aria-selected="true">Precios de Venta</button>
                                     </li>
@@ -136,9 +50,104 @@
                                             aria-selected="true">Precios de Compra</button>
                                     </li>
                                 </ul>
-                                <div class="tab-content" id="myTabContent">
-                                    <div class="tab-pane fade show active" id="venta" role="tabpanel"
+                                <div class="tab-content bg-white pb-2 border" id="myTabContent">
+                                    <div class="tab-pane fade show active" id="informacion" role="tabpanel"
+                                        aria-labelledby="informacion-tab">
+                                        <div style="width:100%; margin-top:24px;"></div>
+                                        <form class="form" id="storeForm">
+                                            @csrf
+                                            <div class="row">
+                                                <div class="col-sm-6">
+                                                    <div class="mb-3 border-bottom">
+                                                        <h5>Información general</h5>
+                                                    </div>
+                                                    <div class="mx-2">
+                                                        <div class="mb-2">
+                                                            <label class="form-label">SKU</label>
+                                                            <input type="text" name="sku" id="sku" class="form-control"
+                                                                placeholder="Ingrese el SKU o código interno del producto"
+                                                                value="{{ $producto->sku }}">
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            <label class="form-label">Nombre</label>
+                                                            <input type="text" name="nombre" id="nombre" class="form-control"
+                                                                placeholder="Ingrese el nombre del producto"
+                                                                value="{{ $producto->nombre }}">
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            <label class="form-label">Descripción</label>
+                                                            <textarea id="descripcion" name="descripcion" placeholder="Ingrese una descripción del producto" class="form-control"
+                                                                cols="40">{{ $producto->descripcion }}</textarea>
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            <label class="form-label">Categoria</label>
+                                                            <select class="form-control" id="categoria" name="categoria">
+                                                                <option>Seleccionar categoria</option>
+                                                                @foreach ($categorias as $categoria)
+                                                                    <option value="{{ $categoria->id }}"
+                                                                        @if ($producto->categoria_id == $categoria->id) selected @endif>
+                                                                        {{ $categoria->nombre }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                        <div class="mb-4">
+                                                            <label class="form-label">Unidad</label>
+                                                            <select class="form-control" id="unidad" name="unidad">
+                                                                <option>Seleccionar unidad</option>
+                                                                @foreach ($unidades as $unidad)
+                                                                    <option value="{{ $unidad->id }}"
+                                                                        @if ($producto->unidad_id == $unidad->id) selected @endif>
+                                                                        {{ $unidad->nombre }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="mb-4 border-bottom">
+                                                        <h5>Información contable</h5>
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <input class="form-check-input" type="checkbox" value="1"
+                                                            id="es_afecto" name="es_afecto"
+                                                            @if ($producto->es_afecto) checked @endif>
+                                                        <label class="form-check-label" for="es_afecto">
+                                                            El producto es afecto
+                                                        </label>
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <input class="form-check-input" type="checkbox" value="1"
+                                                            id="se_vende" name="se_vende"
+                                                            @if ($producto->se_vende) checked @endif>
+                                                        <label class="form-check-label" for="se_vende">
+                                                            El producto se puede vender
+                                                        </label>
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <input class="form-check-input" type="checkbox" value="1"
+                                                            id="se_compra" name="se_compra"
+                                                            @if ($producto->se_compra) checked @endif>
+                                                        <label class="form-check-label" for="se_compra">
+                                                            El producto se puede comprar
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+
+                                            <div class="float-end">
+                                                <button type="submit" class="btn btn-primary submit"><i
+                                                        class="mdi mdi-content-save"></i> Guardar</button>
+                                            </div>
+                                            <button type="button" class="btn btn-danger" onclick="location.href = '/productos'">
+                                                <i class="mdi mdi-cancel"></i>
+                                                Cancelar
+                                            </button>
+                                        </form>
+                                    </div>
+                                    <div class="tab-pane fade" id="venta" role="tabpanel"
                                         aria-labelledby="venta-tab">
+                                        <div style="width:100%; margin-top:24px;"></div>
                                         <table class="table table-sm">
                                             <thead>
                                                 <th>Nombre Lista</th>
@@ -199,6 +208,7 @@
                                     </div>
                                     <div class="tab-pane fade" id="compra" role="tabpanel"
                                         aria-labelledby="compra-tab">
+                                        <div style="width:100%; margin-top:24px;"></div>
                                         <table class="table table-sm">
                                             <thead>
                                                 <th>Nombre Proveedor</th>

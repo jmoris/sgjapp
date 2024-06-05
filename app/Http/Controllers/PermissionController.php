@@ -75,8 +75,10 @@ class PermissionController extends Controller
                 'permisos' => [
                     'usuarios' => [0,0,0,0], // Booleano que representa el CRUD (Ver, Crear, Editar, Eliminar)
                     'proveedores' => [0,0,0,0],
+                    'clientes' => [0,0,0,0],
                     'productos' => [0,0,0,0],
                     'ordenes_compra' => [0,0,0,0],
+                    'facturas' => [0,0,0,0]
                  ]
             ];
 

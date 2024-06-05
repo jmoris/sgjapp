@@ -15,7 +15,19 @@ return new class extends Migration
     {
         Schema::create('clientes', function (Blueprint $table) {
             $table->id();
+            $table->string('rut')->unique();
+            $table->string('razon_social');
+            $table->string('giro');
+            $table->string('direccion');
+            $table->string('email_dte');
+            $table->smallInteger('tipo_pago')->default(2);
+            $table->smallInteger('dias_credito')->default(30);
+            $table->string('telefono')->nullable();
+            $table->string('email')->nullable();
+            $table->string('web')->nullable();
             $table->timestamps();
+
+            $table->foreignIdFor(\App\Comuna::class)->constrained();
         });
     }
 

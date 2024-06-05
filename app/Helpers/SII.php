@@ -1,6 +1,7 @@
 <?php
 namespace App\Helpers;
 
+use App\Config;
 use App\Models\Contribuyente;
 use Exception;
 use Illuminate\Support\Facades\Log;
@@ -34,24 +35,37 @@ class SII {
         return $firma;
     }
 
-    public static function statusCert($rut){
+    public static function statusCert(){
         try{
             $cert = [];
-            $pass = 'Moris.234';
-            $p12 = Storage::get('cert.p12');
+            $config =Config::where('key', 'password_cert')->first();
+            $pass = $config->value;
+            if($pass == null){
+                throw new Exception("Clave incorrecta o nula");
+            }
+            $p12 = Storage::get('app/cert.p12');
             openssl_pkcs12_read($p12, $cert, $pass);
             $firma = new CoreDTEFirmaElectronica([
                 'data' => $p12,
                 'pass' => $pass,
             ]);
+            $desde = $firma->getFrom();
             $hasta = $firma->getTo();
             if(date('Y-m-d H:i:s') < $hasta){
-                return true;
+                return [
+                    'desde' => $desde,
+                    'hasta' => $hasta,
+                    'valido' => true
+                ];
             }else{
-                return false;
+                return [
+                    'desde' => $desde,
+                    'hasta' => $hasta,
+                    'valido' => false
+                ];
             }
         }catch(Exception $ex){
-            Log::error("El archivo del certificado no se encontro. Path: ".'certificados/'.$id.'.p12');
+            Log::error("El archivo del certificado no se encontro o la clave es incorrecta.");
             return false;
         }
     }

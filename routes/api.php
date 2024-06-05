@@ -2,6 +2,8 @@
 
 use App\Comuna;
 use App\DomicilioContribuyente;
+use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\MaestroController;
 use App\Http\Controllers\OrdenCompraController;
 use App\Http\Controllers\PermissionController;
@@ -51,6 +53,13 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
     Route::post('/proveedores/editar/{id}', [ProveedorController::class, 'update']);
     Route::delete('/proveedores/{id}', [ProveedorController::class, 'delete']);
 
+    Route::get('/clientes', [ClienteController::class, 'getAll']);
+    Route::get('/clientes/{id}', [ClienteController::class, 'getById']);
+    Route::get('/clientes/productos/{id}', [ClienteController::class, 'getProductosClienteById']);
+    Route::post('/clientes', [ClienteController::class, 'store']);
+    Route::post('/clientes/editar/{id}', [ClienteController::class, 'update']);
+    Route::delete('/clientes/{id}', [ClienteController::class, 'delete']);
+
 
     Route::get('/productos', [ProductoController::class, 'getAll']);
     Route::get('/productos/{id}', [ProductoController::class, 'getById']);
@@ -76,6 +85,8 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
     });
 
     Route::prefix('ventas')->group(function(){
+        Route::get('facturas', [FacturaController::class, 'getAll']);
+
         Route::get('proyectos', [ProyectoController::class, 'getAll']);
         Route::post('proyectos', [ProyectoController::class, 'store']);
         Route::post('proyectos/editar/{id}', [ProyectoController::class, 'update']);
@@ -95,6 +106,8 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
     Route::get('/categorias', [MaestroController::class, 'getCategorias']);
     Route::post('/categorias', [MaestroController::class, 'storeCategoria']);
 
+    Route::post('/config/certificado', [MaestroController::class, 'storeCertificado']);
+
 
     Route::get('/listaprecios', [MaestroController::class, 'getListaPrecios']);
     Route::post('/unidades', [MaestroController::class, 'storeUnidad']);
@@ -102,12 +115,12 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
     Route::post('/listaprecios', [MaestroController::class, 'storeListaPrecio']);
 
 
-    Route::get('infodte/proveedores/{rut}', function($rut){
+    Route::get('infodte/contribuyentes/{rut}', function($rut){
         \SolucionTotal\CoreDTE\Sii::setAmbiente(Sii::PRODUCCION);
-        $firma_config = ['file' => storage_path('app/cert.p12'), 'pass'=>'Moris234'];
         $firma = App\Helpers\SII::temporalPEM();
         $cookies = \SolucionTotal\CoreDTE\Sii\Autenticacion::requestCookies($firma, '19587757-2');
-        $info = Sii::getInfoContribuyente($rut, $cookies);
+        //$info = Sii::getInfoContribuyente($rut, $cookies);
+        $info = Sii::getInfoCompletaContribuyente($rut, $cookies);
         $domicilio = DomicilioContribuyente::where('rut', $rut)->first();
         $data = ['DIRECCION' => '', 'COMUNA' => ''];
         if($domicilio != null){

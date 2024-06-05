@@ -5,13 +5,13 @@
 @section('content')
     <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
         <div>
-            <h4 class="mb-3 mb-md-0">Gestión de Ordenes de Compra</h4>
+            <h4 class="mb-3 mb-md-0">Gestión de Facturas</h4>
         </div>
         <div class="d-flex align-items-center flex-wrap text-nowrap">
             <button type="button" class="btn btn-sm btn-primary btn-icon-text mb-2 mb-md-0"
-                onclick="location.href = '/compras/ordenescompra/nuevo';">
+                onclick="location.href = '/ventas/facturas/nuevo';">
                 <div>
-                    <i class="mdi mdi-plus"></i> Nueva Orden de Compra
+                    <i class="mdi mdi-plus"></i> Nueva Factura
                 </div>
             </button>
         </div>
@@ -23,7 +23,7 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-baseline">
-                                <h6 class="card-title mb-3">LISTA DE ORDENES DE COMPRA</h6>
+                                <h6 class="card-title mb-3">LISTA DE FACTURAS</h6>
                             </div>
                             <div class="row">
                                 <div class="col-12">
@@ -52,20 +52,16 @@
 
 @push('custom-scripts')
     <script>
-        var ocsTable = null;
+        var facturasTable = null;
         var currentUserId = {{auth()->user()->id}};
 
-        function editarOC(id){
-            location.href = '/compras/ordenescompra/editar/' + id
+        function vistaPreviaFactura(id){
+            location.href = '/api/ventas/facturas/vistaprevia/' + id;
         }
 
-        function vistaPreviaOC(id, rev){
-            location.href = '/api/compras/ordenescompra/vistaprevia/' + id + '/' + rev;
-        }
-
-        ocsTable = new DataTable('#example', {
+        facturasTable = new DataTable('#example', {
             responsive: true,
-            ajax: '/api/compras/ordenescompra',
+            ajax: '/api/ventas/facturas',
             search: {
                 return: true
             },
@@ -121,8 +117,7 @@
                         var html = '';
                         if(row.estado != -1){
                             html = '<div>';
-                            html += '<button type="button" title="Editar Orden de Compra" onclick="editarOC('+row.id+')" class="btn btn-outline-primary btnxs px-1 py-0"><i class="mdi mdi-18 mdi-pencil"></i></button>';
-                            html += '<button type="button" title="Ver Orden de Compra" onclick="vistaPreviaOC('+row.folio+', '+row.rev+')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-magnify"></i></button>';
+                            html += '<button type="button" title="Ver Factura" onclick="vistaPreviaFactura('+row.folio+')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-magnify"></i></button>';
                             html += '</div>';
                         }
                         //var html = '';
