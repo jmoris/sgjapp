@@ -66,7 +66,11 @@ class SII {
             }
         }catch(Exception $ex){
             Log::error("El archivo del certificado no se encontro o la clave es incorrecta.");
-            return false;
+            return [
+                'desde' => date('Y-m-d'),
+                'hasta' => date('Y-m-d'),
+                'valido' => false
+        ];
         }
     }
 
