@@ -201,14 +201,14 @@
                                                                     <div class="form-check form-check-inline">
                                                                         <input class="form-check-input" type="radio"
                                                                             name="tipo_pago" id="tipo_pago"
-                                                                            value="1" checked>
+                                                                            value="2" checked>
                                                                         <label class="form-check-label"
                                                                             for="tipo_pago">Credito</label>
                                                                     </div>
                                                                     <div class="form-check form-check-inline">
                                                                         <input class="form-check-input" type="radio"
                                                                             name="tipo_pago" id="tipo_pago"
-                                                                            value="2">
+                                                                            value="1">
                                                                         <label class="form-check-label"
                                                                             for="tipo_pago">Contado</label>
                                                                     </div>
