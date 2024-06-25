@@ -13,6 +13,7 @@ use App\Http\Controllers\ProyectoController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use SolucionTotal\CoreDTE\Sii;
 
 /*
@@ -122,8 +123,10 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
         \SolucionTotal\CoreDTE\Sii::setAmbiente(Sii::PRODUCCION);
         $firma = App\Helpers\SII::temporalPEM();
         $cookies = \SolucionTotal\CoreDTE\Sii\Autenticacion::requestCookies($firma, $firma->getID());
+        Log::info("Cookies: " .$cookies);
         //$info = Sii::getInfoContribuyente($rut, $cookies);
         $info = Sii::getInfoCompletaContribuyente($rut, $cookies);
+        Log::info($info);
         $domicilio = DomicilioContribuyente::where('rut', $rut)->first();
         $data = ['DIRECCION' => '', 'COMUNA' => ''];
         if($domicilio != null){
