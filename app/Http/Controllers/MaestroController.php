@@ -172,30 +172,30 @@ class MaestroController extends Controller
                 }
                 Storage::putFileAs($path, $file, 'cert.p12');
 
-                $p12 = Storage::disk('local')->get('app/cert.p12');
+                $p12 = Storage::disk('local')->get('cert.p12');
                 openssl_pkcs12_read($p12, $cert, $request->password);
-                if (Storage::disk('local')->exists('app/cert.crt.pem')) {
-                    Storage::disk('local')->delete('app/cert.crt.pem');
+                if (Storage::disk('local')->exists('cert.crt.pem')) {
+                    Storage::disk('local')->delete('cert.crt.pem');
                 }
-                if (Storage::disk('local')->exists('app/cert.key.pem')) {
-                    Storage::disk('local')->delete('app/cert.key.pem');
+                if (Storage::disk('local')->exists('cert.key.pem')) {
+                    Storage::disk('local')->delete('cert.key.pem');
                 }
-                Storage::disk('local')->put('app/cert.crt.pem',  $cert['cert']);
-                Storage::disk('local')->put('app/cert.key.pem',  $cert['pkey']);
+                Storage::disk('local')->put('cert.crt.pem',  $cert['cert']);
+                Storage::disk('local')->put('cert.key.pem',  $cert['pkey']);
                 // CREAR CLAVE PEM YA QUE AL ACTUALIZAR EL CERTIFICADO QUEDA LA PEM ANTERIOR
             }else{
                 $path = '/';
                 Storage::putFileAs($path, $file, 'cert.p12');
-                $p12 = Storage::disk('local')->get('app/cert.p12');
+                $p12 = Storage::disk('local')->get('cert.p12');
                 openssl_pkcs12_read($p12, $cert, $request->password);
-                if (Storage::disk('local')->exists('app/cert.crt.pem')) {
-                    Storage::disk('local')->delete('app/cert.crt.pem');
+                if (Storage::disk('local')->exists('cert.crt.pem')) {
+                    Storage::disk('local')->delete('cert.crt.pem');
                 }
-                Storage::disk('local')->put('app/cert.crt.pem',  $cert['cert']);
-                if (Storage::disk('local')->exists('app/cert.key.pem')) {
-                    Storage::disk('local')->delete('app/cert.key.pem');
+                Storage::disk('local')->put('cert.crt.pem',  $cert['cert']);
+                if (Storage::disk('local')->exists('cert.key.pem')) {
+                    Storage::disk('local')->delete('cert.key.pem');
                 }
-                Storage::disk('local')->put('app/cert.key.pem',  $cert['pkey']);
+                Storage::disk('local')->put('cert.key.pem',  $cert['pkey']);
                 // CREAR CLAVE PEM YA QUE AL ACTUALIZAR EL CERTIFICADO QUEDA LA PEM ANTERIOR
             }
         }catch(Exception $ex){

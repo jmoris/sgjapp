@@ -26,12 +26,17 @@ use App\Producto;
 use App\Tenant;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use SolucionTotal\CoreDTE\Sii;
 
 Route::get('login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('login', [AuthController::class, 'doLogin']);
 Route::get('/', function(){
     return Redirect::to('/dashboard');
+});
+
+Route::get('/testt', function(){
+    return Storage::disk('local')->get('cert.p12');
 });
 
 Route::middleware(['auth:web', 'tenant'])->group(function () {

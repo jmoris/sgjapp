@@ -12,11 +12,11 @@ class SII {
 
     public static function temporalPEM(){
         $cert = [];
-        $pass = "Moris.234";
-        //$p12 = Storage::disk('local')->get('cert.p12');
-        $p12 = file_get_contents(storage_path('app/cert.p12'));
+        $config = Config::where('key', 'password_cert')->first();
+        $pass = $config->value;
+        $p12 = Storage::disk('local')->get('cert.p12');
+        //$p12 = file_get_contents(storage_path('app/cert.p12'));
         openssl_pkcs12_read($p12, $cert, $pass);
-
         if (!Storage::disk('local')->exists('cert.crt.pem')) {
             Storage::disk('local')->put('cert.crt.pem',  $cert['cert']);
             Storage::disk('local')->put('cert.key.pem',  $cert['pkey']);

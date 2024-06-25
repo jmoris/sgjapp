@@ -121,7 +121,7 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
     Route::get('infodte/contribuyentes/{rut}', function($rut){
         \SolucionTotal\CoreDTE\Sii::setAmbiente(Sii::PRODUCCION);
         $firma = App\Helpers\SII::temporalPEM();
-        $cookies = \SolucionTotal\CoreDTE\Sii\Autenticacion::requestCookies($firma, '19587757-2');
+        $cookies = \SolucionTotal\CoreDTE\Sii\Autenticacion::requestCookies($firma, $firma->getID());
         //$info = Sii::getInfoContribuyente($rut, $cookies);
         $info = Sii::getInfoCompletaContribuyente($rut, $cookies);
         $domicilio = DomicilioContribuyente::where('rut', $rut)->first();
