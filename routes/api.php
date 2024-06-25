@@ -86,6 +86,8 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
 
     Route::prefix('ventas')->group(function(){
         Route::get('facturas', [FacturaController::class, 'getAll']);
+        Route::post('facturas', [FacturaController::class, 'storeFactura']);
+        Route::get('facturas/vistaprevia/{folio}', [FacturaController::class, 'vistaPreviaFactura']);
 
         Route::get('proyectos', [ProyectoController::class, 'getAll']);
         Route::post('proyectos', [ProyectoController::class, 'store']);
@@ -110,6 +112,7 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
 
 
     Route::get('/listaprecios', [MaestroController::class, 'getListaPrecios']);
+    Route::get('/listaprecios/{id}', [MaestroController::class, 'getListaPrecio']);
     Route::post('/unidades', [MaestroController::class, 'storeUnidad']);
     Route::post('/categorias', [MaestroController::class, 'storeCategoria']);
     Route::post('/listaprecios', [MaestroController::class, 'storeListaPrecio']);

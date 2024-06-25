@@ -163,7 +163,7 @@
         });
 
         $('#rut').change(function(e) {
-            if($(this).val() == ''||$(this.val.length < 9))
+            if($(this).val() == ''||$(this.val().length < 9))
                 return false;
             $('.modal').modal('show');
             $('#razon_social').val("");

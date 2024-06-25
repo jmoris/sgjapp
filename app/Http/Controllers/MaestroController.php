@@ -28,6 +28,11 @@ class MaestroController extends Controller
         return response()->json($lista_precio);
     }
 
+    public function getListaPrecio(Request $request, $id){
+        $lista = ListaPrecio::where('id', $id)->with('productos')->first();
+        return response()->json($lista);
+    }
+
     public function storeUnidad(Request $request){
         try{
             $validator = Validator::make($request->all(), [
@@ -161,7 +166,7 @@ class MaestroController extends Controller
             $file = $request->cert;
 
             if($file!=null){
-                $path = 'app/';
+                $path = '/';
                 if (file_exists(storage_path($path.'cert.p12'))) {
                     unlink(storage_path($path.'cert.p12'));
                 }
@@ -179,7 +184,7 @@ class MaestroController extends Controller
                 Storage::disk('local')->put('app/cert.key.pem',  $cert['pkey']);
                 // CREAR CLAVE PEM YA QUE AL ACTUALIZAR EL CERTIFICADO QUEDA LA PEM ANTERIOR
             }else{
-                $path = 'app/';
+                $path = '/';
                 Storage::putFileAs($path, $file, 'cert.p12');
                 $p12 = Storage::disk('local')->get('app/cert.p12');
                 openssl_pkcs12_read($p12, $cert, $request->password);

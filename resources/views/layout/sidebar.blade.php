@@ -83,27 +83,54 @@
             </li>
             @endif
             <li class="nav-item nav-category">VENTAS</li>
-            @if(has_permission('ver-factura'))
-            <li class="nav-item {{ active_class(['ventas/facturas']) }}">
-                <a href="{{ url('/ventas/facturas') }}" class="nav-link">
-                    <i class="link-icon" data-feather="message-square"></i>
-                    <span class="link-title">Facturas</span>
+            @if(has_permission('ver-proyecto'))
+            <li class="nav-item {{ active_class(['ventas/proyectos*']) }}">
+                <a href="{{ url('ventas/proyectos') }}" class="nav-link">
+                    <i class="mdi mdi-file-document-arrow-right mdi-18"></i>
+                    <span class="link-title" style="margin-left: 12px;">Proyectos</span>
                 </a>
             </li>
+            @endif
+            <li class="nav-item {{ active_class(['ventas/*']) }}">
+                <a class="nav-link" data-bs-toggle="collapse" href="#email" role="button" aria-expanded="{{ is_active_route(['email/*']) }}" aria-controls="email">
+                    <i class="mdi mdi-file-document-multiple-outline mdi-18"></i>
+                  <span class="link-title" style="margin-left: 12px;">Documentos</span>
+                  <i class="link-arrow" data-feather="chevron-down"></i>
+                </a>
+                <div class="collapse {{ show_class(['ventas/*']) }}" id="email">
+                  <ul class="nav sub-menu">
+                    <li class="nav-item">
+                        <a href="{{ url('/ventas/facturas') }}" class="nav-link {{ active_class(['ventas/facturas']) }}">
+                            Facturas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url('/ventas/facturas') }}" class="nav-link {{ active_class(['email/guiasdespacho']) }}">
+                            Guias de Despacho
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url('/ventas/facturas') }}" class="nav-link {{ active_class(['email/notascredito']) }}">
+                            Notas de Credito
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="{{ url('/ventas/facturas') }}" class="nav-link {{ active_class(['email/notasdebito']) }}">
+                            Notas de Debito
+                        </a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+
+            @if(has_permission('ver-factura'))
+
             @endif
             @if(has_permission('ver-presupuesto'))
             <li class="nav-item {{ active_class(['apps/presupuestos']) }}">
                 <a href="#" class="nav-link">
                     <i class="link-icon" data-feather="message-square"></i>
                     <span class="link-title">Presupuestos</span>
-                </a>
-            </li>
-            @endif
-            @if(has_permission('ver-proyecto'))
-            <li class="nav-item {{ active_class(['ventas/proyectos*']) }}">
-                <a href="{{ url('ventas/proyectos') }}" class="nav-link">
-                    <i class="mdi mdi-file-document-arrow-right mdi-18"></i>
-                    <span class="link-title" style="margin-left: 12px;">Proyectos</span>
                 </a>
             </li>
             @endif

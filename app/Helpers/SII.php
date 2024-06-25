@@ -43,7 +43,7 @@ class SII {
             if($pass == null){
                 throw new Exception("Clave incorrecta o nula");
             }
-            $p12 = Storage::get('app/cert.p12');
+            $p12 = Storage::get('cert.p12');
             openssl_pkcs12_read($p12, $cert, $pass);
             $firma = new CoreDTEFirmaElectronica([
                 'data' => $p12,

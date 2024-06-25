@@ -37,7 +37,7 @@
                             <div class="row mx-3">
                                 <div style="width:100%; margin-top:24px;"></div>
                                 <div class="col-md-12">
-                                    <form class="form" id="storeForm" method="post" onsubmit="procesarOrden(event)">
+                                    <form class="form" id="storeForm" method="post" onsubmit="procesarFactura(event)">
                                         @csrf
                                         <div class="row">
                                             <div class="col-md-12 mb-3">
@@ -111,7 +111,7 @@
                                                 <div class="row">
                                                     <div class="col-md-6">
                                                         <div class="mb-2 border-bottom">
-                                                            <h5>Información del proveedor</h5>
+                                                            <h5>Información del cliente</h5>
                                                         </div>
                                                         <div class="row mx-1">
                                                             <div class="row mb-2">
@@ -121,12 +121,12 @@
                                                                 <div class="col-sm-8">
                                                                     <select name="razon_social" id="razon_social"
                                                                         class="form-control form-control-sm"
-                                                                        onchange="seleccionarProveedor()">
-                                                                        <option value="">Seleccione un proveedor
+                                                                        onchange="seleccionarCliente()">
+                                                                        <option value="">Seleccione un cliente
                                                                         </option>
-                                                                        @foreach ($proveedores as $proveedor)
-                                                                            <option value="{{ $proveedor->id }}">
-                                                                                {{ $proveedor->razon_social }}</option>
+                                                                        @foreach ($clientes as $cliente)
+                                                                            <option value="{{ $cliente->id }}">
+                                                                                {{ $cliente->razon_social }}</option>
                                                                         @endforeach
                                                                     </select>
                                                                 </div>
@@ -177,7 +177,7 @@
                                                                     documento</label>
                                                                 <div class="col-sm-8">
                                                                     <input type="text" name="tipo_doc" id="tipo_doc"
-                                                                        value="Orden de Compra (801)"
+                                                                        value="Factura Electrónica (33)"
                                                                         class="form-control form-control-sm" disabled>
                                                                 </div>
                                                             </div>
@@ -224,11 +224,13 @@
                                                                     class="col-sm-4 col-form-label col-form-label-sm">Lista de Precios</label>
                                                                 <div class="col-sm-8" id="inputProyecto">
                                                                     <select class="form-control form-control-sm"
-                                                                        id="nombre_proyecto" name="nombre_proyecto">
-                                                                        <option>Seleccione Lista</option>
-                                                                        @foreach ([] as $proyecto)
-                                                                            <option value="{{ $proyecto->id }}">
-                                                                                {{ $proyecto->nombre }}</option>
+                                                                        id="lista_precio" name="lista_precio"
+                                                                        onchange="seleccionarLista()">
+                                                                        <option value="">Seleccione una lista
+                                                                        </option>
+                                                                        @foreach ($listas as $lista)
+                                                                            <option value="{{ $lista->id }}">
+                                                                                {{ $lista->nombre }}</option>
                                                                         @endforeach
                                                                     </select>
                                                                 </div>
@@ -593,34 +595,18 @@
             return false;
         }
 
-        function procesarOrden(e) {
+        function procesarFactura(e) {
             e.preventDefault();
 
             // Verificamos que se haya seleccionado un proveedor
-            var proveedorId = $('#razon_social').val();
-            if (proveedorId == '') {
+            var clienteId = $('#razon_social').val();
+            if (clienteId == '') {
                 $.toast({
                     type: 'error',
                     title: 'Error en formulario',
                     subtitle: 'ahora',
                     position: 'top-right',
                     content: 'Debe seleccionar un proveedor para agregar items al documento.',
-                    delay: 15000
-                });
-                return;
-            }
-
-            var switchProyecto = $('#manualProyecto').is(':checked');
-            var nombreProyecto = $('#nombre_proyecto option:selected').text();
-            var idProyecto = $('#nombre_proyecto option:selected').val();
-
-            if (nombreProyecto == 'Seleccione proyecto') {
-                $.toast({
-                    type: 'error',
-                    title: 'Error en formulario',
-                    subtitle: 'ahora',
-                    position: 'top-right',
-                    content: 'Debe seleccionar/añadir un proyecto para generar el documento.',
                     delay: 15000
                 });
                 return;
@@ -638,47 +624,30 @@
                 return;
             }
             var doc = {
-                proveedor: $('#razon_social').val(),
+                cliente: $('#razon_social').val(),
                 fecha_emision: $('#fecha_emision').val(),
                 tipo_pago: $('#tipo_pago').val(),
                 items: detalles,
-                proyecto: idProyecto,
                 glosa: $('#glosaTxt').val(),
                 _token: $('meta[name="_token"]').attr('content')
             };
             console.log(doc);
-            $.post("/api/compras/ordenescompra", doc)
+            $.post("/api/ventas/facturas", doc)
                 .done(function(data) {
                     console.log(data);
-                    location.href = '/compras/ordenescompra';
+                    location.href = '/ventas/facturas';
                 });
         }
 
-        function seleccionarProveedor() {
-            var proveedorId = $('#razon_social').val();
-            if (proveedorId != '') {
-                $.get('/api/proveedores/' + proveedorId, function(data) {
+        function seleccionarCliente() {
+            var clienteId = $('#razon_social').val();
+            if (clienteId != '') {
+                $.get('/api/clientes/' + clienteId, function(data) {
                     console.log(data);
                     $('#rut').val(data.rut);
                     $('#giro').val(data.giro);
                     $('#direccion').val(data.direccion);
                     $('#comuna').val(data.comuna.nombre);
-
-                    // Se vacia el contenido actual de la tabla buscador de productos
-                    $("#productosTable tbody").empty();
-                    // Se obtienen todos los productos del proveedor y se vuelve a llenar
-                    $.get('/api/proveedores/productos/' + proveedorId, function(resp) {
-                        productos = resp;
-                        productos.forEach(function(producto, index) {
-                            var row = `<tr>
-                                <td>${producto.sku}</td>
-                                <td>${producto.nombre}</td>
-                                <td>${producto.pivot.precio.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}</td>
-                                <td style="display:none;"></td>
-                                </tr>`;
-                            $("#productosTable tbody").append(row);
-                        });
-                    });
 
                 });
             }else{
@@ -689,15 +658,34 @@
             }
         }
 
+        function seleccionarLista(){
+            var listaId = $('#lista_precio').val();
+            // Se vacia el contenido actual de la tabla buscador de productos
+            $("#productosTable tbody").empty();
+                    // Se obtienen todos los productos del proveedor y se vuelve a llenar
+                    $.get('/api/listaprecios/' + listaId, function(resp) {
+                        productos = resp.productos;
+                        productos.forEach(function(producto, index) {
+                            var row = `<tr>
+                                <td>${producto.sku}</td>
+                                <td>${producto.nombre}</td>
+                                <td>${producto.pivot.precio.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}</td>
+                                <td style="display:none;"></td>
+                                </tr>`;
+                            $("#productosTable tbody").append(row);
+                        });
+                    });
+        }
+
         function agregarGuardarDetalle() {
-            var proveedorId = $('#razon_social').val();
-            if (proveedorId == '') {
+            var clienteId = $('#razon_social').val();
+            if (clienteId == '') {
                 $.toast({
                     type: 'error',
                     title: 'Error en formulario',
                     subtitle: 'ahora',
                     position: 'top-right',
-                    content: 'Debe seleccionar un proveedor para agregar items al documento.',
+                    content: 'Debe seleccionar un cliente para agregar items al documento.',
                     delay: 15000
                 });
                 return;
@@ -719,7 +707,7 @@
                 success: function(data) {
                     if(data.success == true){
                         var dataJson = {
-                            proveedor_id: $('#razon_social').val(),
+                            lista_precio_id: $('#lista_precio').val(),
                             producto_id: data.data.id,
                             precio: $('#precioTxt').inputmask('unmaskedvalue')
                         };
@@ -728,7 +716,7 @@
                         // Creamos peticion psot para agregar el precio de venta
                         $.ajax({
                             type: "POST",
-                            url: '/api/productos/precioproveedor',
+                            url: '/api/productos/listaprecio',
                             data: dataJson, // serializes the form's elements.
                             success: function(data2) {
                                 if (data2.success == true) {
@@ -765,14 +753,14 @@
 
         function agregarDetalle() {
             // Verificamos que se haya seleccionado un proveedor
-            var proveedorId = $('#razon_social').val();
-            if (proveedorId == '') {
+            var clienteId = $('#razon_social').val();
+            if (clienteId == '') {
                 $.toast({
                     type: 'error',
                     title: 'Error en formulario',
                     subtitle: 'ahora',
                     position: 'top-right',
-                    content: 'Debe seleccionar un proveedor para agregar items al documento.',
+                    content: 'Debe seleccionar un cliente para agregar items al documento.',
                     delay: 15000
                 });
                 return;

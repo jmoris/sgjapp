@@ -11,6 +11,11 @@ class ListaPrecio extends Model
     use HasFactory, UsesTenantConnection;
 
     public function productos(){
-        return $this->hasMany(Producto::class);
+        return $this->belongsToMany(
+            Producto::class,
+            'lista_precios_productos',
+            'lista_precio_id',
+            'producto_id')
+            ->withPivot(['precio', 'activo']);
     }
 }

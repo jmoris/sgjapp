@@ -31,7 +31,7 @@
                                         <thead>
                                             <tr>
                                                 <th>Folio</th>
-                                                <th>Proveedor</th>
+                                                <th>Cliente</th>
                                                 <th>RUT</th>
                                                 <th>Fecha</th>
                                                 <th>Monto Total</th>
@@ -75,11 +75,11 @@
                     responsivePriority: 1
                 },
                 {
-                    data: 'proveedor.razon_social',
+                    data: 'cliente.razon_social',
                     responsivePriority: 2
                 },
                 {
-                    data: 'proveedor.rut',
+                    data: 'cliente.rut',
                     responsivePriority: 3
                 },
                 {

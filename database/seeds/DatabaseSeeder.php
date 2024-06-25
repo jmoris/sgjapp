@@ -85,6 +85,10 @@ class DatabaseSeeder extends Seeder
         $config->value = "FABRICACION DE PRODUCTOS METALICOS PARA USO
         ESTRUCTURAL";
         $config->save();
+        $config = new Config();
+        $config->key = "emisor_acteco";
+        $config->value = 251100;
+        $config->save();
     }
 
     public function runLandlordSpecificSeeders()
