@@ -4,6 +4,7 @@ namespace App\Helpers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Log;
 use Spatie\Multitenancy\Models\Concerns\UsesTenantModel;
 use Spatie\Multitenancy\Models\Tenant;
 use Spatie\Multitenancy\TenantFinder\TenantFinder;
@@ -18,7 +19,8 @@ class CustomTenantFinder extends TenantFinder
             $accountId = $request->cookie('tenant');
 
             $accountId = decrypt($accountId);
-
+            Log::info("Cuenta ID:");
+            Log::info($accountId);
             $account = $this->getTenantModel()::find($accountId);
 
             if (!empty($account)) {

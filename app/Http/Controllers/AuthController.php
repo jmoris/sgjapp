@@ -16,6 +16,7 @@ class AuthController extends Controller
 {
     public function showLogin(Request $request){
         $tenants = Tenant::all();
+        Log::info($tenants);
         if($request->empresa != null){
             Cookie::forget('tenant');
             $tenant = Tenant::whereId($request->empresa)->first();
