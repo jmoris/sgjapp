@@ -91,15 +91,15 @@
                     </a>
                 </li>
             @endif
+            @if (has_permission('ver-factura'))
             <li class="nav-item {{ active_class(['ventas/*']) }}">
-                <a class="nav-link" data-bs-toggle="collapse" href="#email" role="button"
-                    aria-expanded="{{ is_active_route(['email/*']) }}" aria-controls="email">
+                <a class="nav-link" data-bs-toggle="collapse" href="#ventas" role="button"
+                    aria-expanded="{{ is_active_route(['ventas/*']) }}" aria-controls="ventas">
                     <i class="mdi mdi-file-document-multiple-outline mdi-18"></i>
                     <span class="link-title" style="margin-left: 12px;">Documentos</span>
                     <i class="link-arrow" data-feather="chevron-down"></i>
                 </a>
-                @if (has_permission('ver-factura'))
-                <div class="collapse {{ show_class(['ventas/*']) }}" id="email">
+                <div class="collapse {{ show_class(['ventas/*']) }}" id="ventas">
                     <ul class="nav sub-menu">
                         @if (has_permission('ver-factura'))
                             <li class="nav-item">
