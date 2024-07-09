@@ -4,7 +4,9 @@ use App\Comuna;
 use App\DomicilioContribuyente;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\FacturaController;
+use App\Http\Controllers\GuiaDespachoController;
 use App\Http\Controllers\MaestroController;
+use App\Http\Controllers\NotaCreditoController;
 use App\Http\Controllers\OrdenCompraController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProductoController;
@@ -89,6 +91,16 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
         Route::get('facturas', [FacturaController::class, 'getAll']);
         Route::post('facturas', [FacturaController::class, 'storeFactura']);
         Route::get('facturas/vistaprevia/{folio}', [FacturaController::class, 'vistaPreviaFactura']);
+
+        Route::get('guiasdespacho', [GuiaDespachoController::class, 'getAll']);
+        Route::post('guiasdespacho', [GuiaDespachoController::class, 'storeGuiaDespacho']);
+        Route::get('guiasdespacho/vistaprevia/{folio}', [GuiaDespachoController::class, 'vistaPreviaGuiaDespacho']);
+
+        Route::get('notascredito', [NotaCreditoController::class, 'getAll']);
+        Route::post('notascredito', [NotaCreditoController::class, 'storeNotaCredito']);
+        Route::post('notascredito/anulacion', [NotaCreditoController::class, 'storeAnulacion']);
+        Route::get('notascredito/vistaprevia/{folio}', [NotaCreditoController::class, 'vistaPreviaNotaCredito']);
+
 
         Route::get('proyectos', [ProyectoController::class, 'getAll']);
         Route::post('proyectos', [ProyectoController::class, 'store']);

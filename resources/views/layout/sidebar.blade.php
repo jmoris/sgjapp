@@ -104,26 +104,30 @@
                         @if (has_permission('ver-factura'))
                             <li class="nav-item">
                                 <a href="{{ url('/ventas/facturas') }}"
-                                    class="nav-link {{ active_class(['ventas/facturas']) }}">
+                                    class="nav-link {{ active_class(['ventas/facturas*']) }}">
                                     Facturas
                                 </a>
                             </li>
                         @endif
+                        @if (has_permission('ver-guia-despacho'))
                         <li class="nav-item">
-                            <a href="{{ url('/ventas/facturas') }}"
-                                class="nav-link {{ active_class(['email/guiasdespacho']) }}">
+                            <a href="{{ url('/ventas/guiasdespacho') }}"
+                                class="nav-link {{ active_class(['ventas/guiasdespacho*']) }}">
                                 Guias de Despacho
                             </a>
                         </li>
+                        @endif
+                        @if (has_permission('ver-nota-credito'))
                         <li class="nav-item">
-                            <a href="{{ url('/ventas/facturas') }}"
-                                class="nav-link {{ active_class(['email/notascredito']) }}">
+                            <a href="{{ url('/ventas/notascredito') }}"
+                                class="nav-link {{ active_class(['ventas/notascredito*']) }}">
                                 Notas de Credito
                             </a>
                         </li>
+                        @endif
                         <li class="nav-item">
-                            <a href="{{ url('/ventas/facturas') }}"
-                                class="nav-link {{ active_class(['email/notasdebito']) }}">
+                            <a href="{{ url('/ventas/notasdebito') }}"
+                                class="nav-link {{ active_class(['ventas/notasdebito*']) }}">
                                 Notas de Debito
                             </a>
                         </li>

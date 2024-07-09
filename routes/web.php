@@ -12,10 +12,13 @@
 */
 
 use App\DomicilioContribuyente;
+use App\Helpers\Ajustes;
 use App\Http\Controllers\AjusteController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\FacturaController;
+use App\Http\Controllers\GuiaDespachoController;
+use App\Http\Controllers\NotaCreditoController;
 use App\Http\Controllers\OrdenCompraController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProductoController;
@@ -36,6 +39,9 @@ Route::get('/', function(){
     return Redirect::to('/dashboard');
 });
 
+Route::get('prueba', function(){
+    return Ajustes::getEmisor();
+});
 
 Route::middleware(['auth:web', 'tenant'])->group(function () {
 
@@ -79,6 +85,15 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
         Route::prefix('facturas')->middleware('tag:ver-factura')->group(function(){
             Route::get('/', [FacturaController::class, 'index']);
             Route::get('/nuevo', [FacturaController::class, 'newFactura']);
+        });
+        Route::prefix('guiasdespacho')->middleware('tag:ver-guia-despacho')->group(function(){
+            Route::get('/', [GuiaDespachoController::class, 'index']);
+            Route::get('/nuevo', [GuiaDespachoController::class, 'newGuiaDespacho']);
+        });
+        Route::prefix('notascredito')->middleware('tag:ver-nota-credito')->group(function(){
+            Route::get('/', [NotaCreditoController::class, 'index']);
+            Route::get('/nuevo', [NotaCreditoController::class, 'newNotaCredito']);
+            Route::get('/selector', [NotaCreditoController::class, 'showSelector']);
         });
         Route::prefix('proyectos')->middleware('tag:ver-proyecto')->group(function(){
             Route::get('/', [ProyectoController::class, 'index']);

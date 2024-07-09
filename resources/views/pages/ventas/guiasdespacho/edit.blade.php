@@ -1,6 +1,6 @@
 @extends('layout.master')
 
-@section('title', 'Emisión de Factura Electrónica')
+@section('title', 'Edición de Orden de Compra')
 
 @push('style')
     <style>
@@ -12,13 +12,6 @@
         td {
             padding: 0px 0px;
         }
-        body tr {
-            -webkit-user-select: initial !important;
-            -moz-user-select: initial !important;
-            -ms-user-select: initial !important;
-            -o-user-select: initial !important;
-            user-select: initial !important;
-        }
     </style>
 @endpush
 
@@ -29,7 +22,10 @@
 @section('content')
     <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
         <div>
-            <h4 class="mb-3 mb-md-0">Emisión de Factura Electrónica</h4>
+            <h4 class="mb-3 mb-md-0">Edición de Orden de Compra <small style="font-size:.75em;color: grey;">#{{ str_pad($oc->folio, 5, '0', STR_PAD_LEFT); }}</small></h4>
+        </div>
+        <div class="align-end">
+            <button class="btn btn-danger" onclick="anularOC({{$oc->id}})"><i class="mdi mdi-trash-can"></i>&nbsp;&nbsp; Anular O/C</button>
         </div>
     </div>
     <div class="row">
@@ -39,12 +35,13 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-baseline">
-                                <h4 class="card-title mb-0">FORMULARIO DE NUEVA FACTURA ELECTRÓNICA</h4>
+                                <h4 class="card-title mb-0">FORMULARIO DE EDICIÓN ORDEN DE COMPRA</h4>
+
                             </div>
                             <div class="row mx-3">
                                 <div style="width:100%; margin-top:24px;"></div>
                                 <div class="col-md-12">
-                                    <form class="form" id="storeForm" method="post" onsubmit="confirmarFactura(event)">
+                                    <form class="form" id="storeForm" method="post" onsubmit="procesarOrden(event)">
                                         @csrf
                                         <div class="row">
                                             <div class="col-md-12 mb-3">
@@ -118,7 +115,7 @@
                                                 <div class="row">
                                                     <div class="col-md-6">
                                                         <div class="mb-2 border-bottom">
-                                                            <h5>Información del cliente</h5>
+                                                            <h5>Información del proveedor</h5>
                                                         </div>
                                                         <div class="row mx-1">
                                                             <div class="row mb-2">
@@ -128,12 +125,12 @@
                                                                 <div class="col-sm-8">
                                                                     <select name="razon_social" id="razon_social"
                                                                         class="form-control form-control-sm"
-                                                                        onchange="seleccionarCliente()">
-                                                                        <option value="">Seleccione un cliente
+                                                                        disabled>
+                                                                        <option value="">Seleccione un proveedor
                                                                         </option>
-                                                                        @foreach ($clientes as $cliente)
-                                                                            <option value="{{ $cliente->id }}">
-                                                                                {{ $cliente->razon_social }}</option>
+                                                                        @foreach ($proveedores as $proveedor)
+                                                                            <option @if($proveedor->id == $oc->proveedor_id) selected @endif value="{{ $proveedor->id }}">
+                                                                                {{ $proveedor->razon_social }}</option>
                                                                         @endforeach
                                                                     </select>
                                                                 </div>
@@ -184,7 +181,7 @@
                                                                     documento</label>
                                                                 <div class="col-sm-8">
                                                                     <input type="text" name="tipo_doc" id="tipo_doc"
-                                                                        value="Factura Electrónica (33)"
+                                                                        value="Orden de Compra (801)"
                                                                         class="form-control form-control-sm" disabled>
                                                                 </div>
                                                             </div>
@@ -208,14 +205,14 @@
                                                                     <div class="form-check form-check-inline">
                                                                         <input class="form-check-input" type="radio"
                                                                             name="tipo_pago" id="tipo_pago"
-                                                                            value="1" checked>
+                                                                            value="1" @if($oc->tipo_pago == 1) checked @endif>
                                                                         <label class="form-check-label"
                                                                             for="tipo_pago">Credito</label>
                                                                     </div>
                                                                     <div class="form-check form-check-inline">
                                                                         <input class="form-check-input" type="radio"
                                                                             name="tipo_pago" id="tipo_pago"
-                                                                            value="2">
+                                                                            value="2" @if($oc->tipo_pago == 2) checked @endif>
                                                                         <label class="form-check-label"
                                                                             for="tipo_pago">Contado</label>
                                                                     </div>
@@ -223,22 +220,20 @@
                                                             </div>
                                                         </div>
                                                         <div class="mb-2 border-bottom">
-                                                            <h5>Información Comercial</h5>
+                                                            <h5>Información de obra</h5>
                                                         </div>
                                                         <div class="row mx-1">
                                                             <div class="row mb-2">
                                                                 <label
-                                                                    class="col-sm-4 col-form-label col-form-label-sm">Lista
-                                                                    de Precios</label>
+                                                                    class="col-sm-4 col-form-label col-form-label-sm">Nombre
+                                                                    Obra/Proyecto</label>
                                                                 <div class="col-sm-8" id="inputProyecto">
                                                                     <select class="form-control form-control-sm"
-                                                                        id="lista_precio" name="lista_precio"
-                                                                        onchange="seleccionarLista()">
-                                                                        <option value="">Seleccione una lista
-                                                                        </option>
-                                                                        @foreach ($listas as $lista)
-                                                                            <option value="{{ $lista->id }}">
-                                                                                {{ $lista->nombre }}</option>
+                                                                        id="nombre_proyecto" name="nombre_proyecto">
+                                                                        <option>Seleccione proyecto</option>
+                                                                        @foreach ($proyectos as $proyecto)
+                                                                            <option @if($proyecto->id == $oc->proyecto_id) selected @endif value="{{ $proyecto->id }}">
+                                                                                {{ $proyecto->nombre }}</option>
                                                                         @endforeach
                                                                     </select>
                                                                 </div>
@@ -267,7 +262,7 @@
                                                         </thead>
                                                         <tbody>
                                                             <tr class="noBorder" id="rowDetalle">
-                                                                <td style="width:12%;padding:4px;">
+                                                                <td style="width:15%;padding:4px;">
                                                                     <div class="input-group">
                                                                         <input id="skuTxt" type="text"
                                                                             class="form-control form-control-sm p-1"
@@ -286,7 +281,7 @@
                                                                         class="form-control form-control-sm"
                                                                         placeholder="NOMBRE ITEM" />
                                                                 </td>
-                                                                <td style="width:18%;padding:4px;">
+                                                                <td style="width:15%;padding:4px;">
                                                                     <div class="input-group">
                                                                         <input id="cantidadTxt"
                                                                             onchange="calcSubtotalFila()" type="number"
@@ -306,10 +301,10 @@
                                                                         onchange="calcSubtotalFila()" id="precioTxt"
                                                                         value="0" type="text"
                                                                         class="form-control" placeholder="PRECIO" /></td>
-                                                                <td style="width:15%;padding:4px;"><span
+                                                                <td style="width:18%;padding:4px;"><span
                                                                         style="vertical-align: bottom; text-align:right;"
                                                                         id="lblSubtotal">$ 0</span></td>
-                                                                <td style="width:10%;padding:4px;">
+                                                                <td style="width:7%;padding:4px;">
                                                                     <button type="button" onclick="agregarDetalle()"
                                                                         title="Agregar detalle a la lista"
                                                                         class="btn btn-sm btn-outline-primary"
@@ -355,134 +350,103 @@
                                                             </tr>
                                                         </tbody>
                                                     </table>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-8">
-                                                <div class="mb-2 border-bottom">
-                                                    <h5>Referencias del documento</h5>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <table class="table table-sm mb-3">
-                                                        <tbody>
-                                                            <tr>
-                                                                <td style="width: 30%;">
-                                                                    <select class="form-control form-control-sm">
-                                                                        <option>Seleccione tipo documento</option>
-                                                                    </select>
-                                                                </td>
-                                                                <td style="width: 20%;">
-                                                                    <input class="form-control form-control-sm"
-                                                                        type="text" placeholder="Folio" />
-                                                                </td>
-                                                                <td style="width: 15%;">
-                                                                    <input type="date"
-                                                                        class="form-control form-control-sm" />
-                                                                </td>
-                                                                <td style="width: 30%;">
-                                                                    <input class="form-control form-control-sm"
-                                                                        type="text" placeholder="Razón" />
-                                                                </td>
-                                                                <td style="width: 5%;">
-                                                                    <button type="button" onclick="agregarDetalle()"
-                                                                        title="Agregar detalle a la lista"
-                                                                        class="btn btn-sm btn-outline-primary"
-                                                                        style="padding:.25em .5em; float:right;">
-                                                                        <span class="mdi mdi-plus"></span></button>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                                <div class="mb-2 border-bottom">
-                                                    <h5>Glosa documento</h5>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <textarea id="glosaTxt" maxlength="250" class="form-control mt-3" rows="3"></textarea>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="mb-2 border-bottom">
-                                                    <h5>Resumen de montos</h5>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <div class="row">
-                                                        <div class="col-md-7">
-                                                            <p>Subtotal </p>
+                                                    <div class="col-md-7">
+                                                        <div class="mb-2 border-bottom">
+                                                            <h5>Glosa documento</h5>
                                                         </div>
-                                                        <div class="col-md-5 text-end">
-                                                            <p id="lblSubtotalDoc">$0</p>
+                                                        <div class="col-md-12">
+                                                            <textarea id="glosaTxt" maxlength="250" class="form-control mt-3" rows="5">{{ $oc->glosa }}</textarea>
                                                         </div>
                                                     </div>
-                                                    <div class="row">
-                                                        <div class="col-md-6 pr-0">
-                                                            <p>Descuento global </p>
+                                                    <div class="col-md-5">
+                                                        <div class="mb-2 border-bottom">
+                                                            <h5>Resumen de montos</h5>
                                                         </div>
-                                                        <div class="col-md-3 pl-0">
-                                                            <input value="0" class="form-control form-control-sm"
-                                                                type="text" name="descuentoglobal"
-                                                                id="descuentoglobal" />
-
-                                                        </div>
-                                                        <div class="col-md-3 pl-0 my-0 text-end">
-                                                            <p class="my-0" id="lbldescuentoglobal">$0</p>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-7">
-                                                            <p>Monto exento </p>
-                                                        </div>
-                                                        <div class="col-md-5 text-end">
-                                                            <p id="lblexento">$0</p>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-7">
-                                                            <p>Monto neto </p>
-                                                        </div>
-                                                        <div class="col-md-5 text-end">
-                                                            <p id="lblneto">$0</p>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-7">
-                                                            <p>IVA </p>
-                                                        </div>
-                                                        <div class="col-md-5 text-end">
-                                                            <p id="lbliva">$0</p>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-7">
-                                                            <p>Impuestos adicionales </p>
-                                                        </div>
-                                                        <div class="col-md-5 text-end">
-                                                            <p id="lblimpad">$0</p>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-7">
-                                                            <p><b>Total </b></p>
-                                                        </div>
-                                                        <div class="col-md-5 text-end">
-                                                            <p id="lbltotal">$0</p>
+                                                        <div class="col-md-12">
+                                                            <div class="row">
+                                                                <div class="col-md-7">
+                                                                    <p>Subtotal </p>
+                                                                </div>
+                                                                <div class="col-md-5 text-end">
+                                                                    <p id="lblSubtotalDoc">$0</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-5 pr-0">
+                                                                    <p>Descuento global </p>
+                                                                </div>
+                                                                <div class="col-md-4 pl-0">
+                                                                    <div class="input-group">
+                                                                        <input step="any" min="0"
+                                                                            max="100" value="0"
+                                                                            class="form-control form-control-sm"
+                                                                            type="number" name="descuentoglobal"
+                                                                            id="descuentoglobal" />
+                                                                        <span class="input-group-text">%</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-md-3 pl-0 my-0 text-end">
+                                                                    <p class="my-0" id="lbldescuentoglobal">$0</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-7">
+                                                                    <p>Monto exento </p>
+                                                                </div>
+                                                                <div class="col-md-5 text-end">
+                                                                    <p id="lblexento">$0</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-7">
+                                                                    <p>Monto neto </p>
+                                                                </div>
+                                                                <div class="col-md-5 text-end">
+                                                                    <p id="lblneto">$0</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-7">
+                                                                    <p>IVA </p>
+                                                                </div>
+                                                                <div class="col-md-5 text-end">
+                                                                    <p id="lbliva">$0</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-7">
+                                                                    <p>Impuestos adicionales </p>
+                                                                </div>
+                                                                <div class="col-md-5 text-end">
+                                                                    <p id="lblimpad">$0</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-7">
+                                                                    <p><b>Total </b></p>
+                                                                </div>
+                                                                <div class="col-md-5 text-end">
+                                                                    <p id="lbltotal">$0</p>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
+
+                                        <div class="float-end">
+                                            <button type="submit" class="btn btn-primary submit"><i
+                                                    class="mdi mdi-content-save"></i> Guardar</button>
+                                        </div>
+                                        <button type="button" class="btn btn-danger"
+                                            onclick="location.href = '/compras/ordenescompra'">
+                                            <i class="mdi mdi-cancel"></i>
+                                            Cancelar
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
-
-                            <div class="float-end">
-                                <button type="submit" class="btn btn-primary submit"><i
-                                        class="mdi mdi-content-save"></i> Guardar</button>
-                            </div>
-                            <button type="button" class="btn btn-danger"
-                                onclick="location.href = '/compras/ordenescompra'">
-                                <i class="mdi mdi-cancel"></i>
-                                Cancelar
-                            </button>
-                            </form>
                         </div>
                     </div>
                 </div>
@@ -519,14 +483,6 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     <button type="button" class="btn btn-primary" onclick="selectDetalle()">Seleccionar</button>
                 </div>
-            </div>
-        </div>
-    </div>
-    <div class="modal fade" id="loadingModal" data-backdrop="static" data-keyboard="false" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <img class="text-center mx-auto" src="/loading.gif" style="width: 48px; height: 48px;">
-                <span id="statusTxt" class="text-center fw-bold">Enviando información al SII...</span>
             </div>
         </div>
     </div>
@@ -567,7 +523,7 @@
 @push('custom-scripts')
     <script>
         var index = 0;
-        var detalles = [];
+        var detalles = {!! json_encode($oc->lineas()->select('sku', 'nombre', 'descripcion', 'cantidad', 'unidad', 'precio_unitario as precio')->get()) !!};
         var subtotalDoc = 0;
         var unidades = {!! json_encode($unidades) !!};
         var selectedProducto = null;
@@ -580,7 +536,6 @@
                 groupSeparator: '.',
                 rightAlign: false
             });
-            $("#descuentoglobal").inputmask('percentage', {});
             $('#razon_social').select2();
             $('#productosTable').on('click', 'tbody tr', function(event) {
                 $(this).addClass('highlight').siblings().removeClass('highlight');
@@ -589,15 +544,63 @@
             $('#productosTable').on('dblclick', 'tbody tr', function(event) {
                 selectDetalle();
             });
+            renderDetalles();
+            seleccionarProveedor();
         });
 
-        function selectDetalle() {
+        function renderDetalles(){
+            for(var i = 0; i < detalles.length; i++){
+                unidad = $.map(unidades, (item) => {
+                    if (item.abreviacion == detalles[i].unidad) {
+                        return item;
+                    }
+                })[0];
+                detalles[i].unidad = unidad.id;
+            }
+
+
+            detalles.forEach(function(producto, index) {
+                // Mapeamos las unidades y seleccionamos la información
+                var unidad = $.map(unidades, (item) => {
+                    if (item.id == producto.unidad) {
+                        return item;
+                    }
+                })[0];
+                console.log(producto);
+                //producto[index].unidad = unidad[1];
+                // Se calcula el subtotal del producto
+                var subtotal = producto.precio * producto.cantidad;
+                subtotalDoc += subtotal;
+
+                var row = `
+                <tr detIndex="${index}">
+                    <td>${producto.sku}</td>
+                    <td>${producto.nombre}</td>
+                    <td>${producto.cantidad} ${unidad['abreviacion']}</td>
+                    <td>${'$ ' + producto.precio.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}</td>
+                    <td>${'$ ' + subtotal.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}</td>
+                    <td>
+                        <button type="button" onclick="eliminarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .25em;">
+                        <span class="mdi mdi-delete"></span></button>
+                    </td>
+                </tr>`;
+                // Se inserta antes del rowDetalle que es nuestro formulario estatico
+                $(row).insertBefore($('#rowDetalle'));
+                index++;
+            });
+            index++;
+            // Se calculan los totales y se aumenta el indice
+            calcSubtotalFila();
+            calcularTotales();
+        }
+
+        function selectDetalle(){
             var item = $('#productosTable tbody tr.highlight');
             var sku = $(item).find('td:eq(0)').text();
             var nombre = $(item).find('td:eq(1)').text();
             var descripcion = $(item).find('td:eq(3)').text();
             var precio = parseInt($(item).find('td:eq(2)').text().replace(/[^0-9]/gi, ''));
-            if (sku == '' && nombre == '' && precio == '') {
+            if(sku == '' && nombre == '' && precio == ''){
                 $.toast({
                     type: 'error',
                     title: 'Error en formulario',
@@ -619,8 +622,8 @@
             $('#descripcionTxt').val(descripcion);
             $('#precioTxt').val(precio);
             calcSubtotalFila();
-            $("#staticBackdrop").modal('hide');
             $('#cantidadTxt').focus();
+            $("#staticBackdrop").modal('hide');
         }
 
         function cambiarInputProyecto() {
@@ -643,32 +646,12 @@
             return false;
         }
 
-        function confirmarFactura(e) {
+        function procesarOrden(e) {
             e.preventDefault();
 
-            Swal.fire({
-                title: "¿Quieres confirmar esta Factura?",
-                text: "Una vez confirmada la Factura no se podran hacer cambios sobre ella, recomendamos revisar el detalle del documento.",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Confirmar",
-                cancelButtonText: "Cancelar"
-            }).then((modalResult) => {
-                if (modalResult.isConfirmed) {
-                    procesarFactura(e);
-                }
-            });
-        }
-
-        function procesarFactura(e) {
-
-            $('#loadingModal').modal('show');
-            $('#statusTxt').text('Validando información del formulario...');
             // Verificamos que se haya seleccionado un proveedor
-            var clienteId = $('#razon_social').val();
-            if (clienteId == '') {
+            var proveedorId = $('#razon_social').val();
+            if (proveedorId == '') {
                 $.toast({
                     type: 'error',
                     title: 'Error en formulario',
@@ -680,7 +663,23 @@
                 return;
             }
 
-            if (detalles.length == 0) {
+            var switchProyecto = $('#manualProyecto').is(':checked');
+            var nombreProyecto = $('#nombre_proyecto option:selected').text();
+            var idProyecto = $('#nombre_proyecto option:selected').val();
+
+            if (nombreProyecto == 'Seleccione proyecto') {
+                $.toast({
+                    type: 'error',
+                    title: 'Error en formulario',
+                    subtitle: 'ahora',
+                    position: 'top-right',
+                    content: 'Debe seleccionar/añadir un proyecto para generar el documento.',
+                    delay: 15000
+                });
+                return;
+            }
+
+            if (detalles.length  == 0) {
                 $.toast({
                     type: 'error',
                     title: 'Error en formulario',
@@ -692,70 +691,65 @@
                 return;
             }
             var doc = {
-                cliente: $('#razon_social').val(),
+                proveedor: $('#razon_social').val(),
                 fecha_emision: $('#fecha_emision').val(),
                 tipo_pago: $('#tipo_pago').val(),
                 items: detalles,
+                proyecto: idProyecto,
                 glosa: $('#glosaTxt').val(),
                 _token: $('meta[name="_token"]').attr('content')
             };
-            $('#statusTxt').text('Enviando información del documento...');
-            $.post("/api/ventas/facturas", doc)
+            console.log(doc);
+            $.post("/api/compras/ordenescompra/editar/{{$oc->id}}", doc)
                 .done(function(data) {
-                    $('#statusTxt').text('Recibiendo información de respuesta...');
                     console.log(data);
-                    $('#loadingModal').modal('hide');
-                    location.href = '/ventas/facturas';
+                    location.href = '/compras/ordenescompra';
                 });
         }
 
-        function seleccionarCliente() {
-            var clienteId = $('#razon_social').val();
-            if (clienteId != '') {
-                $.get('/api/clientes/' + clienteId, function(data) {
-                    console.log(data);
+        function seleccionarProveedor() {
+            var proveedorId = $('#razon_social').val();
+            if (proveedorId != '') {
+                $.get('/api/proveedores/' + proveedorId, function(data) {
                     $('#rut').val(data.rut);
                     $('#giro').val(data.giro);
                     $('#direccion').val(data.direccion);
                     $('#comuna').val(data.comuna.nombre);
 
-                });
-            } else {
-                $('#rut').val('');
-                $('#giro').val('');
-                $('#direccion').val('');
-                $('#comuna').val('');
-            }
-        }
-
-        function seleccionarLista() {
-            var listaId = $('#lista_precio').val();
-            // Se vacia el contenido actual de la tabla buscador de productos
-            $("#productosTable tbody").empty();
-            // Se obtienen todos los productos del proveedor y se vuelve a llenar
-            $.get('/api/listaprecios/' + listaId, function(resp) {
-                productos = resp.productos;
-                productos.forEach(function(producto, index) {
-                    var row = `<tr>
+                    // Se vacia el contenido actual de la tabla buscador de productos
+                    $("#productosTable tbody").empty();
+                    // Se obtienen todos los productos del proveedor y se vuelve a llenar
+                    $.get('/api/proveedores/productos/' + proveedorId, function(resp) {
+                        productos = resp;
+                        productos.forEach(function(producto, index) {
+                            var row = `<tr>
                                 <td>${producto.sku}</td>
                                 <td>${producto.nombre}</td>
                                 <td>${producto.pivot.precio.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}</td>
                                 <td style="display:none;"></td>
                                 </tr>`;
-                    $("#productosTable tbody").append(row);
+                            $("#productosTable tbody").append(row);
+                        });
+                    });
+
                 });
-            });
+            }else{
+                $('#rut').val('');
+                    $('#giro').val('');
+                    $('#direccion').val('');
+                    $('#comuna').val('');
+            }
         }
 
         function agregarGuardarDetalle() {
-            var clienteId = $('#razon_social').val();
-            if (clienteId == '') {
+            var proveedorId = $('#razon_social').val();
+            if (proveedorId == '') {
                 $.toast({
                     type: 'error',
                     title: 'Error en formulario',
                     subtitle: 'ahora',
                     position: 'top-right',
-                    content: 'Debe seleccionar un cliente para agregar items al documento.',
+                    content: 'Debe seleccionar un proveedor para agregar items al documento.',
                     delay: 15000
                 });
                 return;
@@ -775,9 +769,9 @@
                 url: '/api/productos',
                 data: data, // serializes the form's elements.
                 success: function(data) {
-                    if (data.success == true) {
+                    if(data.success == true){
                         var dataJson = {
-                            lista_precio_id: $('#lista_precio').val(),
+                            proveedor_id: $('#razon_social').val(),
                             producto_id: data.data.id,
                             precio: $('#precioTxt').inputmask('unmaskedvalue')
                         };
@@ -786,7 +780,7 @@
                         // Creamos peticion psot para agregar el precio de venta
                         $.ajax({
                             type: "POST",
-                            url: '/api/productos/listaprecio',
+                            url: '/api/productos/precioproveedor',
                             data: dataJson, // serializes the form's elements.
                             success: function(data2) {
                                 if (data2.success == true) {
@@ -798,23 +792,23 @@
                             }
                         });
                         Swal.fire({
-                                title: "Producto guardado exitosamente",
-                                text: "La información ingresada es correcta y fue procesada exitosamente.",
-                                icon: "success"
-                            })
-                            .then((result) => {
-                                agregarDetalle();
-                                seleccionarProveedor();
-                            });
-                    } else {
+                            title: "Producto guardado exitosamente",
+                            text: "La información ingresada es correcta y fue procesada exitosamente.",
+                            icon: "success"
+                        })
+                        .then((result) => {
+                            agregarDetalle();
+                            seleccionarProveedor();
+                        });
+                    }else{
                         Swal.fire({
-                                title: "Producto no pudo ser guardado",
-                                text: "La información ingresada no es correcta, verifiquela y vuelva a intentarlo.",
-                                icon: "error"
-                            })
-                            .then((result) => {
-                                agregarDetalle();
-                            });
+                            title: "Producto no pudo ser guardado",
+                            text: "La información ingresada no es correcta, verifiquela y vuelva a intentarlo.",
+                            icon: "error"
+                        })
+                        .then((result) => {
+                            agregarDetalle();
+                        });
                     }
 
                 }
@@ -823,22 +817,17 @@
 
         function agregarDetalle() {
             // Verificamos que se haya seleccionado un proveedor
-            var clienteId = $('#razon_social').val();
-            if (clienteId == '') {
+            var proveedorId = $('#razon_social').val();
+            if (proveedorId == '') {
                 $.toast({
                     type: 'error',
                     title: 'Error en formulario',
                     subtitle: 'ahora',
                     position: 'top-right',
-                    content: 'Debe seleccionar un cliente para agregar items al documento.',
+                    content: 'Debe seleccionar un proveedor para agregar items al documento.',
                     delay: 15000
                 });
                 return;
-            }
-
-            // Se verifica si se escribio un SKU, de no haber uno, se rellena con el timestamp
-            if($('#skuTxt').val() == ''){
-                $('#skuTxt').val('AG'+$.now());
             }
 
             // Se recopila toda la información del producto
@@ -895,12 +884,10 @@
                     <td>${'$ ' + producto.precio.replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}</td>
                     <td>${'$ ' + subtotal.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}</td>
                     <td>
-                        <button type="button" onclick="eliminarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em;float:right;">
+                        <button type="button" onclick="eliminarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .25em;">
                         <span class="mdi mdi-delete"></span></button>
                     </td>
                 </tr>`;
-                /*
-                 */
                 // Se limpian los inputs
                 $('#skuTxt').val('');
                 $('#nombreTxt').val('');
@@ -925,6 +912,30 @@
             $('#tablaDetalle tr[detindex="' + index + '"]').remove();
             // Se calculan los totales y se aumenta el indice
             calcularTotales();
+        }
+
+        function anularOC(id){
+            $.ajax({
+                            type: "POST",
+                            url: '/api/compras/ordenescompra/anular/' + id,
+                            data: {}, // serializes the form's elements.
+                            success: function(data2) {
+                                if (data2.success == true) {
+                                    console.log("precio guardado");
+                                } else {
+                                    console.log("error al guardar el precio");
+                                }
+
+                            }
+                        });
+                        Swal.fire({
+                            title: "Orden de Compra anulada exitosamente",
+                            text: "Orden de Compra anulada correctamente, recuerde que los cambios realizados no son reversibles.",
+                            icon: "error"
+                        })
+                        .then((result) => {
+                            location.href = "/compras/ordenescompra";
+                        });
         }
 
         function calcularTotales() {

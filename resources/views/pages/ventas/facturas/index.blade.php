@@ -1,6 +1,6 @@
 @extends('layout.master')
 
-@section('title', 'Gestión de Ordenes de Compra')
+@section('title', 'Gestión de Facturas')
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
@@ -50,12 +50,18 @@
     </div>
 @endsection
 
+@push('plugin-scripts')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment-with-locales.min.js"
+        integrity="sha512-4F1cxYdMiAW98oomSLaygEwmCnIP38pb4Kx70yQYqRwLVCs3DbRumfBq82T08g/4LJ/smbFGFpmeFlQgoDccgg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+@endpush
+
 @push('custom-scripts')
     <script>
         var facturasTable = null;
-        var currentUserId = {{auth()->user()->id}};
+        var currentUserId = {{ auth()->user()->id }};
 
-        function vistaPreviaFactura(id){
+        function vistaPreviaFactura(id) {
             location.href = '/api/ventas/facturas/vistaprevia/' + id;
         }
 
@@ -68,9 +74,10 @@
             language: {
                 url: '/assets/js/datatables/es-ES.json',
             },
-            order: [[0, 'desc']],
-            columns: [
-                {
+            order: [
+                [0, 'desc']
+            ],
+            columns: [{
                     data: 'folio',
                     responsivePriority: 1
                 },
@@ -84,12 +91,16 @@
                 },
                 {
                     data: 'fecha_emision',
-                    responsivePriority: 3
+                    responsivePriority: 3,
+                    render: function(data, type, row) {
+                        var fecha = moment(row.fecha_emision, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY');
+                        return fecha;
+                    }
                 },
                 {
                     data: 'monto_total',
                     responsivePriority: 3,
-                    render: function(data,type,row){
+                    render: function(data, type, row) {
                         return '$' + row.monto_total.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.');
                     }
                 },
@@ -97,29 +108,46 @@
                     data: 'estado',
                     responsivePriority: 3,
                     render: function(data, type, row) {
+                        var estado = row.estado;
+                        var estadoSii = estado.slice(0, 1);
+                        var estadoXml = estado.slice(1, 2);
+                        var estadoAcuse = estado.slice(2, 3);
                         var html = '';
-                        if(row.estado == -1){
-                            html = '<span class="badge bg-danger">ANULADA</span>';
-                        }else if(row.estado == 0){
-                            html = '<span class="badge bg-warning">EN PROCESO</span>';
-                        }else if(row.estado == 1){
-                            html = '<span class="badge bg-warning">ENVIADA</span>';
-                        }else if(row.estado == 2){
-                            html = '<span class="badge bg-warning">ACEPTADA</span>';
+                        if(estadoSii == 0){
+                            // en proceso
+                            html += '<span class="badge bg-warning me-1" title="Documento En Proceso"><span class="mdi mdi-24 mdi-clock-time-eight-outline"></span></span>';
+                        }else if(estadoSii == 1){
+                            // aceptado
+                            html += '<span class="badge bg-success me-1" title="Documento Aceptado"><span class="mdi mdi-24 mdi-check-circle-outline"></span></span>';
+                        }else if(estadoSii == 2){
+                            // rechazado
+                            html += '<span class="badge bg-danger me-1" title="Documento Rechazado"><span class="mdi mdi-24 mdi-alert-circle-outline"></span></span>';
+                        }else if(estadoSii == 3){
+                            // anulado
+                            html += '<span class="badge bg-danger me-1" title="Documento Anulado"><span class="mdi mdi-24 mdi-close-circle"></span></span>';
                         }
+
+                        if(estadoXml == 0){
+                            html += '<span class="badge bg-warning" title="XML No Enviado"><span class="mdi mdi-24 mdi mdi-send-clock"></span></span>';
+                        }else if(estadoXml == 1){
+                            html += '<span class="badge bg-success" title="XML Recibido"><span class="mdi mdi-24 mdi-send"></span></span>';
+                        }else if(estadoXml == 2){
+                            html += '<span class="badge bg-error" title="Error de Envio"><span class="mdi mdi-24 mdi-alert-circle-outline"></span></span>';
+                        }
+
                         return html;
                     }
                 },
                 {
                     data: null,
-                    orderable:false,
+                    orderable: false,
                     render: function(data, type, row) {
                         var html = '';
-                        if(row.estado != -1){
-                            html = '<div>';
-                            html += '<button type="button" title="Ver Factura" onclick="vistaPreviaFactura('+row.folio+')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-magnify"></i></button>';
-                            html += '</div>';
-                        }
+                        html = '<div>';
+                        html += '<button type="button" title="Ver Factura" onclick="vistaPreviaFactura(' +
+                            row.folio +
+                            ')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-magnify"></i></button>';
+                        html += '</div>';
                         //var html = '';
                         return html;
                     }

@@ -1,6 +1,6 @@
 @extends('layout.master')
 
-@section('title', 'Emisión de Factura Electrónica')
+@section('title', 'Emisión de Guia de Despacho Electrónica')
 
 @push('style')
     <style>
@@ -29,7 +29,7 @@
 @section('content')
     <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
         <div>
-            <h4 class="mb-3 mb-md-0">Emisión de Factura Electrónica</h4>
+            <h4 class="mb-3 mb-md-0">Emisión de Guia de Despacho Electrónica</h4>
         </div>
     </div>
     <div class="row">
@@ -39,12 +39,13 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-baseline">
-                                <h4 class="card-title mb-0">FORMULARIO DE NUEVA FACTURA ELECTRÓNICA</h4>
+                                <h4 class="card-title mb-0">FORMULARIO DE NUEVA GUIA DE DESPACHO ELECTRÓNICA</h4>
                             </div>
                             <div class="row mx-3">
                                 <div style="width:100%; margin-top:24px;"></div>
                                 <div class="col-md-12">
-                                    <form class="form" id="storeForm" method="post" onsubmit="confirmarFactura(event)">
+                                    <form class="form" id="storeForm" method="post"
+                                        onsubmit="confirmarGuiaDespacho(event)">
                                         @csrf
                                         <div class="row">
                                             <div class="col-md-12 mb-3">
@@ -184,7 +185,7 @@
                                                                     documento</label>
                                                                 <div class="col-sm-8">
                                                                     <input type="text" name="tipo_doc" id="tipo_doc"
-                                                                        value="Factura Electrónica (33)"
+                                                                        value="Guia de Despacho Electrónica (52)"
                                                                         class="form-control form-control-sm" disabled>
                                                                 </div>
                                                             </div>
@@ -203,22 +204,31 @@
                                                             <div class="row mb-2">
                                                                 <label
                                                                     class="col-sm-4 col-form-label col-form-label-sm">Tipo
-                                                                    de pago</label>
-                                                                <div class="col-sm-8 align-bottom">
-                                                                    <div class="form-check form-check-inline">
-                                                                        <input class="form-check-input" type="radio"
-                                                                            name="tipo_pago" id="tipo_pago"
-                                                                            value="1" checked>
-                                                                        <label class="form-check-label"
-                                                                            for="tipo_pago">Credito</label>
-                                                                    </div>
-                                                                    <div class="form-check form-check-inline">
-                                                                        <input class="form-check-input" type="radio"
-                                                                            name="tipo_pago" id="tipo_pago"
-                                                                            value="2">
-                                                                        <label class="form-check-label"
-                                                                            for="tipo_pago">Contado</label>
-                                                                    </div>
+                                                                    Despacho</label>
+                                                                <div class="col-sm-8">
+                                                                    <select name="tipo_despacho" id="tipo_despacho"
+                                                                        class="form-control form-control-sm">
+                                                                        <option value="1">Comprador</option>
+                                                                        <option value="2">Emisor al Comprador</option>
+                                                                        <option value="3">Emisor a Otro</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row mb-2">
+                                                                <label
+                                                                    class="col-sm-4 col-form-label col-form-label-sm">Tipo
+                                                                    Traslado</label>
+                                                                <div class="col-sm-8">
+                                                                    <select name="ind_traslado" id="ind_traslado"
+                                                                        class="form-control form-control-sm" onchange="checkTraslado()">
+                                                                        <option value="1">Constituye Venta</option>
+                                                                        <option value="2">Por efectuar</option>
+                                                                        <option value="3">Consigación</option>
+                                                                        <option value="4">Donación</option>
+                                                                        <option value="5">Interno</option>
+                                                                        <option value="6">No Constituye Venta</option>
+                                                                        <option value="7">Devolución</option>
+                                                                    </select>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -357,7 +367,7 @@
                                                     </table>
                                                 </div>
                                             </div>
-                                            <div class="col-md-8">
+                                            <div class="col-md-7">
                                                 <div class="mb-2 border-bottom">
                                                     <h5>Referencias del documento</h5>
                                                 </div>
@@ -365,29 +375,41 @@
                                                     <table class="table table-sm mb-3">
                                                         <tbody>
                                                             <tr>
-                                                                <td style="width: 30%;">
+                                                                <td>
                                                                     <select class="form-control form-control-sm">
                                                                         <option>Seleccione tipo documento</option>
                                                                     </select>
                                                                 </td>
-                                                                <td style="width: 20%;">
+                                                                <td>
                                                                     <input class="form-control form-control-sm"
                                                                         type="text" placeholder="Folio" />
                                                                 </td>
-                                                                <td style="width: 15%;">
+                                                                <td>
                                                                     <input type="date"
                                                                         class="form-control form-control-sm" />
                                                                 </td>
-                                                                <td style="width: 30%;">
+                                                                <td>
                                                                     <input class="form-control form-control-sm"
                                                                         type="text" placeholder="Razón" />
                                                                 </td>
-                                                                <td style="width: 5%;">
-                                                                    <button type="button" onclick="agregarDetalle()"
-                                                                        title="Agregar detalle a la lista"
-                                                                        class="btn btn-sm btn-outline-primary"
-                                                                        style="padding:.25em .5em; float:right;">
-                                                                        <span class="mdi mdi-plus"></span></button>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>
+                                                                    <select class="form-control form-control-sm">
+                                                                        <option>Seleccione tipo documento</option>
+                                                                    </select>
+                                                                </td>
+                                                                <td>
+                                                                    <input class="form-control form-control-sm"
+                                                                        type="text" placeholder="Folio" />
+                                                                </td>
+                                                                <td>
+                                                                    <input type="date"
+                                                                        class="form-control form-control-sm" />
+                                                                </td>
+                                                                <td>
+                                                                    <input class="form-control form-control-sm"
+                                                                        type="text" placeholder="Razón" />
                                                                 </td>
                                                             </tr>
                                                         </tbody>
@@ -400,7 +422,7 @@
                                                     <textarea id="glosaTxt" maxlength="250" class="form-control mt-3" rows="3"></textarea>
                                                 </div>
                                             </div>
-                                            <div class="col-md-4">
+                                            <div class="col-md-5">
                                                 <div class="mb-2 border-bottom">
                                                     <h5>Resumen de montos</h5>
                                                 </div>
@@ -470,19 +492,19 @@
                                                 </div>
                                             </div>
                                         </div>
+
+                                        <div class="float-end">
+                                            <button type="submit" class="btn btn-primary submit"><i
+                                                    class="mdi mdi-content-save"></i> Guardar</button>
+                                        </div>
+                                        <button type="button" class="btn btn-danger"
+                                            onclick="location.href = '/compras/ordenescompra'">
+                                            <i class="mdi mdi-cancel"></i>
+                                            Cancelar
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
-
-                            <div class="float-end">
-                                <button type="submit" class="btn btn-primary submit"><i
-                                        class="mdi mdi-content-save"></i> Guardar</button>
-                            </div>
-                            <button type="button" class="btn btn-danger"
-                                onclick="location.href = '/compras/ordenescompra'">
-                                <i class="mdi mdi-cancel"></i>
-                                Cancelar
-                            </button>
-                            </form>
                         </div>
                     </div>
                 </div>
@@ -591,6 +613,18 @@
             });
         });
 
+        function checkTraslado(){
+            var tipo = $('#ind_traslado').find(":selected").val();
+            if(tipo == 5){
+                // traslado interno
+                $("#razon_social").val(null).trigger("change");
+                $("#rut").val("{{$emisor['rut']}}");
+                $("#giro").val("{{$emisor['giro']}}");
+                $("#direccion").val("{{$emisor['direccion']}}");;
+                $("#comuna").val("{{App\Comuna::find($emisor['comuna'])->nombre}}")
+            }
+        }
+
         function selectDetalle() {
             var item = $('#productosTable tbody tr.highlight');
             var sku = $(item).find('td:eq(0)').text();
@@ -619,8 +653,8 @@
             $('#descripcionTxt').val(descripcion);
             $('#precioTxt').val(precio);
             calcSubtotalFila();
-            $("#staticBackdrop").modal('hide');
             $('#cantidadTxt').focus();
+            $("#staticBackdrop").modal('hide');
         }
 
         function cambiarInputProyecto() {
@@ -643,12 +677,12 @@
             return false;
         }
 
-        function confirmarFactura(e) {
+        function confirmarGuiaDespacho(e) {
             e.preventDefault();
 
             Swal.fire({
-                title: "¿Quieres confirmar esta Factura?",
-                text: "Una vez confirmada la Factura no se podran hacer cambios sobre ella, recomendamos revisar el detalle del documento.",
+                title: "¿Quieres confirmar esta Guia de Despacho?",
+                text: "Una vez confirmada la Guia de Despacho no se podran hacer cambios sobre ella, recomendamos revisar el detalle del documento.",
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#3085d6",
@@ -657,13 +691,12 @@
                 cancelButtonText: "Cancelar"
             }).then((modalResult) => {
                 if (modalResult.isConfirmed) {
-                    procesarFactura(e);
+                    procesarGuiaDespacho(e);
                 }
             });
         }
 
-        function procesarFactura(e) {
-
+        function procesarGuiaDespacho(e) {
             $('#loadingModal').modal('show');
             $('#statusTxt').text('Validando información del formulario...');
             // Verificamos que se haya seleccionado un proveedor
@@ -694,18 +727,19 @@
             var doc = {
                 cliente: $('#razon_social').val(),
                 fecha_emision: $('#fecha_emision').val(),
-                tipo_pago: $('#tipo_pago').val(),
+                ind_traslado: $('#ind_traslado').find(":selected").val(),
+                tipo_despacho: $('#tipo_despacho').find(":selected").val(),
                 items: detalles,
                 glosa: $('#glosaTxt').val(),
                 _token: $('meta[name="_token"]').attr('content')
             };
             $('#statusTxt').text('Enviando información del documento...');
-            $.post("/api/ventas/facturas", doc)
+            $.post("/api/ventas/guiasdespacho", doc)
                 .done(function(data) {
                     $('#statusTxt').text('Recibiendo información de respuesta...');
                     console.log(data);
                     $('#loadingModal').modal('hide');
-                    location.href = '/ventas/facturas';
+                    location.href = '/ventas/guiasdespacho';
                 });
         }
 
@@ -895,12 +929,10 @@
                     <td>${'$ ' + producto.precio.replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}</td>
                     <td>${'$ ' + subtotal.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}</td>
                     <td>
-                        <button type="button" onclick="eliminarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em;float:right;">
+                        <button type="button" onclick="eliminarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .25em;">
                         <span class="mdi mdi-delete"></span></button>
                     </td>
                 </tr>`;
-                /*
-                 */
                 // Se limpian los inputs
                 $('#skuTxt').val('');
                 $('#nombreTxt').val('');

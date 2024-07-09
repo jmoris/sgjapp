@@ -12,13 +12,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('facturas', function (Blueprint $table) {
+        Schema::create('nota_creditos', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('folio');
             $table->foreignIdFor(Cliente::class)->constrained();
             $table->dateTime('fecha_emision');
             $table->smallInteger('tipo_pago');
-            $table->text('estado')->default('000');
+            $table->text('estado')->default('00');
             $table->smallInteger('tipo_descuento')->nullable();
             $table->bigInteger('descuento')->default(0);
             $table->bigInteger('monto_neto');
@@ -35,6 +35,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('facturas');
+        Schema::dropIfExists('nota_creditos');
     }
 };

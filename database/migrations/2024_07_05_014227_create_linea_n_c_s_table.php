@@ -11,16 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('linea_o_c_s', function (Blueprint $table) {
+        Schema::create('linea_n_c_s', function (Blueprint $table) {
             $table->id();
-            $table->string('sku')->nullable();
+            $table->string('sku')->nullable();;
             $table->string('nombre');
             $table->string('descripcion')->nullable();
             $table->float('cantidad');
             $table->string('unidad');
             $table->bigInteger('precio_unitario');
             $table->smallInteger('descuento');
-            $table->foreignIdFor(\App\OrdenCompra::class)->constrained();
+            $table->foreignIdFor(\App\NotaCredito::class)->constrained();
             $table->timestamps();
         });
     }
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('linea_o_c_s');
+        Schema::dropIfExists('linea_n_c_s');
     }
 };

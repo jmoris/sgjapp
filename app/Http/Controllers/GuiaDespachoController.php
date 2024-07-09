@@ -4,48 +4,48 @@ namespace App\Http\Controllers;
 
 use App\Cliente;
 use App\Comuna;
-use App\DocumentoPendiente;
-use App\Factura;
+use App\GuiaDespacho;
 use App\Helpers\Ajustes;
-use App\LineaFactura;
+use App\LineaGuia;
 use App\ListaPrecio;
 use App\Unidad;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use SolucionTotal\CoreDTE\Sii\Dte;
 use SolucionTotal\CoreDTE\Sii\EnvioDte;
 use Yajra\DataTables\Facades\DataTables;
 
-class FacturaController extends Controller
+class GuiaDespachoController extends Controller
 {
     public function index(){
-        return view('pages.ventas.facturas.index');
+        return view('pages.ventas.guiasdespacho.index');
     }
 
-    public function newFactura(){
+    public function newGuiaDespacho(){
         $emisor = Ajustes::getEmisor();
         $comunas = Comuna::all();
         $clientes = Cliente::all(); // aqui clientes
         $unidades = Unidad::all();
         $listas = ListaPrecio::all();
-        return view('pages.ventas.facturas.create', ['clientes' => $clientes, 'unidades' => $unidades,'comunas' => $comunas, 'emisor' => $emisor, 'listas' => $listas]);
+        return view('pages.ventas.guiasdespacho.create', ['clientes' => $clientes, 'unidades' => $unidades,'comunas' => $comunas, 'emisor' => $emisor, 'listas' => $listas]);
     }
     /*
         DESDE AQUI HACIA ABAJO ESTARAN LAS FUNCIONES DE LA API
     */
     public function getAll(){
-        $data = Factura::with('cliente');
+        $data = GuiaDespacho::with('cliente');
         return DataTables::eloquent($data)->toJson();
     }
 
-    public function storeFactura(Request $request){
+    public function storeGuiaDespacho(Request $request){
         try{
             $validator = Validator::make($request->all(), [
                 'fecha_emision' => 'required',
                 'cliente' => 'required',
-                'tipo_pago' => 'required',
+                'ind_traslado' => 'required',
+                'tipo_despacho' => 'required',
                 'items' => 'required|array',
                 'glosa' => 'nullable'
             ]);
@@ -60,9 +60,8 @@ class FacturaController extends Controller
 
             $emisor = Ajustes::getEmisor();
             $cliente = Cliente::where('id', $request->cliente)->with('comuna')->first();
-
-
             $str = date('Y-m-d', strtotime($request->fecha_emision)).' '.date('H:i');
+
             $detalle = [];
             foreach($request->items as $item){
                 array_push($detalle, [
@@ -74,11 +73,14 @@ class FacturaController extends Controller
                 ]);
             }
             $detalle = array_filter($detalle);
+
             $data = [
                 'contribuyente' => $emisor['rut'],
                 'acteco' => $emisor['acteco'],
-                'tipo' => 33,
+                'tipo' => 52,
                 'fecha' => $str,
+                'ind_traslado' => ($request->ind_traslado!=null)?$request->ind_traslado:null,
+                'tipo_despacho' => ($request->tipo_despacho!=null)?$request->tipo_despacho:null,
                 'receptor' => [
                     'rut'=> $cliente->rut,
                     'razon_social'=> $cliente->razon_social,
@@ -101,31 +103,28 @@ class FacturaController extends Controller
             curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
             $result = curl_exec($ch);
             curl_close($ch);
-
             $docData = json_decode($result);
 
-            $fact = new Factura();
-            $fact->folio = $docData->folio;
+            $guia = new GuiaDespacho();
+            $guia->folio = $docData->folio;
             Log::info($str);
-            $fact->fecha_emision = date('Y-m-d H:i', strtotime($str));
-            $fact->cliente_id = $request->cliente;
-            $fact->user_id = auth()->user()->id;
-            $fact->tipo_pago = $request->tipo_pago;
-            $fact->tipo_descuento = 0;
-            $fact->descuento = 0;
-            $fact->estado = '000';
-            $fact->monto_neto = $docData->totales->neto;
-            $fact->monto_iva = $docData->totales->iva;
-            $fact->monto_total = $docData->totales->total;
+            $guia->fecha_emision = date('Y-m-d H:i', strtotime($str));
+            $guia->cliente_id = $request->cliente;
+            $guia->user_id = auth()->user()->id;
+            $guia->ind_traslado = $request->ind_traslado;
+            $guia->tipo_despacho = $request->tipo_despacho;
+            $guia->descuento = 1;
+            $guia->monto_neto = $docData->totales->neto;
+            $guia->monto_iva = $docData->totales->iva;
+            $guia->monto_total = $docData->totales->total;
             if(isset($request->glosa)){
-                $fact->glosa = str_replace('///', '<br>', $request->glosa);
+                $guia->glosa = str_replace('///', '<br>', $request->glosa);
             }
-            $fact->tipo_pago = $request->tipo_pago;
-            $fact->save();
+            $guia->save();
             // Se recorre listado de productos OC y se almacenan
             $subtotal = 0;
             foreach($request->items as $item){
-                $linea = new LineaFactura();
+                $linea = new LineaGuia();
                 $linea->sku = $item['sku'];
                 $linea->nombre = $item['nombre'];
                 $linea->descripcion = ((!array_key_exists('descripcion', $item))?'':$item['descripcion']);
@@ -133,15 +132,9 @@ class FacturaController extends Controller
                 $linea->unidad = Unidad::find($item['unidad'])->abreviacion;
                 $linea->precio_unitario = $item['precio'];
                 $linea->descuento = ((!array_key_exists('descuento', $item))?0:$item['descuento']);
-                $linea->factura_id = $fact->id;
+                $linea->guia_despacho_id = $guia->id;
                 $linea->save();
             }
-
-            $pendiente = new DocumentoPendiente();
-            $pendiente->tipo_doc = 33;
-            $pendiente->folio = $fact->folio;
-            $pendiente->track_id = $docData->trackid;
-            $pendiente->save();
 
             return response()->json([
                 'success' => true,
@@ -155,11 +148,12 @@ class FacturaController extends Controller
         }
     }
 
-    public function vistaPreviaFactura(Request $request, $folio){
+    public function vistaPreviaGuiaDespacho(Request $request, $folio){
         try{
             $emisor = Ajustes::getEmisor();
-            $fact = Factura::with('cliente', 'cliente.comuna')->where('folio', $folio)->first();
-            $ch = curl_init( 'https://dev.facturapi.cl/api/documentos/generar/xml/33/'.$folio.'?contribuyente='.$emisor['rut']);
+            $guia = GuiaDespacho::with('cliente', 'cliente.comuna')->where('folio', $folio)->first();
+
+            $ch = curl_init( 'https://dev.facturapi.cl/api/documentos/generar/xml/52/'.$folio.'?contribuyente='.$emisor['rut']);
             curl_setopt( $ch, CURLOPT_POST, false);
             curl_setopt( $ch, CURLOPT_HTTPHEADER, [
                 'Content-Type:application/json',
@@ -183,7 +177,8 @@ class FacturaController extends Controller
             $pdf->setWeb($emisor['web']);
             $pdf->setMail($emisor['email']);
             $pdf->setMarcaAgua('https://i.imgur.com/oWL7WBw.jpeg');
-            $glosa = str_replace('//', '<br>', $fact->glosa);
+            $glosa = str_replace('//', '<br>', $guia->glosa);
+
             $pdf->setGlosa($glosa);
             $pdf->construir();
             $pdf->generar(1);

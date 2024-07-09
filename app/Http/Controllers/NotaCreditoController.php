@@ -7,47 +7,49 @@ use App\Comuna;
 use App\DocumentoPendiente;
 use App\Factura;
 use App\Helpers\Ajustes;
-use App\LineaFactura;
+use App\LineaNC;
 use App\ListaPrecio;
+use App\NotaCredito;
 use App\Unidad;
 use Exception;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use SolucionTotal\CoreDTE\Sii\EnvioDte;
 use Yajra\DataTables\Facades\DataTables;
 
-class FacturaController extends Controller
+class NotaCreditoController extends Controller
 {
     public function index(){
-        return view('pages.ventas.facturas.index');
+        return view('pages.ventas.notascredito.index');
     }
 
-    public function newFactura(){
+    public function newNotaCredito(){
         $emisor = Ajustes::getEmisor();
         $comunas = Comuna::all();
         $clientes = Cliente::all(); // aqui clientes
         $unidades = Unidad::all();
         $listas = ListaPrecio::all();
-        return view('pages.ventas.facturas.create', ['clientes' => $clientes, 'unidades' => $unidades,'comunas' => $comunas, 'emisor' => $emisor, 'listas' => $listas]);
+        return view('pages.ventas.notascredito.create', ['clientes' => $clientes, 'unidades' => $unidades,'comunas' => $comunas, 'emisor' => $emisor, 'listas' => $listas]);
+    }
+
+    public function showSelector(Request $request){
+        $documentos = Factura::where('estado', '!=', -1)->with('cliente')->get();
+        return view('pages.ventas.notascredito.selector', ['documentos' => $documentos]);
     }
     /*
         DESDE AQUI HACIA ABAJO ESTARAN LAS FUNCIONES DE LA API
     */
     public function getAll(){
-        $data = Factura::with('cliente');
+        $data = NotaCredito::where('estado', '!=', -1)->with('cliente');
         return DataTables::eloquent($data)->toJson();
     }
 
-    public function storeFactura(Request $request){
+    public function storeAnulacion(Request $request){
         try{
             $validator = Validator::make($request->all(), [
-                'fecha_emision' => 'required',
-                'cliente' => 'required',
-                'tipo_pago' => 'required',
-                'items' => 'required|array',
-                'glosa' => 'nullable'
+                'tipo_doc' => 'required',
+                'folio' => 'required',
             ]);
 
             if($validator->fails()){
@@ -58,26 +60,41 @@ class FacturaController extends Controller
                 ]);
             }
 
+            // Se declara una variable vacia para almacenar el documento
+            $doc = null;
+            // Si el documento es una factura, buscamos en la tabla facturas
+            if($request->tipo_doc == 33){
+                // Encontramos el documento y lo almacenamos
+                $doc = Factura::where('folio', $request->folio)->with('lineas')->first();
+            }
+
+            if($doc == null){
+                return response()->json([
+                    'success' => 'false',
+                    'msg' => 'El documento no existe en la base de datos',
+                ]);
+            }
+
             $emisor = Ajustes::getEmisor();
-            $cliente = Cliente::where('id', $request->cliente)->with('comuna')->first();
+            $cliente = Cliente::where('id', $doc->cliente_id)->with('comuna')->first();
 
 
-            $str = date('Y-m-d', strtotime($request->fecha_emision)).' '.date('H:i');
+            $str = date('Y-m-d').' '.date('H:i');
             $detalle = [];
-            foreach($request->items as $item){
+            foreach($doc->lineas as $item){
                 array_push($detalle, [
-                    'nombre' => $item['nombre'],
-                    'descripcion' => ((!array_key_exists('descripcion', $item))?false:$item['descripcion']),
-                    'unidad' => Unidad::find($item['unidad'])->abreviacion,
-                    'precio' => $item['precio'],
-                    'cantidad' => $item['cantidad']
+                    'nombre' => $item->nombre,
+                    'descripcion' => $item->descripcion,
+                    'unidad' => $item->unidad,
+                    'precio' => $item->precio_unitario,
+                    'cantidad' => $item->cantidad
                 ]);
             }
             $detalle = array_filter($detalle);
             $data = [
                 'contribuyente' => $emisor['rut'],
                 'acteco' => $emisor['acteco'],
-                'tipo' => 33,
+                'tipo' => 61,
                 'fecha' => $str,
                 'receptor' => [
                     'rut'=> $cliente->rut,
@@ -86,9 +103,17 @@ class FacturaController extends Controller
                     'direccion'=> $cliente->direccion,
                     'comuna'=> $cliente->comuna->nombre,
                 ],
-                'tipo_pago' => $request->tipo_pago,
+                'tipo_pago' => $doc->tipo_pago,
                 'detalles' => $detalle,
-                'referencias' => []
+                'referencias' => [
+                    [
+                    'tipo' => 33,
+                    'fecha' => date('Y-m-d', strtotime($doc->fecha_emision)),
+                    'folio' => $doc->folio,
+                    'razon' => 'ANULA DOCUMENTO',
+                    'codigo' => 1
+                    ]
+                ]
             ];
 
             $ch = curl_init( 'https://dev.facturapi.cl/api/documentos' );
@@ -104,42 +129,45 @@ class FacturaController extends Controller
 
             $docData = json_decode($result);
 
-            $fact = new Factura();
-            $fact->folio = $docData->folio;
+            $nc = new NotaCredito();
+            $nc->folio = $docData->folio;
             Log::info($str);
-            $fact->fecha_emision = date('Y-m-d H:i', strtotime($str));
-            $fact->cliente_id = $request->cliente;
-            $fact->user_id = auth()->user()->id;
-            $fact->tipo_pago = $request->tipo_pago;
-            $fact->tipo_descuento = 0;
-            $fact->descuento = 0;
-            $fact->estado = '000';
-            $fact->monto_neto = $docData->totales->neto;
-            $fact->monto_iva = $docData->totales->iva;
-            $fact->monto_total = $docData->totales->total;
+            $nc->fecha_emision = date('Y-m-d H:i', strtotime($str));
+            $nc->cliente_id = $doc->cliente_id;
+            $nc->user_id = auth()->user()->id;
+            $nc->tipo_pago = $doc->tipo_pago;
+            $nc->descuento = 0;
+            $nc->monto_neto = $docData->totales->neto;
+            $nc->monto_iva = $docData->totales->iva;
+            $nc->monto_total = $docData->totales->total;
             if(isset($request->glosa)){
-                $fact->glosa = str_replace('///', '<br>', $request->glosa);
+                $nc->glosa = str_replace('///', '<br>', $request->glosa);
             }
-            $fact->tipo_pago = $request->tipo_pago;
-            $fact->save();
-            // Se recorre listado de productos OC y se almacenan
+            $nc->save();
+
+            $factEstado = $doc->estado;
+            $factEstado = substr($factEstado, 1);
+            $newEstado = '2'.$factEstado;
+            $doc->estado = $newEstado;
+            $doc->save();
+            // Se recorre listado de productos NC y se almacenan
             $subtotal = 0;
-            foreach($request->items as $item){
-                $linea = new LineaFactura();
-                $linea->sku = $item['sku'];
-                $linea->nombre = $item['nombre'];
-                $linea->descripcion = ((!array_key_exists('descripcion', $item))?'':$item['descripcion']);
-                $linea->cantidad = $item['cantidad'];
-                $linea->unidad = Unidad::find($item['unidad'])->abreviacion;
-                $linea->precio_unitario = $item['precio'];
-                $linea->descuento = ((!array_key_exists('descuento', $item))?0:$item['descuento']);
-                $linea->factura_id = $fact->id;
+            foreach($doc->lineas as $item){
+                $linea = new LineaNC();
+                $linea->sku = $item->sku;
+                $linea->nombre = $item->nombre;
+                $linea->descripcion = $item->descripcion;
+                $linea->cantidad = $item->cantidad;
+                $linea->unidad = $item->unidad;
+                $linea->precio_unitario = $item->precio_unitario;
+                $linea->descuento = $item->descuento;
+                $linea->nota_credito_id = $nc->id;
                 $linea->save();
             }
 
             $pendiente = new DocumentoPendiente();
-            $pendiente->tipo_doc = 33;
-            $pendiente->folio = $fact->folio;
+            $pendiente->tipo_doc = 61;
+            $pendiente->folio = $nc->folio;
             $pendiente->track_id = $docData->trackid;
             $pendiente->save();
 
@@ -155,11 +183,11 @@ class FacturaController extends Controller
         }
     }
 
-    public function vistaPreviaFactura(Request $request, $folio){
+    public function vistaPreviaNotaCredito(Request $request, $folio){
         try{
             $emisor = Ajustes::getEmisor();
-            $fact = Factura::with('cliente', 'cliente.comuna')->where('folio', $folio)->first();
-            $ch = curl_init( 'https://dev.facturapi.cl/api/documentos/generar/xml/33/'.$folio.'?contribuyente='.$emisor['rut']);
+            $fact = NotaCredito::with('cliente', 'cliente.comuna')->where('folio', $folio)->first();
+            $ch = curl_init( 'https://dev.facturapi.cl/api/documentos/generar/xml/61/'.$folio.'?contribuyente='.$emisor['rut']);
             curl_setopt( $ch, CURLOPT_POST, false);
             curl_setopt( $ch, CURLOPT_HTTPHEADER, [
                 'Content-Type:application/json',

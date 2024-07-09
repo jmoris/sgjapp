@@ -1,19 +1,21 @@
 @extends('layout.master')
 
-@section('title', 'Gestión de Ordenes de Compra')
+@section('title', 'Gestión de Notas de Credito')
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
         <div>
-            <h4 class="mb-3 mb-md-0">Gestión de Ordenes de Compra</h4>
+            <h4 class="mb-3 mb-md-0">Gestión de Notas de Credito</h4>
         </div>
         <div class="d-flex align-items-center flex-wrap text-nowrap">
-            <button type="button" class="btn btn-sm btn-primary btn-icon-text mb-2 mb-md-0"
-                onclick="location.href = '/compras/ordenescompra/nuevo';">
-                <div>
-                    <i class="mdi mdi-plus"></i> Nueva Orden de Compra
+            <div class="btn-group" role="group">
+                <button id="btnGroupDrop1" type="button" class="btn btn-sm btn-primary btn-icon-text mb-2 mb-md-0 dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="mdi mdi-plus"></i> Nueva Nota de Credito
+                </button>
+                <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                  <a class="dropdown-item" href="/ventas/notascredito/selector">Anulación</a>
                 </div>
-            </button>
+              </div>
         </div>
     </div>
     <div class="row">
@@ -23,7 +25,7 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-baseline">
-                                <h6 class="card-title mb-3">LISTA DE ORDENES DE COMPRA</h6>
+                                <h6 class="card-title mb-3">LISTA DE NOTAS DE CREDITO</h6>
                             </div>
                             <div class="row">
                                 <div class="col-12">
@@ -31,7 +33,7 @@
                                         <thead>
                                             <tr>
                                                 <th>Folio</th>
-                                                <th>Proveedor</th>
+                                                <th>Cliente</th>
                                                 <th>RUT</th>
                                                 <th>Fecha</th>
                                                 <th>Monto Total</th>
@@ -49,25 +51,23 @@
         </div>
     </div>
 @endsection
+
 @push('plugin-scripts')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment-with-locales.min.js" integrity="sha512-4F1cxYdMiAW98oomSLaygEwmCnIP38pb4Kx70yQYqRwLVCs3DbRumfBq82T08g/4LJ/smbFGFpmeFlQgoDccgg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 @endpush
+
 @push('custom-scripts')
     <script>
-        var ocsTable = null;
+        var notasCreditoTable = null;
         var currentUserId = {{auth()->user()->id}};
 
-        function editarOC(id){
-            location.href = '/compras/ordenescompra/editar/' + id
+        function vistaPreviaFactura(id){
+            location.href = '/api/ventas/notascredito/vistaprevia/' + id;
         }
 
-        function vistaPreviaOC(id, rev){
-            location.href = '/api/compras/ordenescompra/vistaprevia/' + id + '/' + rev;
-        }
-
-        ocsTable = new DataTable('#example', {
+        notasCreditoTable = new DataTable('#example', {
             responsive: true,
-            ajax: '/api/compras/ordenescompra',
+            ajax: '/api/ventas/notascredito',
             search: {
                 return: true
             },
@@ -81,11 +81,11 @@
                     responsivePriority: 1
                 },
                 {
-                    data: 'proveedor.razon_social',
+                    data: 'cliente.razon_social',
                     responsivePriority: 2
                 },
                 {
-                    data: 'proveedor.rut',
+                    data: 'cliente.rut',
                     responsivePriority: 3
                 },
                 {
@@ -107,16 +107,34 @@
                     data: 'estado',
                     responsivePriority: 3,
                     render: function(data, type, row) {
+                        var estado = row.estado;
+                        console.log(estado);
+
+                        var estadoSii = estado.slice(0, 1);
+                        var estadoXml = estado.slice(1, 2);
                         var html = '';
-                        if(row.estado == -1){
-                            html = '<span class="badge bg-danger">ANULADA</span>';
-                        }else if(row.estado == 0){
-                            html = '<span class="badge bg-warning">EN PROCESO</span>';
-                        }else if(row.estado == 1){
-                            html = '<span class="badge bg-warning">ENVIADA</span>';
-                        }else if(row.estado == 2){
-                            html = '<span class="badge bg-warning">ACEPTADA</span>';
+                        if(estadoSii == 0){
+                            // en proceso
+                            html += '<span class="badge bg-warning me-1" title="Documento En Proceso"><span class="mdi mdi-24 mdi-clock-time-eight-outline"></span></span>';
+                        }else if(estadoSii == 1){
+                            // aceptado
+                            html += '<span class="badge bg-success me-1" title="Documento Aceptado"><span class="mdi mdi-24 mdi-check-circle-outline"></span></span>';
+                        }else if(estadoSii == 2){
+                            // rechazado
+                            html += '<span class="badge bg-danger me-1" title="Documento Rechazado"><span class="mdi mdi-24 mdi-alert-circle-outline"></span></span>';
+                        }else if(estadoSii == 3){
+                            // anulado
+                            html += '<span class="badge bg-danger me-1" title="Documento Anulado"><span class="mdi mdi-24 mdi-close-circle"></span></span>';
                         }
+
+                        if(estadoXml == 0){
+                            html += '<span class="badge bg-warning" title="XML No Enviado"><span class="mdi mdi-24 mdi mdi-send-clock"></span></span>';
+                        }else if(estadoXml == 1){
+                            html += '<span class="badge bg-success" title="XML Recibido"><span class="mdi mdi-24 mdi-send"></span></span>';
+                        }else if(estadoXml == 2){
+                            html += '<span class="badge bg-error" title="Error de Envio"><span class="mdi mdi-24 mdi-alert-circle-outline"></span></span>';
+                        }
+
                         return html;
                     }
                 },
@@ -127,8 +145,7 @@
                         var html = '';
                         if(row.estado != -1){
                             html = '<div>';
-                            html += '<button type="button" title="Editar Orden de Compra" onclick="editarOC('+row.id+')" class="btn btn-outline-primary btnxs px-1 py-0"><i class="mdi mdi-18 mdi-pencil"></i></button>';
-                            html += '<button type="button" title="Ver Orden de Compra" onclick="vistaPreviaOC('+row.folio+', '+row.rev+')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-magnify"></i></button>';
+                            html += '<button type="button" title="Ver Factura" onclick="vistaPreviaFactura('+row.folio+')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-magnify"></i></button>';
                             html += '</div>';
                         }
                         //var html = '';

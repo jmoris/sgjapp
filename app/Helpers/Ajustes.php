@@ -12,6 +12,7 @@ class Ajustes
             'razon_social' => $configs[0]['value'],
             'rut' => $configs[1]['value'],
             'giro' => $configs[7]['value'],
+            'acteco' => $configs[8]['value'],
             'direccion' => $configs[2]['value'],
             'comuna' => $configs[3]['value'],
             'telefono' => $configs[4]['value'],

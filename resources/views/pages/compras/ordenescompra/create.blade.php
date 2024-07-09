@@ -12,6 +12,14 @@
         td {
             padding: 0px 0px;
         }
+
+        body tr {
+            -webkit-user-select: initial !important;
+            -moz-user-select: initial !important;
+            -ms-user-select: initial !important;
+            -o-user-select: initial !important;
+            user-select: initial !important;
+        }
     </style>
 @endpush
 
@@ -258,7 +266,7 @@
                                                         </thead>
                                                         <tbody>
                                                             <tr class="noBorder" id="rowDetalle">
-                                                                <td style="width:15%;padding:4px;">
+                                                                <td style="width:12%;padding:4px;">
                                                                     <div class="input-group">
                                                                         <input id="skuTxt" type="text"
                                                                             class="form-control form-control-sm p-1"
@@ -277,7 +285,7 @@
                                                                         class="form-control form-control-sm"
                                                                         placeholder="NOMBRE ITEM" />
                                                                 </td>
-                                                                <td style="width:15%;padding:4px;">
+                                                                <td style="width:18%;padding:4px;">
                                                                     <div class="input-group">
                                                                         <input id="cantidadTxt"
                                                                             onchange="calcSubtotalFila()" type="number"
@@ -297,10 +305,10 @@
                                                                         onchange="calcSubtotalFila()" id="precioTxt"
                                                                         value="0" type="text"
                                                                         class="form-control" placeholder="PRECIO" /></td>
-                                                                <td style="width:18%;padding:4px;"><span
+                                                                <td style="width:15%;padding:4px;"><span
                                                                         style="vertical-align: bottom; text-align:right;"
                                                                         id="lblSubtotal">$ 0</span></td>
-                                                                <td style="width:7%;padding:4px;">
+                                                                <td style="width:10%;padding:4px;">
                                                                     <button type="button" onclick="agregarDetalle()"
                                                                         title="Agregar detalle a la lista"
                                                                         class="btn btn-sm btn-outline-primary"
@@ -346,85 +354,81 @@
                                                             </tr>
                                                         </tbody>
                                                     </table>
-                                                    <div class="col-md-7">
-                                                        <div class="mb-2 border-bottom">
-                                                            <h5>Glosa documento</h5>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-7">
+                                                <div class="mb-2 border-bottom">
+                                                    <h5>Glosa documento</h5>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <textarea id="glosaTxt" maxlength="250" class="form-control mt-3" rows="5"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <div class="mb-2 border-bottom">
+                                                    <h5>Resumen de montos</h5>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="row">
+                                                        <div class="col-md-7">
+                                                            <p>Subtotal </p>
                                                         </div>
-                                                        <div class="col-md-12">
-                                                            <textarea id="glosaTxt" maxlength="250" class="form-control mt-3" rows="5"></textarea>
+                                                        <div class="col-md-5 text-end">
+                                                            <p id="lblSubtotalDoc">$0</p>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-5">
-                                                        <div class="mb-2 border-bottom">
-                                                            <h5>Resumen de montos</h5>
+                                                    <div class="row">
+                                                        <div class="col-md-6 pr-0">
+                                                            <p>Descuento global </p>
                                                         </div>
-                                                        <div class="col-md-12">
-                                                            <div class="row">
-                                                                <div class="col-md-7">
-                                                                    <p>Subtotal </p>
-                                                                </div>
-                                                                <div class="col-md-5 text-end">
-                                                                    <p id="lblSubtotalDoc">$0</p>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row">
-                                                                <div class="col-md-5 pr-0">
-                                                                    <p>Descuento global </p>
-                                                                </div>
-                                                                <div class="col-md-4 pl-0">
-                                                                    <div class="input-group">
-                                                                        <input step="any" min="0"
-                                                                            max="100" value="0"
-                                                                            class="form-control form-control-sm"
-                                                                            type="number" name="descuentoglobal"
-                                                                            id="descuentoglobal" />
-                                                                        <span class="input-group-text">%</span>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="col-md-3 pl-0 my-0 text-end">
-                                                                    <p class="my-0" id="lbldescuentoglobal">$0</p>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row">
-                                                                <div class="col-md-7">
-                                                                    <p>Monto exento </p>
-                                                                </div>
-                                                                <div class="col-md-5 text-end">
-                                                                    <p id="lblexento">$0</p>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row">
-                                                                <div class="col-md-7">
-                                                                    <p>Monto neto </p>
-                                                                </div>
-                                                                <div class="col-md-5 text-end">
-                                                                    <p id="lblneto">$0</p>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row">
-                                                                <div class="col-md-7">
-                                                                    <p>IVA </p>
-                                                                </div>
-                                                                <div class="col-md-5 text-end">
-                                                                    <p id="lbliva">$0</p>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row">
-                                                                <div class="col-md-7">
-                                                                    <p>Impuestos adicionales </p>
-                                                                </div>
-                                                                <div class="col-md-5 text-end">
-                                                                    <p id="lblimpad">$0</p>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row">
-                                                                <div class="col-md-7">
-                                                                    <p><b>Total </b></p>
-                                                                </div>
-                                                                <div class="col-md-5 text-end">
-                                                                    <p id="lbltotal">$0</p>
-                                                                </div>
-                                                            </div>
+                                                        <div class="col-md-3 pl-0">
+                                                            <input value="0" class="form-control form-control-sm"
+                                                                type="text" name="descuentoglobal"
+                                                                id="descuentoglobal" />
+
+                                                        </div>
+                                                        <div class="col-md-3 pl-0 my-0 text-end">
+                                                            <p class="my-0" id="lbldescuentoglobal">$0</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-7">
+                                                            <p>Monto exento </p>
+                                                        </div>
+                                                        <div class="col-md-5 text-end">
+                                                            <p id="lblexento">$0</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-7">
+                                                            <p>Monto neto </p>
+                                                        </div>
+                                                        <div class="col-md-5 text-end">
+                                                            <p id="lblneto">$0</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-7">
+                                                            <p>IVA </p>
+                                                        </div>
+                                                        <div class="col-md-5 text-end">
+                                                            <p id="lbliva">$0</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-7">
+                                                            <p>Impuestos adicionales </p>
+                                                        </div>
+                                                        <div class="col-md-5 text-end">
+                                                            <p id="lblimpad">$0</p>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-7">
+                                                            <p><b>Total </b></p>
+                                                        </div>
+                                                        <div class="col-md-5 text-end">
+                                                            <p id="lbltotal">$0</p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -532,6 +536,7 @@
                 groupSeparator: '.',
                 rightAlign: false
             });
+            $("#descuentoglobal").inputmask('percentage', {});
             $('#razon_social').select2();
             $('#productosTable').on('click', 'tbody tr', function(event) {
                 $(this).addClass('highlight').siblings().removeClass('highlight');
@@ -542,13 +547,13 @@
             });
         });
 
-        function selectDetalle(){
+        function selectDetalle() {
             var item = $('#productosTable tbody tr.highlight');
             var sku = $(item).find('td:eq(0)').text();
             var nombre = $(item).find('td:eq(1)').text();
             var descripcion = $(item).find('td:eq(3)').text();
             var precio = parseInt($(item).find('td:eq(2)').text().replace(/[^0-9]/gi, ''));
-            if(sku == '' && nombre == '' && precio == ''){
+            if (sku == '' && nombre == '' && precio == '') {
                 $.toast({
                     type: 'error',
                     title: 'Error en formulario',
@@ -627,7 +632,7 @@
                 return;
             }
 
-            if (detalles.length  == 0) {
+            if (detalles.length == 0) {
                 $.toast({
                     type: 'error',
                     title: 'Error en formulario',
@@ -682,11 +687,11 @@
                     });
 
                 });
-            }else{
+            } else {
                 $('#rut').val('');
-                    $('#giro').val('');
-                    $('#direccion').val('');
-                    $('#comuna').val('');
+                $('#giro').val('');
+                $('#direccion').val('');
+                $('#comuna').val('');
             }
         }
 
@@ -718,7 +723,7 @@
                 url: '/api/productos',
                 data: data, // serializes the form's elements.
                 success: function(data) {
-                    if(data.success == true){
+                    if (data.success == true) {
                         var dataJson = {
                             proveedor_id: $('#razon_social').val(),
                             producto_id: data.data.id,
@@ -741,23 +746,23 @@
                             }
                         });
                         Swal.fire({
-                            title: "Producto guardado exitosamente",
-                            text: "La información ingresada es correcta y fue procesada exitosamente.",
-                            icon: "success"
-                        })
-                        .then((result) => {
-                            agregarDetalle();
-                            seleccionarProveedor();
-                        });
-                    }else{
+                                title: "Producto guardado exitosamente",
+                                text: "La información ingresada es correcta y fue procesada exitosamente.",
+                                icon: "success"
+                            })
+                            .then((result) => {
+                                agregarDetalle();
+                                seleccionarProveedor();
+                            });
+                    } else {
                         Swal.fire({
-                            title: "Producto no pudo ser guardado",
-                            text: "La información ingresada no es correcta, verifiquela y vuelva a intentarlo.",
-                            icon: "error"
-                        })
-                        .then((result) => {
-                            agregarDetalle();
-                        });
+                                title: "Producto no pudo ser guardado",
+                                text: "La información ingresada no es correcta, verifiquela y vuelva a intentarlo.",
+                                icon: "error"
+                            })
+                            .then((result) => {
+                                agregarDetalle();
+                            });
                     }
 
                 }
@@ -777,6 +782,11 @@
                     delay: 15000
                 });
                 return;
+            }
+
+            // Se verifica si se escribio un SKU, de no haber uno, se rellena con el timestamp
+            if ($('#skuTxt').val() == '') {
+                $('#skuTxt').val('AG' + $.now());
             }
 
             // Se recopila toda la información del producto

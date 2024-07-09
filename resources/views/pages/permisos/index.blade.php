@@ -156,6 +156,28 @@
                                                     <td><input class="form-check-input" type="checkbox"
                                                             id="eliminarFactura" name="eliminarFactura"></td>
                                                 </tr>
+                                                <tr modulename="guias_despacho">
+                                                    <td>Guias de Despacho</td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="verGuiaDespacho" name="verGuiaDespacho"></td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="editarGuiaDespacho" name="editarGuiaDespacho"></td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="crearGuiaDespacho" name="crearGuiaDespacho"></td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="eliminarGuiaDespacho" name="eliminarGuiaDespacho"></td>
+                                                </tr>
+                                                <tr modulename="notas_credito">
+                                                    <td>Notas de Credito</td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="verNotaCredito" name="verNotaCredito"></td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="editarNotaCredito" name="editarNotaCredito"></td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="crearNotaCredito" name="crearNotaCredito"></td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="eliminarNotaCredito" name="eliminarNotaCredito"></td>
+                                                </tr>
                                             </tbody>
                                         </table>
                                         <button type="button" onclick="guardarPermisos()" class="mt-3 btn btn-primary btn-xs float-end">Guardar</button>

@@ -97,7 +97,7 @@
                                                             {{ $estado['hasta']}}
                                                         </div>
                                                         @php
-                                                            $date1 = new DateTime($estado['desde']);
+                                                            $date1 = new DateTime(date('Y-m-d h:i'));
                                                             $date2 = new DateTime($estado['hasta']);
                                                             $diferencia = $date1->diff($date2);
                                                         @endphp
