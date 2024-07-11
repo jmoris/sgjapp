@@ -131,23 +131,5 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
     Route::post('/listaprecios', [MaestroController::class, 'storeListaPrecio']);
 
 
-    Route::get('infodte/contribuyentes/{rut}', function($rut){
-        \SolucionTotal\CoreDTE\Sii::setAmbiente(Sii::PRODUCCION);
-        $firma = App\Helpers\SII::temporalPEM();
-        $cookies = \SolucionTotal\CoreDTE\Sii\Autenticacion::requestCookies($firma, $firma->getID());
-        $info = Sii::getInfoContribuyente($rut, $cookies);
-        //$info = Sii::getInfoCompletaContribuyente($rut, $cookies);
-        Log::info($info);
-        $domicilio = DomicilioContribuyente::where('rut', $rut)->first();
-        $data = ['DIRECCION' => '', 'COMUNA' => ''];
-        if($domicilio != null){
-            $comuna = Comuna::whereRaw('LOWER(comunas.nombre) = (?)', [strtolower($domicilio->comuna)])->first();
-            $data = [
-                'DIRECCION' => $domicilio->direccion,
-                'COMUNA' => $comuna->id
-            ];
-        }
-
-        return response()->json(array_merge($info, $data));
-    });
+    Route::get('infodte/contribuyentes/{rut}', [MaestroController::class, 'getInfoContribuyente']);
 });

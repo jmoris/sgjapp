@@ -3,13 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Categoria;
+use App\Comuna;
 use App\Config;
+use App\DomicilioContribuyente;
 use App\ListaPrecio;
 use App\Unidad;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use SolucionTotal\CoreDTE\Log as CoreDTELog;
+use SolucionTotal\CoreDTE\Sii;
 
 class MaestroController extends Controller
 {
@@ -202,5 +207,31 @@ class MaestroController extends Controller
             return redirect()->back()->with('certificado', 'El certificado no es valido');
         }
         return response()->redirectTo('ajustes');
+    }
+
+    public function getInfoContribuyente(Request $request, $rut){
+        \SolucionTotal\CoreDTE\Sii::setAmbiente(Sii::PRODUCCION);
+        $firma = \App\Helpers\SII::temporalPEM();
+        $cookies = \SolucionTotal\CoreDTE\Sii\Autenticacion::requestCookies($firma, $firma->getID());
+        if($cookies == null){
+            $errors = '';
+            foreach (CoreDTELog::readAll() as $log)
+                $errors.=$log."\n";
+            Log::error($errors);
+        }
+        $info = Sii::getInfoContribuyente($rut, $cookies);
+        //$info = Sii::getInfoCompletaContribuyente($rut, $cookies);
+        Log::info($info);
+        $domicilio = DomicilioContribuyente::where('rut', $rut)->first();
+        $data = ['DIRECCION' => '', 'COMUNA' => ''];
+        if($domicilio != null){
+            $comuna = Comuna::whereRaw('LOWER(comunas.nombre) = (?)', [strtolower($domicilio->comuna)])->first();
+            $data = [
+                'DIRECCION' => $domicilio->direccion,
+                'COMUNA' => $comuna->id
+            ];
+        }
+
+        return response()->json(array_merge($info, $data));
     }
 }
