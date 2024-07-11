@@ -253,10 +253,16 @@
             var datos = {
                 'usuarios': [tienePermiso('#verUsuarios'),tienePermiso('#editarUsuarios'),tienePermiso('#crearUsuarios'),tienePermiso('#eliminarUsuarios')],
                 'proveedores': [tienePermiso('#verProveedor'),tienePermiso('#editarProveedor'),tienePermiso('#crearProveedor'),tienePermiso('#eliminarProveedor')],
+                'clientes': [tienePermiso('#verCliente'),tienePermiso('#editarCliente'),tienePermiso('#crearCliente'),tienePermiso('#eliminarCliente')],
                 'productos': [tienePermiso('#verProducto'),tienePermiso('#editarProducto'),tienePermiso('#crearProducto'),tienePermiso('#eliminarProducto')],
                 'ordenes_compra': [tienePermiso('#verOrdenCompra'),tienePermiso('#editarOrdenCompra'),tienePermiso('#crearOrdenCompra'),tienePermiso('#eliminarOrdenCompra')],
                 'proyectos': [tienePermiso('#verProyecto'),tienePermiso('#editarProyecto'),tienePermiso('#crearProyecto'),tienePermiso('#eliminarProyecto')],
+                'facturas': [tienePermiso('#verFactura'),tienePermiso('#editarFactura'),tienePermiso('#crearFactura'),tienePermiso('#eliminarFactura')],
+                'guias_despacho': [tienePermiso('#verGuiaDespacho'),tienePermiso('#editarGuiaDespacho'),tienePermiso('#crearGuiaDespacho'),tienePermiso('#eliminarGuiaDespacho')],
+                'notas_credito': [tienePermiso('#verNotaCredito'),tienePermiso('#editarNotaCredito'),tienePermiso('#crearNotaCredito'),tienePermiso('#eliminarNotaCredito')],
             };
+
+            console.log(datos);
 
             $.post('/api/roles/' + selectedRol + '/permisos', {modulos:datos}).done(function(e){
                 cargarPermisos(selectedRol);

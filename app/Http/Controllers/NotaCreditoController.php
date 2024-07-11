@@ -34,7 +34,7 @@ class NotaCreditoController extends Controller
     }
 
     public function showSelector(Request $request){
-        $documentos = Factura::where('estado', '!=', -1)->with('cliente')->get();
+        $documentos = Factura::where('estado', 'NOT LIKE', '3%')->with('cliente')->get();
         return view('pages.ventas.notascredito.selector', ['documentos' => $documentos]);
     }
     /*
@@ -146,10 +146,11 @@ class NotaCreditoController extends Controller
             $nc->save();
 
             $factEstado = $doc->estado;
-            $factEstado = substr($factEstado, 1);
-            $newEstado = '2'.$factEstado;
-            $doc->estado = $newEstado;
-            $doc->save();
+            $factEstado = substr($factEstado, 1); // se quita el primer caracter del string estado '000' => '00'
+            $newEstado = '3'.$factEstado; // se concatena el nuevo estado con el string estado anterior '3' + '00' => '300'
+            $doc->estado = $newEstado; // se asigna el valor del nuevo estado
+            $doc->save(); // se almacena el documento con el nuevo estado
+
             // Se recorre listado de productos NC y se almacenan
             $subtotal = 0;
             foreach($doc->lineas as $item){
