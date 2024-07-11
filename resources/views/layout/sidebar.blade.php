@@ -91,7 +91,7 @@
                     </a>
                 </li>
             @endif
-            @if (has_permission('ver-factura'))
+            @if (has_permission('ver-factura')||has_permission('ver-guia-despacho')||has_permission('ver-nota-credito'))
             <li class="nav-item {{ active_class(['ventas/*']) }}">
                 <a class="nav-link" data-bs-toggle="collapse" href="#ventas" role="button"
                     aria-expanded="{{ is_active_route(['ventas/*']) }}" aria-controls="ventas">
