@@ -104,6 +104,7 @@ class GuiaDespachoController extends Controller
             ]);
             curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
             $result = curl_exec($ch);
+            Log::info($result);
             curl_close($ch);
             $docData = json_decode($result);
 
