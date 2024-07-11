@@ -116,12 +116,12 @@ class NotaCreditoController extends Controller
                 ]
             ];
 
-            $ch = curl_init( 'https://dev.facturapi.cl/api/documentos' );
+            $ch = curl_init( env('FACTURAPI_ENDPOINT').'documentos' );
             curl_setopt( $ch, CURLOPT_POST, true);
             curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode($data) );
             curl_setopt( $ch, CURLOPT_HTTPHEADER, [
                 'Content-Type:application/json',
-                'Authorization: Bearer 2|cFBrnEmGhb6eFM9pCUNv55WAWUSV7TcAegK2pAHZda9482c3'
+                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
             ]);
             curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
             $result = curl_exec($ch);
@@ -188,11 +188,11 @@ class NotaCreditoController extends Controller
         try{
             $emisor = Ajustes::getEmisor();
             $fact = NotaCredito::with('cliente', 'cliente.comuna')->where('folio', $folio)->first();
-            $ch = curl_init( 'https://dev.facturapi.cl/api/documentos/generar/xml/61/'.$folio.'?contribuyente='.$emisor['rut']);
+            $ch = curl_init( env('FACTURAPI_ENDPOINT').'documentos/generar/xml/61/'.$folio.'?contribuyente='.$emisor['rut']);
             curl_setopt( $ch, CURLOPT_POST, false);
             curl_setopt( $ch, CURLOPT_HTTPHEADER, [
                 'Content-Type:application/json',
-                'Authorization: Bearer 2|cFBrnEmGhb6eFM9pCUNv55WAWUSV7TcAegK2pAHZda9482c3'
+                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
             ]);
             curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
             $result = curl_exec($ch);

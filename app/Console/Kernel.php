@@ -38,10 +38,10 @@ class Kernel extends ConsoleKernel
                 $emisor = Ajustes::getEmisor();
                 $pendientes = DocumentoPendiente::all();
                 foreach ($pendientes as $doc) {
-                    $ch = curl_init('https://dev.facturapi.cl/api/documentos/consulta?contribuyente=' . $emisor['rut'] . '&trackid=' . $doc->track_id);
+                    $ch = curl_init(env('FACTURAPI_ENDPOINT').'documentos/consulta?contribuyente=' . $emisor['rut'] . '&trackid=' . $doc->track_id);
                     curl_setopt($ch, CURLOPT_HTTPHEADER, [
                         'Content-Type:application/json',
-                        'Authorization: Bearer 2|cFBrnEmGhb6eFM9pCUNv55WAWUSV7TcAegK2pAHZda9482c3'
+                        'Authorization: Bearer '.env('FACTURAPI_TOKEN')
                     ]);
                     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                     $result = curl_exec($ch);
