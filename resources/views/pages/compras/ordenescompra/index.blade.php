@@ -10,7 +10,7 @@
         <div class="d-flex align-items-center flex-wrap text-nowrap">
             <button type="button" class="btn btn-sm btn-primary btn-icon-text mb-2 mb-md-0"
                 onclick="location.href = '/compras/ordenescompra/nuevo';"
-                @if(has_permission('ver-orden-compra')) disabled @endif>
+                @if(!has_permission('crear-orden-compra')) disabled @endif>
                 <div>
                     <i class="mdi mdi-plus"></i> Nueva Orden de Compra
                 </div>
