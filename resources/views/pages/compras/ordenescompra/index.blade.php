@@ -63,7 +63,7 @@
         }
 
         function vistaPreviaOC(id, rev){
-            location.href = '/api/compras/ordenescompra/vistaprevia/' + id + '/' + rev;
+            window.open('/api/compras/ordenescompra/vistaprevia/' + id + '/' + rev);
         }
 
         ocsTable = new DataTable('#example', {

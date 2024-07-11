@@ -60,7 +60,7 @@
         var currentUserId = {{auth()->user()->id}};
 
         function vistaPreviaFactura(id){
-            location.href = '/api/ventas/guiasdespacho/vistaprevia/' + id;
+            window.open('/api/ventas/guiasdespacho/vistaprevia/' + id);
         }
 
         guiasTable = new DataTable('#example', {
