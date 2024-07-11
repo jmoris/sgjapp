@@ -128,7 +128,7 @@
                         var html = '';
                         if(row.estado != -1){
                             html = '<div>';
-                            @if(has_permission('ver-orden-compra'))
+                            @if(has_permission('editar-orden-compra'))
                             html += '<button type="button" title="Editar Orden de Compra" onclick="editarOC('+row.id+')" class="btn btn-outline-primary btnxs px-1 py-0"><i class="mdi mdi-18 mdi-pencil"></i></button>';
                             @endif
                             html += '<button type="button" title="Ver Orden de Compra" onclick="vistaPreviaOC('+row.folio+', '+row.rev+')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-magnify"></i></button>';
