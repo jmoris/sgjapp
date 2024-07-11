@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Spatie\Multitenancy\Models\Concerns\UsesLandlordConnection;
 
 class Tenant extends \Spatie\Multitenancy\Models\Tenant
 {
-    use HasFactory;
+    use HasFactory, UsesLandlordConnection;
 
     protected $fillable = ['rut', 'name', 'domain', 'database'];
 
