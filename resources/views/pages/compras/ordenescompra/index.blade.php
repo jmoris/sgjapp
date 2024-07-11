@@ -9,7 +9,8 @@
         </div>
         <div class="d-flex align-items-center flex-wrap text-nowrap">
             <button type="button" class="btn btn-sm btn-primary btn-icon-text mb-2 mb-md-0"
-                onclick="location.href = '/compras/ordenescompra/nuevo';">
+                onclick="location.href = '/compras/ordenescompra/nuevo';"
+                @if(has_permission('ver-orden-compra')) disabled @endif>
                 <div>
                     <i class="mdi mdi-plus"></i> Nueva Orden de Compra
                 </div>
@@ -127,7 +128,9 @@
                         var html = '';
                         if(row.estado != -1){
                             html = '<div>';
+                            @if(has_permission('ver-orden-compra'))
                             html += '<button type="button" title="Editar Orden de Compra" onclick="editarOC('+row.id+')" class="btn btn-outline-primary btnxs px-1 py-0"><i class="mdi mdi-18 mdi-pencil"></i></button>';
+                            @endif
                             html += '<button type="button" title="Ver Orden de Compra" onclick="vistaPreviaOC('+row.folio+', '+row.rev+')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-magnify"></i></button>';
                             html += '</div>';
                         }
