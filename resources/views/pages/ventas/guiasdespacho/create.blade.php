@@ -220,14 +220,27 @@
                                                                     Traslado</label>
                                                                 <div class="col-sm-8">
                                                                     <select name="ind_traslado" id="ind_traslado"
-                                                                        class="form-control form-control-sm" onchange="checkTraslado()">
-                                                                        <option value="1">Constituye Venta</option>
-                                                                        <option value="2">Por efectuar</option>
+                                                                        class="form-control form-control-sm">
+                                                                        <option value="1">Operación Constituye Venta</option>
+                                                                        <option value="2">Venta Por efectuar</option>
                                                                         <option value="3">Consigación</option>
                                                                         <option value="4">Donación</option>
-                                                                        <option value="5">Interno</option>
+                                                                        <option value="5">Traslado Interno</option>
                                                                         <option value="6">No Constituye Venta</option>
                                                                         <option value="7">Devolución</option>
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row mb-2">
+                                                                <label
+                                                                    class="col-sm-4 col-form-label col-form-label-sm">Comuna de Destino</label>
+                                                                <div class="col-sm-8">
+                                                                    <select name="comuna_destino" id="comuna_destino"
+                                                                        class="form-control form-control-sm">
+                                                                        <option value="">Seleccione Comuna</option>
+                                                                        @foreach($comunas as $comuna)
+                                                                            <option value="{{ $comuna->id }}">{{ $comuna->nombre }}</option>
+                                                                        @endforeach
                                                                     </select>
                                                                 </div>
                                                             </div>
@@ -377,7 +390,7 @@
                                                             <tr>
                                                                 <td>
                                                                     <select class="form-control form-control-sm">
-                                                                        <option>Seleccione tipo documento</option>
+                                                                        <option>Tipo de Documento</option>
                                                                     </select>
                                                                 </td>
                                                                 <td>
@@ -604,6 +617,7 @@
             });
             $("#descuentoglobal").inputmask('percentage', {});
             $('#razon_social').select2();
+            $('#comuna_destino').select2();
             $('#productosTable').on('click', 'tbody tr', function(event) {
                 $(this).addClass('highlight').siblings().removeClass('highlight');
             });
@@ -612,18 +626,6 @@
                 selectDetalle();
             });
         });
-
-        function checkTraslado(){
-            var tipo = $('#ind_traslado').find(":selected").val();
-            if(tipo == 5){
-                // traslado interno
-                $("#razon_social").val(null).trigger("change");
-                $("#rut").val("{{$emisor['rut']}}");
-                $("#giro").val("{{$emisor['giro']}}");
-                $("#direccion").val("{{$emisor['direccion']}}");;
-                $("#comuna").val("{{App\Comuna::find($emisor['comuna'])->nombre}}")
-            }
-        }
 
         function selectDetalle() {
             var item = $('#productosTable tbody tr.highlight');
@@ -729,6 +731,7 @@
                 fecha_emision: $('#fecha_emision').val(),
                 ind_traslado: $('#ind_traslado').find(":selected").val(),
                 tipo_despacho: $('#tipo_despacho').find(":selected").val(),
+                comuna_destino: $('#comuna_destino').val(),
                 items: detalles,
                 glosa: $('#glosaTxt').val(),
                 _token: $('meta[name="_token"]').attr('content')

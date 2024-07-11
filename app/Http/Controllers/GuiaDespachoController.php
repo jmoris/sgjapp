@@ -46,6 +46,7 @@ class GuiaDespachoController extends Controller
                 'cliente' => 'required',
                 'ind_traslado' => 'required',
                 'tipo_despacho' => 'required',
+                'comuna_destino' => 'required',
                 'items' => 'required|array',
                 'glosa' => 'nullable'
             ]);
@@ -81,6 +82,7 @@ class GuiaDespachoController extends Controller
                 'fecha' => $str,
                 'ind_traslado' => ($request->ind_traslado!=null)?$request->ind_traslado:null,
                 'tipo_despacho' => ($request->tipo_despacho!=null)?$request->tipo_despacho:null,
+                'comuna_destino' => $request->comuna_destino,
                 'receptor' => [
                     'rut'=> $cliente->rut,
                     'razon_social'=> $cliente->razon_social,
