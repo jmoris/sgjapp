@@ -30,6 +30,7 @@ class FacturaController extends Controller
         $clientes = Cliente::all(); // aqui clientes
         $unidades = Unidad::all();
         $listas = ListaPrecio::all();
+
         return view('pages.ventas.facturas.create', ['clientes' => $clientes, 'unidades' => $unidades,'comunas' => $comunas, 'emisor' => $emisor, 'listas' => $listas]);
     }
     /*

@@ -4,6 +4,7 @@ namespace App\Console;
 
 use App\DocumentoPendiente;
 use App\Factura;
+use App\GuiaDespacho;
 use App\Helpers\Ajustes;
 use App\NotaCredito;
 use Illuminate\Console\Scheduling\Schedule;
@@ -67,6 +68,13 @@ class Kernel extends ConsoleKernel
                             Factura::where('folio', $doc->folio)->update([
                                 'track_id' => $doc->track_id,
                                 'estado' => $newEstado
+                            ]);
+                            DocumentoPendiente::find($doc->id)->delete();
+                        }
+                        if($doc->tipo_doc == 52){
+                            GuiaDespacho::where('folio', $doc->folio)->update([
+                                'track_id' => $doc->track_id,
+                                'estado' => $estado
                             ]);
                             DocumentoPendiente::find($doc->id)->delete();
                         }

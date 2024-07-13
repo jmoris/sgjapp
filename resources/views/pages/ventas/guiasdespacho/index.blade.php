@@ -106,14 +106,19 @@
                     responsivePriority: 3,
                     render: function(data, type, row) {
                         var html = '';
-                        if(row.estado == -1){
-                            html = '<span class="badge bg-danger">ANULADA</span>';
-                        }else if(row.estado == 0){
-                            html = '<span class="badge bg-warning">EN PROCESO</span>';
-                        }else if(row.estado == 1){
-                            html = '<span class="badge bg-warning">ENVIADA</span>';
-                        }else if(row.estado == 2){
-                            html = '<span class="badge bg-warning">ACEPTADA</span>';
+                        var estado = row.estado;
+                        if(estado == 0){
+                            // en proceso
+                            html += '<span class="badge bg-warning me-1" title="Documento En Proceso"><span class="mdi mdi-24 mdi-clock-time-eight-outline"></span></span>';
+                        }else if(estado == 1){
+                            // aceptado
+                            html += '<span class="badge bg-success me-1" title="Documento Aceptado"><span class="mdi mdi-24 mdi-check-circle-outline"></span></span>';
+                        }else if(estado == 2){
+                            // rechazado
+                            html += '<span class="badge bg-danger me-1" title="Documento Rechazado"><span class="mdi mdi-24 mdi-alert-circle-outline"></span></span>';
+                        }else if(estado == 3){
+                            // anulado
+                            html += '<span class="badge bg-danger me-1" title="Documento Anulado"><span class="mdi mdi-24 mdi-close-circle"></span></span>';
                         }
                         return html;
                     }

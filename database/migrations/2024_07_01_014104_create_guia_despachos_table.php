@@ -20,6 +20,7 @@ return new class extends Migration
             $table->smallInteger('ind_traslado');
             $table->smallInteger('tipo_despacho');
             $table->smallInteger('estado')->default(0);
+            $table->string('track_id')->nullable();
             $table->smallInteger('tipo_descuento')->nullable();
             $table->bigInteger('descuento')->default(0);
             $table->bigInteger('monto_neto');

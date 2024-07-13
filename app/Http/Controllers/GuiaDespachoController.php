@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Cliente;
 use App\Comuna;
+use App\DocumentoPendiente;
 use App\GuiaDespacho;
 use App\Helpers\Ajustes;
 use App\LineaGuia;
 use App\ListaPrecio;
+use App\Proyecto;
 use App\Unidad;
 use Exception;
 use Illuminate\Http\Request;
@@ -29,7 +31,9 @@ class GuiaDespachoController extends Controller
         $clientes = Cliente::all(); // aqui clientes
         $unidades = Unidad::all();
         $listas = ListaPrecio::all();
-        return view('pages.ventas.guiasdespacho.create', ['clientes' => $clientes, 'unidades' => $unidades,'comunas' => $comunas, 'emisor' => $emisor, 'listas' => $listas]);
+        $proyectos = Proyecto::where('estado', 0)->get();
+
+        return view('pages.ventas.guiasdespacho.create', ['clientes' => $clientes, 'unidades' => $unidades,'comunas' => $comunas, 'emisor' => $emisor, 'listas' => $listas, 'proyectos' => $proyectos]);
     }
     /*
         DESDE AQUI HACIA ABAJO ESTARAN LAS FUNCIONES DE LA API
@@ -138,6 +142,12 @@ class GuiaDespachoController extends Controller
                 $linea->guia_despacho_id = $guia->id;
                 $linea->save();
             }
+
+            $pendiente = new DocumentoPendiente();
+            $pendiente->tipo_doc = 52;
+            $pendiente->folio = $guia->folio;
+            $pendiente->track_id = $docData->trackid;
+            $pendiente->save();
 
             return response()->json([
                 'success' => true,
