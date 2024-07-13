@@ -210,7 +210,6 @@ class MaestroController extends Controller
     }
 
     public function getInfoContribuyente(Request $request, $rut){
-        \SolucionTotal\CoreDTE\Sii::setAmbiente(Sii::PRODUCCION);
         $firma = \App\Helpers\SII::temporalPEM();
         $cookies = \SolucionTotal\CoreDTE\Sii\Autenticacion::requestCookies($firma, $firma->getID());
         if($cookies == null){
@@ -219,6 +218,7 @@ class MaestroController extends Controller
                 $errors.=$log."\n";
             Log::error($errors);
         }
+        Sii::setAmbiente(Sii::PRODUCCION);
         $info = Sii::getInfoContribuyente($rut, $cookies);
         //$info = Sii::getInfoCompletaContribuyente($rut, $cookies);
         Log::info($info);
