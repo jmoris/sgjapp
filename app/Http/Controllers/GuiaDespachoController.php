@@ -113,6 +113,9 @@ class GuiaDespachoController extends Controller
                 'referencias' => $referencias
             ];
 
+            Log::info("Estructura Guia de Despacho:");
+            Log::info(json_encode($data));
+
             $ch = curl_init( env('FACTURAPI_ENDPOINT').'documentos' );
             curl_setopt( $ch, CURLOPT_POST, true);
             curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode($data) );
