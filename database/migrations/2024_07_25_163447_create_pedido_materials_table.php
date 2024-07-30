@@ -12,24 +12,21 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('guia_despachos', function (Blueprint $table) {
+        Schema::create('pedido_materials', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('folio');
             $table->foreignIdFor(Cliente::class)->constrained();
             $table->dateTime('fecha_emision');
-            $table->smallInteger('ind_traslado');
-            $table->smallInteger('tipo_despacho');
+            $table->smallInteger('tipo_pago');
+            $table->unsignedBigInteger('proyecto_id');
             $table->smallInteger('estado')->default(0);
-            $table->string('track_id')->nullable();
-            $table->smallInteger('tipo_descuento')->nullable();
-            $table->bigInteger('descuento')->default(0);
             $table->bigInteger('monto_neto');
             $table->bigInteger('monto_iva');
             $table->bigInteger('monto_total');
             $table->string('glosa')->nullable();
-            $table->foreignIdFor(\App\Proyecto::class)->constrained();
             $table->foreignIdFor(\App\User::class)->constrained();
-            $table->timestamps();
+            $table->smallInteger('rev')->default(1);
+            $table->boolean('rev_activa')->default(false);
         });
     }
 
@@ -38,6 +35,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('guia_despachos');
+        Schema::dropIfExists('pedido_materials');
     }
 };

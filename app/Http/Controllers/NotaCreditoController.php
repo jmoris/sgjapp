@@ -143,6 +143,7 @@ class NotaCreditoController extends Controller
             if(isset($request->glosa)){
                 $nc->glosa = str_replace('///', '<br>', $request->glosa);
             }
+            $nc->proyecto_id = $doc->proyecto_id;
             $nc->save();
 
             $factEstado = $doc->estado;
@@ -187,7 +188,7 @@ class NotaCreditoController extends Controller
     public function vistaPreviaNotaCredito(Request $request, $folio){
         try{
             $emisor = Ajustes::getEmisor();
-            $fact = NotaCredito::with('cliente', 'cliente.comuna')->where('folio', $folio)->first();
+            $nc = NotaCredito::with('cliente', 'cliente.comuna')->where('folio', $folio)->first();
             $ch = curl_init( env('FACTURAPI_ENDPOINT').'documentos/generar/xml/61/'.$folio.'?contribuyente='.$emisor['rut']);
             curl_setopt( $ch, CURLOPT_POST, false);
             curl_setopt( $ch, CURLOPT_HTTPHEADER, [
@@ -207,12 +208,13 @@ class NotaCreditoController extends Controller
             $pdf = new \SolucionTotal\CorePDF\PDF($data, 1, 'https://i.imgur.com/oWL7WBw.jpeg', 2, $dte->getTED());
             $pdf->setCedible(false);
             //$pdf->setLeyendaImpresion('Sistema de facturacion por SoluciónTotal');
+            $pdf->setObra($nc->proyecto->nombre);
             $pdf->setTelefono($emisor['telefono']);
             $pdf->setResolucion(date('Y', strtotime($caratula['FchResol'])), $caratula['NroResol']);
             $pdf->setWeb($emisor['web']);
             $pdf->setMail($emisor['email']);
             $pdf->setMarcaAgua('https://i.imgur.com/oWL7WBw.jpeg');
-            $glosa = str_replace('//', '<br>', $fact->glosa);
+            $glosa = str_replace('//', '<br>', $nc->glosa);
             $pdf->setGlosa($glosa);
             $pdf->construir();
             $pdf->generar(1);

@@ -162,7 +162,14 @@
                     </a>
                 </li>
             @endif
+
             @if (has_permission('ver-inventario'))
+            <li class="nav-item {{ active_class(['compras/pedidosmateriales*']) }}">
+                <a href="{{ url('/compras/pedidosmateriales') }}" class="nav-link">
+                    <i class="mdi mdi-archive-search-outline mdi-18"></i>
+                    <span class="link-title" style="margin-left: 12px;">Pedido Materiales</span>
+                </a>
+            </li>
                 <li class="nav-item {{ active_class(['apps/inventario']) }}">
                     <a href="#" class="nav-link">
                         <i class="link-icon" data-feather="message-square"></i>

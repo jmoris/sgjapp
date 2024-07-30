@@ -20,6 +20,7 @@ use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\GuiaDespachoController;
 use App\Http\Controllers\NotaCreditoController;
 use App\Http\Controllers\OrdenCompraController;
+use App\Http\Controllers\PedidoMaterialController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
@@ -78,6 +79,11 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
             Route::get('/', [OrdenCompraController::class, 'index']);
             Route::get('/editar/{id}', [OrdenCompraController::class, 'editOC']);
             Route::get('/nuevo', [OrdenCompraController::class, 'newOC']);
+        });
+        Route::prefix('pedidosmateriales')->middleware('tag:ver-orden-compra')->group(function(){
+            Route::get('/', [PedidoMaterialController::class, 'index']);
+            Route::get('/editar/{id}', [PedidoMaterialController::class, 'editPedido']);
+            Route::get('/nuevo', [PedidoMaterialController::class, 'newPedido']);
         });
     });
 

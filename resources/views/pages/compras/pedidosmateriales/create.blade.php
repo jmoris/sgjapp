@@ -1,6 +1,6 @@
 @extends('layout.master')
 
-@section('title', 'Emisión de Factura Electrónica')
+@section('title', 'Emisión de Orden de Compra')
 
 @push('style')
     <style>
@@ -12,6 +12,7 @@
         td {
             padding: 0px 0px;
         }
+
         body tr {
             -webkit-user-select: initial !important;
             -moz-user-select: initial !important;
@@ -29,7 +30,7 @@
 @section('content')
     <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
         <div>
-            <h4 class="mb-3 mb-md-0">Emisión de Factura Electrónica</h4>
+            <h4 class="mb-3 mb-md-0">Emisión de Orden de Compra</h4>
         </div>
     </div>
     <div class="row">
@@ -39,12 +40,12 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-baseline">
-                                <h4 class="card-title mb-0">FORMULARIO DE NUEVA FACTURA ELECTRÓNICA</h4>
+                                <h4 class="card-title mb-0">FORMULARIO DE NUEVA ORDEN DE COMPRA</h4>
                             </div>
                             <div class="row mx-3">
                                 <div style="width:100%; margin-top:24px;"></div>
                                 <div class="col-md-12">
-                                    <form class="form" id="storeForm" method="post" onsubmit="confirmarFactura(event)">
+                                    <form class="form" id="storeForm" method="post" onsubmit="procesarOrden(event)">
                                         @csrf
                                         <div class="row">
                                             <div class="col-md-12 mb-3">
@@ -116,93 +117,75 @@
                                             </div>
                                             <div class="col-md-12 mb-3">
                                                 <div class="row">
-                                                    <div class="col-md-12 mb-3">
+                                                    <div class="col-md-6">
                                                         <div class="mb-2 border-bottom">
-                                                            <h5>Información del cliente</h5>
+                                                            <h5>Información del proveedor</h5>
                                                         </div>
-                                                        <div class="row">
-                                                            <div class="col-md-6">
-                                                                <div class="row mx-1">
-                                                                    <div class="row mb-2">
-                                                                        <label
-                                                                            class="col-sm-4 col-form-label col-form-label-sm">Razón
-                                                                            Social</label>
-                                                                        <div class="col-sm-8">
-                                                                            <select name="razon_social" id="razon_social"
-                                                                                class="form-control form-control-sm"
-                                                                                onchange="seleccionarCliente()">
-                                                                                <option value="">Seleccione un cliente
-                                                                                </option>
-                                                                                @foreach ($clientes as $cliente)
-                                                                                    <option value="{{ $cliente->id }}">
-                                                                                        {{ $cliente->razon_social }}
-                                                                                    </option>
-                                                                                @endforeach
-                                                                            </select>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row mb-2">
-                                                                        <label
-                                                                            class="col-sm-4 col-form-label col-form-label-sm">R.U.T.</label>
-                                                                        <div class="col-sm-8">
-                                                                            <input type="text" name="rut"
-                                                                                id="rut"
-                                                                                class="form-control form-control-sm"
-                                                                                disabled>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row mb-2">
-                                                                        <label
-                                                                            class="col-sm-4 col-form-label col-form-label-sm">Actividad
-                                                                            Económica</label>
-                                                                        <div class="col-sm-8">
-                                                                            <input type="text" name="giro"
-                                                                                id="giro"
-                                                                                class="form-control form-control-sm"
-                                                                                disabled>
-                                                                        </div>
-                                                                    </div>
+                                                        <div class="row mx-1">
+                                                            <div class="row mb-2">
+                                                                <label
+                                                                    class="col-sm-4 col-form-label col-form-label-sm">Razón
+                                                                    Social</label>
+                                                                <div class="col-sm-8">
+                                                                    <select name="razon_social" id="razon_social"
+                                                                        class="form-control form-control-sm"
+                                                                        onchange="seleccionarProveedor()">
+                                                                        <option value="">Seleccione un proveedor
+                                                                        </option>
+                                                                        @foreach ($proveedores as $proveedor)
+                                                                            <option value="{{ $proveedor->id }}">
+                                                                                {{ $proveedor->razon_social }}</option>
+                                                                        @endforeach
+                                                                    </select>
                                                                 </div>
                                                             </div>
-                                                            <div class="col-md-6">
-                                                                <div class="row mx-1">
-                                                                    <div class="row mb-2">
-                                                                        <label
-                                                                            class="col-sm-4 col-form-label col-form-label-sm">Dirección</label>
-                                                                        <div class="col-sm-8">
-                                                                            <input type="text" name="direccion"
-                                                                                id="direccion"
-                                                                                class="form-control form-control-sm"
-                                                                                disabled>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row mb-2">
-                                                                        <label
-                                                                            class="col-sm-4 col-form-label col-form-label-sm">Comuna</label>
-                                                                        <div class="col-sm-8">
-                                                                            <input type="text" name="comuna"
-                                                                                id="comuna"
-                                                                                class="form-control form-control-sm"
-                                                                                disabled>
-                                                                        </div>
-                                                                    </div>
+                                                            <div class="row mb-2">
+                                                                <label
+                                                                    class="col-sm-4 col-form-label col-form-label-sm">R.U.T.</label>
+                                                                <div class="col-sm-8">
+                                                                    <input type="text" name="rut" id="rut"
+                                                                        class="form-control form-control-sm" disabled>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row mb-2">
+                                                                <label
+                                                                    class="col-sm-4 col-form-label col-form-label-sm">Actividad
+                                                                    Económica</label>
+                                                                <div class="col-sm-8">
+                                                                    <input type="text" name="giro" id="giro"
+                                                                        class="form-control form-control-sm" disabled>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row mb-2">
+                                                                <label
+                                                                    class="col-sm-4 col-form-label col-form-label-sm">Dirección</label>
+                                                                <div class="col-sm-8">
+                                                                    <input type="text" name="direccion" id="direccion"
+                                                                        class="form-control form-control-sm" disabled>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row mb-2">
+                                                                <label
+                                                                    class="col-sm-4 col-form-label col-form-label-sm">Comuna</label>
+                                                                <div class="col-sm-8">
+                                                                    <input type="text" name="comuna" id="comuna"
+                                                                        class="form-control form-control-sm" disabled>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-6 ">
+                                                    <div class="col-md-6">
                                                         <div class="mb-2 border-bottom">
                                                             <h5>Información del documento</h5>
                                                         </div>
                                                         <div class="row mx-1">
-
                                                             <div class="row mb-2">
                                                                 <label
                                                                     class="col-sm-4 col-form-label col-form-label-sm">Tipo
                                                                     documento</label>
                                                                 <div class="col-sm-8">
                                                                     <input type="text" name="tipo_doc" id="tipo_doc"
-                                                                        value="Factura Electrónica (33)"
+                                                                        value="Orden de Compra (801)"
                                                                         class="form-control form-control-sm" disabled>
                                                                 </div>
                                                             </div>
@@ -220,21 +203,30 @@
                                                             </div>
                                                             <div class="row mb-2">
                                                                 <label
-                                                                    class="col-sm-4 col-form-label col-form-label-sm">Lista
-                                                                    de Precios</label>
-                                                                <div class="col-sm-8" id="inputListaPrecio">
-                                                                    <select class="form-control form-control-sm"
-                                                                        id="lista_precio" name="lista_precio"
-                                                                        onchange="seleccionarLista()">
-                                                                        <option value="">Seleccione una lista
-                                                                        </option>
-                                                                        @foreach ($listas as $lista)
-                                                                            <option value="{{ $lista->id }}">
-                                                                                {{ $lista->nombre }}</option>
-                                                                        @endforeach
-                                                                    </select>
+                                                                    class="col-sm-4 col-form-label col-form-label-sm">Tipo
+                                                                    de pago</label>
+                                                                <div class="col-sm-8 align-bottom">
+                                                                    <div class="form-check form-check-inline">
+                                                                        <input class="form-check-input" type="radio"
+                                                                            name="tipo_pago" id="tipo_pago"
+                                                                            value="2" checked>
+                                                                        <label class="form-check-label"
+                                                                            for="tipo_pago">Credito</label>
+                                                                    </div>
+                                                                    <div class="form-check form-check-inline">
+                                                                        <input class="form-check-input" type="radio"
+                                                                            name="tipo_pago" id="tipo_pago"
+                                                                            value="1">
+                                                                        <label class="form-check-label"
+                                                                            for="tipo_pago">Contado</label>
+                                                                    </div>
                                                                 </div>
                                                             </div>
+                                                        </div>
+                                                        <div class="mb-2 border-bottom">
+                                                            <h5>Información de obra</h5>
+                                                        </div>
+                                                        <div class="row mx-1">
                                                             <div class="row mb-2">
                                                                 <label
                                                                     class="col-sm-4 col-form-label col-form-label-sm">Nombre
@@ -251,39 +243,6 @@
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="mb-2 border-bottom">
-                                                            <h5>Información Comercial</h5>
-                                                        </div>
-                                                        <div class="row mx-1">
-                                                            <div class="row mb-2">
-                                                                <label
-                                                                    class="col-sm-4 col-form-label col-form-label-sm">Tipo de
-                                                                    Pago</label>
-                                                                <div class="col-sm-8">
-                                                                    <select name="tipo_pago" id="tipo_pago"
-                                                                        class="form-control form-control-sm">
-                                                                        <option value="1">Contado</option>
-                                                                        <option value="2">Credito</option>
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row mb-2">
-                                                                <label
-                                                                    class="col-sm-4 col-form-label col-form-label-sm">Fecha
-                                                                    Vencimiento</label>
-                                                                <div class="col-sm-8">
-                                                                    <input type="date" name="fecha_vencimiento"
-                                                                        id="fecha_vencimiento"
-                                                                        class="form-control form-control-sm"
-                                                                        value="{{ date('Y-m-d') }}"
-                                                                        min="{{ date('Y-m-d') }}">
-                                                                </div>
-                                                            </div>
-
-                                                        </div>
-
                                                     </div>
                                                 </div>
                                             </div>
@@ -397,160 +356,15 @@
                                                     </table>
                                                 </div>
                                             </div>
-                                            <div class="col-md-8">
-                                                <div class="mb-2 border-bottom">
-                                                    <h5>Referencias del documento</h5>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <table id="tablaReferencia" class="table table-sm mb-3">
-                                                        <thead>
-                                                            <th>Tipo Documento</th>
-                                                            <th>Folio</th>
-                                                            <th>Fecha</th>
-                                                        </thead>
-                                                        <tbody>
-                                                            <tr id="rowReferencia">
-                                                                <td style="width: 40%">
-                                                                    <select id="ref_tipo"
-                                                                        class="form-control form-control-sm">
-                                                                        <option></option>
-                                                                        <option value="30">Factura</option>
-                                                                        <option value="32">Factura de venta bienes y
-                                                                            servicios no afectos o exentos de iva </option>
-                                                                        <option value="33">Factura electronica
-                                                                        </option>
-                                                                        <option value="34">Factura no afecta o exenta
-                                                                            electronica </option>
-                                                                        <option value="35">Boleta </option>
-                                                                        <option value="38">Boleta exenta </option>
-                                                                        <option value="39">Boleta electronica </option>
-                                                                        <option value="40">Liquidacion factura
-                                                                        </option>
-                                                                        <option value="41">Boleta exenta electronica
-                                                                        </option>
-                                                                        <option value="43">Liquidacion factura
-                                                                            electronica </option>
-                                                                        <option value="45">Factura de compra </option>
-                                                                        <option value="46">Factura de compra
-                                                                            electronica </option>
-                                                                        <option value="47">Vale electronico especial
-                                                                        </option>
-                                                                        <option value="48">Comprobantes pago
-                                                                            electronico </option>
-                                                                        <option value="50">Guía de despacho </option>
-                                                                        <option value="52">Guía de despacho electronica
-                                                                        </option>
-                                                                        <option value="55">Nota de debito </option>
-                                                                        <option value="56">Nota de debito electronica
-                                                                        </option>
-                                                                        <option value="60">Nota de credito </option>
-                                                                        <option value="61">Nota de credito electronica
-                                                                        </option>
-                                                                        <option value="101">Factura de exportacion
-                                                                        </option>
-                                                                        <option value="102">Factura vta exenta a zona
-                                                                            franca prim </option>
-                                                                        <option value="103">Liquidacion </option>
-                                                                        <option value="104">Nota de debito de
-                                                                            exportacion </option>
-                                                                        <option value="105">Boleta liq res 1423 76
-                                                                        </option>
-                                                                        <option value="106">Nota de credito de
-                                                                            exportacion </option>
-                                                                        <option value="108">Srf solicitud registro de
-                                                                            factura </option>
-                                                                        <option value="109">Factura turista </option>
-                                                                        <option value="110">Factura de exportacion
-                                                                            electronica </option>
-                                                                        <option value="111">Nota de debito de
-                                                                            exportacion electronica </option>
-                                                                        <option value="112">Nota de credito de
-                                                                            exportacion electronica </option>
-                                                                        <option value="801">Orden de compra </option>
-                                                                        <option value="802">Nota de pedido </option>
-                                                                        <option value="803">Contrato </option>
-                                                                        <option value="804">Resolucion </option>
-                                                                        <option value="805">Proceso chilecompra
-                                                                        </option>
-                                                                        <option value="806">Ficha chilecompra </option>
-                                                                        <option value="807">Dus </option>
-                                                                        <option value="808">B l conocimiento de embarque
-                                                                        </option>
-                                                                        <option value="809">Awb air will bill </option>
-                                                                        <option value="810">Mic dta </option>
-                                                                        <option value="811">Carta de porte </option>
-                                                                        <option value="812">Resolucion del sna donde
-                                                                            califica servicios de </option>
-                                                                        <option value="813">Pasaporte </option>
-                                                                        <option value="814">Certificado de deposito
-                                                                            bolsa prod chile v
-                                                                        <option value="815">Vale de prenda bolsa prod
-                                                                            chile </option>
-                                                                        <option value="901">Fact vta emp terr pres res
-                                                                            1057 85 </option>
-                                                                        <option value="902">Conocimiento embarque
-                                                                            maritimo o aereo </option>
-                                                                        <option value="903">Documento unico salida dus
-                                                                        </option>
-                                                                        <option value="904">Factura de traspaso
-                                                                        </option>
-                                                                        <option value="905">Factura de reexpedicion
-                                                                        </option>
-                                                                        <option value="906">Boleta vta modulo zf
-                                                                        </option>
-                                                                        <option value="907">Factura vta modulo zf 907
-                                                                        </option>
-                                                                        <option value="909">Factura vta modulo zf 909
-                                                                        </option>
-                                                                        <option value="910">Solicitud traslado zona
-                                                                            franca zf </option>
-                                                                        <option value="911">Decl de ingreso a zona
-                                                                            franca primaria </option>
-                                                                        <option value="914">Declaracion de ingreso din
-                                                                        </option>
-                                                                        <option value="919">Vta pasaje nac sin factura
-                                                                        </option>
-                                                                        <option value="920">Otros registros no doc
-                                                                            aumenta debito </option>
-                                                                        <option value="922">Otros registros no doc
-                                                                            disminuye debito</option>
-                                                                        <option value="924">Vta pasajes inter sin
-                                                                            factura </option>
-                                                                        <option value="HES">Hoja entrada de servicio
-                                                                        </option>
-                                                                        <option value="OST">Orden de servicio a terceros
-                                                                        </option>
-
-                                                                    </select>
-                                                                </td>
-                                                                <td style="width: 30%">
-                                                                    <input id="ref_folio"
-                                                                        class="form-control form-control-sm"
-                                                                        type="text" placeholder="Folio" />
-                                                                </td>
-                                                                <td style="width: 25%">
-                                                                    <input id="ref_fecha" type="date"
-                                                                        class="form-control form-control-sm" />
-                                                                </td>
-                                                                <td style="width: 5%">
-                                                                    <button type="button" onclick="agregarReferencia()"
-                                                                        title="Agregar detalle a la lista"
-                                                                        class="btn btn-sm btn-outline-primary"
-                                                                        style="padding:.25em .5em; float:right;">
-                                                                        <span class="mdi mdi-plus"></span></button>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </div>
+                                            <div class="col-md-7">
                                                 <div class="mb-2 border-bottom">
                                                     <h5>Glosa documento</h5>
                                                 </div>
                                                 <div class="col-md-12">
-                                                    <textarea id="glosaTxt" maxlength="250" class="form-control mt-3" rows="3"></textarea>
+                                                    <textarea id="glosaTxt" maxlength="250" class="form-control mt-3" rows="5"></textarea>
                                                 </div>
                                             </div>
-                                            <div class="col-md-4">
+                                            <div class="col-md-5">
                                                 <div class="mb-2 border-bottom">
                                                     <h5>Resumen de montos</h5>
                                                 </div>
@@ -620,19 +434,19 @@
                                                 </div>
                                             </div>
                                         </div>
+
+                                        <div class="float-end">
+                                            <button type="submit" class="btn btn-primary submit"><i
+                                                    class="mdi mdi-content-save"></i> Guardar</button>
+                                        </div>
+                                        <button type="button" class="btn btn-danger"
+                                            onclick="location.href = '/compras/ordenescompra'">
+                                            <i class="mdi mdi-cancel"></i>
+                                            Cancelar
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
-
-                            <div class="float-end">
-                                <button type="submit" class="btn btn-primary submit"><i
-                                        class="mdi mdi-content-save"></i> Guardar</button>
-                            </div>
-                            <button type="button" class="btn btn-danger"
-                                onclick="location.href = '/compras/ordenescompra'">
-                                <i class="mdi mdi-cancel"></i>
-                                Cancelar
-                            </button>
-                            </form>
                         </div>
                     </div>
                 </div>
@@ -669,14 +483,6 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     <button type="button" class="btn btn-primary" onclick="selectDetalle()">Seleccionar</button>
                 </div>
-            </div>
-        </div>
-    </div>
-    <div class="modal fade" id="loadingModal" data-backdrop="static" data-keyboard="false" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <img class="text-center mx-auto" src="/loading.gif" style="width: 48px; height: 48px;">
-                <span id="statusTxt" class="text-center fw-bold">Enviando información al SII...</span>
             </div>
         </div>
     </div>
@@ -717,13 +523,11 @@
 @push('custom-scripts')
     <script>
         var index = 0;
-        var ref_index = 0;
         var detalles = [];
         var subtotalDoc = 0;
         var unidades = {!! json_encode($unidades) !!};
         var selectedProducto = null;
         var productos = [];
-        var referencias = [];
         // Aqui se inicializan las librerias
         $(document).ready(function() {
             $("#precioTxt").inputmask('numeric', {
@@ -731,9 +535,6 @@
                 radixPoint: ',',
                 groupSeparator: '.',
                 rightAlign: false
-            });
-            $('#ref_tipo').select2({
-                placeholder: "Tipo de Documento"
             });
             $("#descuentoglobal").inputmask('percentage', {});
             $('#razon_social').select2();
@@ -774,8 +575,8 @@
             $('#descripcionTxt').val(descripcion);
             $('#precioTxt').val(precio);
             calcSubtotalFila();
-            $("#staticBackdrop").modal('hide');
             $('#cantidadTxt').focus();
+            $("#staticBackdrop").modal('hide');
         }
 
         function cambiarInputProyecto() {
@@ -798,38 +599,34 @@
             return false;
         }
 
-        function confirmarFactura(e) {
+        function procesarOrden(e) {
             e.preventDefault();
 
-            Swal.fire({
-                title: "¿Quieres confirmar esta Factura?",
-                text: "Una vez confirmada la Factura no se podran hacer cambios sobre ella, recomendamos revisar el detalle del documento.",
-                icon: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Confirmar",
-                cancelButtonText: "Cancelar"
-            }).then((modalResult) => {
-                if (modalResult.isConfirmed) {
-                    procesarFactura(e);
-                }
-            });
-        }
-
-        function procesarFactura(e) {
-
-            $('#loadingModal').modal('show');
-            $('#statusTxt').text('Validando información del formulario...');
             // Verificamos que se haya seleccionado un proveedor
-            var clienteId = $('#razon_social').val();
-            if (clienteId == '') {
+            var proveedorId = $('#razon_social').val();
+            if (proveedorId == '') {
                 $.toast({
                     type: 'error',
                     title: 'Error en formulario',
                     subtitle: 'ahora',
                     position: 'top-right',
                     content: 'Debe seleccionar un proveedor para agregar items al documento.',
+                    delay: 15000
+                });
+                return;
+            }
+
+            var switchProyecto = $('#manualProyecto').is(':checked');
+            var nombreProyecto = $('#nombre_proyecto option:selected').text();
+            var idProyecto = $('#nombre_proyecto option:selected').val();
+
+            if (nombreProyecto == 'Seleccione proyecto') {
+                $.toast({
+                    type: 'error',
+                    title: 'Error en formulario',
+                    subtitle: 'ahora',
+                    position: 'top-right',
+                    content: 'Debe seleccionar/añadir un proyecto para generar el documento.',
                     delay: 15000
                 });
                 return;
@@ -847,38 +644,47 @@
                 return;
             }
             var doc = {
-                cliente: $('#razon_social').val(),
+                proveedor: $('#razon_social').val(),
                 fecha_emision: $('#fecha_emision').val(),
-                fecha_vencimiento: $('#fecha_vencimiento').val(),
                 tipo_pago: $('#tipo_pago').val(),
                 items: detalles,
-                referencias: referencias,
-                proyecto: $('#nombre_proyecto option:selected').val(),
+                proyecto: idProyecto,
                 glosa: $('#glosaTxt').val(),
                 _token: $('meta[name="_token"]').attr('content')
             };
-            $('#statusTxt').text('Enviando información del documento...');
-            $.post("/api/ventas/facturas", doc)
+            console.log(doc);
+            $.post("/api/compras/ordenescompra", doc)
                 .done(function(data) {
-                    $('#statusTxt').text('Recibiendo información de respuesta...');
                     console.log(data);
-                    if(data.error){
-                        console.log(data.error);
-                    }
-                    $('#loadingModal').modal('hide');
-                    location.href = '/ventas/facturas';
+                    location.href = '/compras/ordenescompra';
                 });
         }
 
-        function seleccionarCliente() {
-            var clienteId = $('#razon_social').val();
-            if (clienteId != '') {
-                $.get('/api/clientes/' + clienteId, function(data) {
+        function seleccionarProveedor() {
+            var proveedorId = $('#razon_social').val();
+            if (proveedorId != '') {
+                $.get('/api/proveedores/' + proveedorId, function(data) {
                     console.log(data);
                     $('#rut').val(data.rut);
                     $('#giro').val(data.giro);
                     $('#direccion').val(data.direccion);
                     $('#comuna').val(data.comuna.nombre);
+
+                    // Se vacia el contenido actual de la tabla buscador de productos
+                    $("#productosTable tbody").empty();
+                    // Se obtienen todos los productos del proveedor y se vuelve a llenar
+                    $.get('/api/proveedores/productos/' + proveedorId, function(resp) {
+                        productos = resp;
+                        productos.forEach(function(producto, index) {
+                            var row = `<tr>
+                                <td>${producto.sku}</td>
+                                <td>${producto.nombre}</td>
+                                <td>${producto.pivot.precio.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}</td>
+                                <td style="display:none;"></td>
+                                </tr>`;
+                            $("#productosTable tbody").append(row);
+                        });
+                    });
 
                 });
             } else {
@@ -889,34 +695,15 @@
             }
         }
 
-        function seleccionarLista() {
-            var listaId = $('#lista_precio').val();
-            // Se vacia el contenido actual de la tabla buscador de productos
-            $("#productosTable tbody").empty();
-            // Se obtienen todos los productos del proveedor y se vuelve a llenar
-            $.get('/api/listaprecios/' + listaId, function(resp) {
-                productos = resp.productos;
-                productos.forEach(function(producto, index) {
-                    var row = `<tr>
-                                <td>${producto.sku}</td>
-                                <td>${producto.nombre}</td>
-                                <td>${producto.pivot.precio.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}</td>
-                                <td style="display:none;"></td>
-                                </tr>`;
-                    $("#productosTable tbody").append(row);
-                });
-            });
-        }
-
         function agregarGuardarDetalle() {
-            var clienteId = $('#razon_social').val();
-            if (clienteId == '') {
+            var proveedorId = $('#razon_social').val();
+            if (proveedorId == '') {
                 $.toast({
                     type: 'error',
                     title: 'Error en formulario',
                     subtitle: 'ahora',
                     position: 'top-right',
-                    content: 'Debe seleccionar un cliente para agregar items al documento.',
+                    content: 'Debe seleccionar un proveedor para agregar items al documento.',
                     delay: 15000
                 });
                 return;
@@ -938,7 +725,7 @@
                 success: function(data) {
                     if (data.success == true) {
                         var dataJson = {
-                            lista_precio_id: $('#lista_precio').val(),
+                            proveedor_id: $('#razon_social').val(),
                             producto_id: data.data.id,
                             precio: $('#precioTxt').inputmask('unmaskedvalue')
                         };
@@ -947,7 +734,7 @@
                         // Creamos peticion psot para agregar el precio de venta
                         $.ajax({
                             type: "POST",
-                            url: '/api/productos/listaprecio',
+                            url: '/api/productos/precioproveedor',
                             data: dataJson, // serializes the form's elements.
                             success: function(data2) {
                                 if (data2.success == true) {
@@ -984,22 +771,22 @@
 
         function agregarDetalle() {
             // Verificamos que se haya seleccionado un proveedor
-            var clienteId = $('#razon_social').val();
-            if (clienteId == '') {
+            var proveedorId = $('#razon_social').val();
+            if (proveedorId == '') {
                 $.toast({
                     type: 'error',
                     title: 'Error en formulario',
                     subtitle: 'ahora',
                     position: 'top-right',
-                    content: 'Debe seleccionar un cliente para agregar items al documento.',
+                    content: 'Debe seleccionar un proveedor para agregar items al documento.',
                     delay: 15000
                 });
                 return;
             }
 
             // Se verifica si se escribio un SKU, de no haber uno, se rellena con el timestamp
-            if($('#skuTxt').val() == ''){
-                $('#skuTxt').val('AG'+$.now());
+            if ($('#skuTxt').val() == '') {
+                $('#skuTxt').val('AG' + $.now());
             }
 
             // Se recopila toda la información del producto
@@ -1056,12 +843,10 @@
                     <td>${'$ ' + producto.precio.replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}</td>
                     <td>${'$ ' + subtotal.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}</td>
                     <td>
-                        <button type="button" onclick="eliminarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em;float:right;">
+                        <button type="button" onclick="eliminarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .25em;">
                         <span class="mdi mdi-delete"></span></button>
                     </td>
                 </tr>`;
-                /*
-                 */
                 // Se limpian los inputs
                 $('#skuTxt').val('');
                 $('#nombreTxt').val('');
@@ -1081,88 +866,9 @@
             }
         }
 
-        function agregarReferencia() {
-            var ref_tipo = $('#ref_tipo').val();
-            var ref_folio = $('#ref_folio').val();
-            var ref_fecha = $('#ref_fecha').val();
-            if (ref_tipo == '') {
-                $.toast({
-                    type: 'error',
-                    title: 'Error en formulario',
-                    subtitle: 'ahora',
-                    position: 'top-right',
-                    content: 'Debe seleccionar un tipo de documento',
-                    delay: 15000
-                });
-                return;
-            }
-            if(ref_folio == ''){
-                $.toast({
-                    type: 'error',
-                    title: 'Error en formulario',
-                    subtitle: 'ahora',
-                    position: 'top-right',
-                    content: 'Debe incluir un folio en la referencia',
-                    delay: 15000
-                });
-                return;
-            }
-            if(ref_fecha == ''){
-                $.toast({
-                    type: 'error',
-                    title: 'Error en formulario',
-                    subtitle: 'ahora',
-                    position: 'top-right',
-                    content: 'Debe incluir una fecha en la referencia',
-                    delay: 15000
-                });
-                return;
-            }
-            // Se recopila toda la información del producto
-            var referencia = {
-                'tipo': $('#ref_tipo').find(':selected').val(),
-                'folio': $('#ref_folio').val(),
-                'fecha': $('#ref_fecha').val(),
-                'razon': '',
-                'codigo': false
-            };
-
-            // Se crea una fila con toda la información necesaria
-            var row = `
-                <tr refIndex="${ref_index}">
-                    <td>${$('#ref_tipo').find(':selected').text()}</td>
-                    <td>${referencia.folio}</td>
-                    <td>${referencia.fecha}</td>
-                    <td>
-                        <button type="button" onclick="eliminarReferencia(${ref_index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em; float:right;">
-                        <span class="mdi mdi-delete"></span></button>
-                    </td>
-                </tr>`;
-            // Se limpian los inputs
-            $("#ref_tipo").val(null);
-            $('#ref_tipo').trigger('change');
-            $('#ref_folio').val('');
-            $('#ref_fecha').val('');
-
-
-            // Se inserta antes del rowDetalle que es nuestro formulario estatico
-            $(row).insertBefore($('#rowReferencia'));
-            // Se inserta el producto en nuestra lista
-            referencias.push(referencia);
-            ref_index++;
-
-        }
-
         function eliminarDetalle(index) {
             detalles.splice(index, 1);
             $('#tablaDetalle tr[detindex="' + index + '"]').remove();
-            // Se calculan los totales y se aumenta el indice
-            calcularTotales();
-        }
-
-        function eliminarReferencia(ref_indx) {
-            referencias.splice(ref_indx, 1);
-            $('#tablaReferencia tr[refindex="' + ref_indx + '"]').remove();
             // Se calculan los totales y se aumenta el indice
             calcularTotales();
         }

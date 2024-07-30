@@ -52,6 +52,7 @@ class GuiaDespachoController extends Controller
                 'tipo_despacho' => 'required',
                 'comuna_destino' => 'required',
                 'items' => 'required|array',
+                'referencias' => 'nullable|array',
                 'glosa' => 'nullable'
             ]);
 
@@ -67,8 +68,9 @@ class GuiaDespachoController extends Controller
             $cliente = Cliente::where('id', $request->cliente)->with('comuna')->first();
             $str = date('Y-m-d', strtotime($request->fecha_emision)).' '.date('H:i');
 
+            $detArray = ($request->items==null)?[]:$request->items;
             $detalle = [];
-            foreach($request->items as $item){
+            foreach($detArray as $item){
                 array_push($detalle, [
                     'nombre' => $item['nombre'],
                     'descripcion' => ((!array_key_exists('descripcion', $item))?false:$item['descripcion']),
@@ -78,6 +80,18 @@ class GuiaDespachoController extends Controller
                 ]);
             }
             $detalle = array_filter($detalle);
+
+            $refArray = ($request->referencias==null)?[]:$request->referencias;
+            $referencias = [];
+            foreach($refArray as $ref){
+                array_push($referencias, [
+                    'tipo' => $ref['tipo'],
+                    'folio' => $ref['folio'],
+                    'fecha' => $ref['fecha'],
+                    'razon' => ' ',
+                    'codigo' => false
+                ]);
+            }
 
             $data = [
                 'contribuyente' => $emisor['rut'],
@@ -96,7 +110,7 @@ class GuiaDespachoController extends Controller
                 ],
                 'tipo_pago' => $request->tipo_pago,
                 'detalles' => $detalle,
-                'referencias' => []
+                'referencias' => $referencias
             ];
 
             $ch = curl_init( env('FACTURAPI_ENDPOINT').'documentos' );
@@ -124,6 +138,7 @@ class GuiaDespachoController extends Controller
             $guia->monto_neto = $docData->totales->neto;
             $guia->monto_iva = $docData->totales->iva;
             $guia->monto_total = $docData->totales->total;
+            $guia->proyecto_id = $request->proyecto;
             if(isset($request->glosa)){
                 $guia->glosa = str_replace('///', '<br>', $request->glosa);
             }
@@ -185,6 +200,7 @@ class GuiaDespachoController extends Controller
             $pdf = new \SolucionTotal\CorePDF\PDF($data, 1, 'https://i.imgur.com/oWL7WBw.jpeg', 2, $dte->getTED());
             $pdf->setCedible(false);
             //$pdf->setLeyendaImpresion('Sistema de facturacion por SoluciónTotal');
+            $pdf->setObra($guia->proyecto->nombre);
             $pdf->setTelefono($emisor['telefono']);
             $pdf->setResolucion(date('Y', strtotime($caratula['FchResol'])), $caratula['NroResol']);
             $pdf->setWeb($emisor['web']);

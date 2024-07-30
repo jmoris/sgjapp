@@ -64,6 +64,24 @@
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="mb-4 border-bottom">
+                                                    <h5>Información del producto</h5>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label class="form-label">Largo</label>
+                                                    <input type="text" name="nombre" id="nombre" class="form-control"
+                                                        placeholder="Ingrese el nombre del producto">
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label class="form-label">Ancho</label>
+                                                    <input type="text" name="nombre" id="nombre" class="form-control"
+                                                        placeholder="Ingrese el nombre del producto">
+                                                </div>
+                                                <div class="mb-2">
+                                                    <label class="form-label">Peso (Kg/Mt)</label>
+                                                    <input type="text" name="nombre" id="nombre" class="form-control"
+                                                        placeholder="Ingrese el nombre del producto">
+                                                </div>
+                                                <div class="mb-4 border-bottom">
                                                     <h5>Información contable</h5>
                                                 </div>
                                                 <div class="mb-2">
@@ -84,6 +102,7 @@
                                                         El producto se puede comprar
                                                     </label>
                                                 </div>
+
                                             </div>
                                         </div>
 

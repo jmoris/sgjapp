@@ -14,6 +14,10 @@ class Factura extends Model
         return $this->hasOne(Cliente::class, 'id', 'cliente_id');
     }
 
+    public function proyecto(){
+        return $this->hasOne(Proyecto::class, 'id', 'proyecto_id');
+    }
+
     public function lineas(){
         return $this->hasMany(LineaFactura::class);
     }

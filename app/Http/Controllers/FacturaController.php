@@ -9,6 +9,7 @@ use App\Factura;
 use App\Helpers\Ajustes;
 use App\LineaFactura;
 use App\ListaPrecio;
+use App\Proyecto;
 use App\Unidad;
 use Exception;
 use Illuminate\Http\Request;
@@ -30,8 +31,9 @@ class FacturaController extends Controller
         $clientes = Cliente::all(); // aqui clientes
         $unidades = Unidad::all();
         $listas = ListaPrecio::all();
+        $proyectos = Proyecto::where('estado', 0)->get();
 
-        return view('pages.ventas.facturas.create', ['clientes' => $clientes, 'unidades' => $unidades,'comunas' => $comunas, 'emisor' => $emisor, 'listas' => $listas]);
+        return view('pages.ventas.facturas.create', ['clientes' => $clientes, 'unidades' => $unidades,'comunas' => $comunas, 'emisor' => $emisor, 'listas' => $listas, 'proyectos' => $proyectos]);
     }
     /*
         DESDE AQUI HACIA ABAJO ESTARAN LAS FUNCIONES DE LA API
@@ -47,7 +49,9 @@ class FacturaController extends Controller
                 'fecha_emision' => 'required',
                 'cliente' => 'required',
                 'tipo_pago' => 'required',
+                'fecha_vencimiento' => 'required',
                 'items' => 'required|array',
+                'referencias' => 'nullable|array',
                 'glosa' => 'nullable'
             ]);
 
@@ -75,11 +79,27 @@ class FacturaController extends Controller
                 ]);
             }
             $detalle = array_filter($detalle);
+
+            $refArray = ($request->referencias==null)?[]:$request->referencias;
+
+
+            $referencias = [];
+            foreach($refArray as $ref){
+                array_push($referencias, [
+                    'tipo' => $ref['tipo'],
+                    'folio' => $ref['folio'],
+                    'fecha' => $ref['fecha'],
+                    'razon' => ' ',
+                    'codigo' => false
+                ]);
+            }
+
             $data = [
                 'contribuyente' => $emisor['rut'],
                 'acteco' => $emisor['acteco'],
                 'tipo' => 33,
                 'fecha' => $str,
+                'fecha_vencimiento' => $request->fecha_vencimiento,
                 'receptor' => [
                     'rut'=> $cliente->rut,
                     'razon_social'=> $cliente->razon_social,
@@ -89,8 +109,11 @@ class FacturaController extends Controller
                 ],
                 'tipo_pago' => $request->tipo_pago,
                 'detalles' => $detalle,
-                'referencias' => []
+                'referencias' => $referencias
             ];
+
+            Log::info("Datos enviados Factura:");
+            Log::info($data);
 
             $ch = curl_init( env('FACTURAPI_ENDPOINT').'documentos' );
             curl_setopt( $ch, CURLOPT_POST, true);
@@ -101,6 +124,8 @@ class FacturaController extends Controller
             ]);
             curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
             $result = curl_exec($ch);
+            Log::info("Datos recibidos Factura:");
+            Log::info($result);
             curl_close($ch);
 
             $docData = json_decode($result);
@@ -118,6 +143,7 @@ class FacturaController extends Controller
             $fact->monto_neto = $docData->totales->neto;
             $fact->monto_iva = $docData->totales->iva;
             $fact->monto_total = $docData->totales->total;
+            $fact->proyecto_id = $request->proyecto;
             if(isset($request->glosa)){
                 $fact->glosa = str_replace('///', '<br>', $request->glosa);
             }
@@ -179,6 +205,7 @@ class FacturaController extends Controller
             $pdf = new \SolucionTotal\CorePDF\PDF($data, 1, 'https://i.imgur.com/oWL7WBw.jpeg', 2, $dte->getTED());
             $pdf->setCedible(false);
             //$pdf->setLeyendaImpresion('Sistema de facturacion por SoluciónTotal');
+            $pdf->setObra($fact->proyecto->nombre);
             $pdf->setTelefono($emisor['telefono']);
             $pdf->setResolucion(date('Y', strtotime($caratula['FchResol'])), $caratula['NroResol']);
             $pdf->setWeb($emisor['web']);

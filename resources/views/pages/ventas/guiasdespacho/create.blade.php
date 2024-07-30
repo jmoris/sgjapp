@@ -12,6 +12,7 @@
         td {
             padding: 0px 0px;
         }
+
         body tr {
             -webkit-user-select: initial !important;
             -moz-user-select: initial !important;
@@ -117,68 +118,86 @@
                                             </div>
                                             <div class="col-md-12 mb-3">
                                                 <div class="row">
-                                                    <div class="col-md-6">
+                                                    <div class="col-md-12 mb-3">
                                                         <div class="mb-2 border-bottom">
                                                             <h5>Información del cliente</h5>
                                                         </div>
-                                                        <div class="row mx-1">
-                                                            <div class="row mb-2">
-                                                                <label
-                                                                    class="col-sm-4 col-form-label col-form-label-sm">Razón
-                                                                    Social</label>
-                                                                <div class="col-sm-8">
-                                                                    <select name="razon_social" id="razon_social"
-                                                                        class="form-control form-control-sm"
-                                                                        onchange="seleccionarCliente()">
-                                                                        <option value="">Seleccione un cliente
-                                                                        </option>
-                                                                        @foreach ($clientes as $cliente)
-                                                                            <option value="{{ $cliente->id }}">
-                                                                                {{ $cliente->razon_social }}</option>
-                                                                        @endforeach
-                                                                    </select>
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="row mx-1">
+                                                                    <div class="row mb-2">
+                                                                        <label
+                                                                            class="col-sm-4 col-form-label col-form-label-sm">Razón
+                                                                            Social</label>
+                                                                        <div class="col-sm-8">
+                                                                            <select name="razon_social" id="razon_social"
+                                                                                class="form-control form-control-sm"
+                                                                                onchange="seleccionarCliente()">
+                                                                                <option value="">Seleccione un cliente
+                                                                                </option>
+                                                                                @foreach ($clientes as $cliente)
+                                                                                    <option value="{{ $cliente->id }}">
+                                                                                        {{ $cliente->razon_social }}
+                                                                                    </option>
+                                                                                @endforeach
+                                                                            </select>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row mb-2">
+                                                                        <label
+                                                                            class="col-sm-4 col-form-label col-form-label-sm">R.U.T.</label>
+                                                                        <div class="col-sm-8">
+                                                                            <input type="text" name="rut"
+                                                                                id="rut"
+                                                                                class="form-control form-control-sm"
+                                                                                disabled>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row mb-2">
+                                                                        <label
+                                                                            class="col-sm-4 col-form-label col-form-label-sm">Actividad
+                                                                            Económica</label>
+                                                                        <div class="col-sm-8">
+                                                                            <input type="text" name="giro"
+                                                                                id="giro"
+                                                                                class="form-control form-control-sm"
+                                                                                disabled>
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                            <div class="row mb-2">
-                                                                <label
-                                                                    class="col-sm-4 col-form-label col-form-label-sm">R.U.T.</label>
-                                                                <div class="col-sm-8">
-                                                                    <input type="text" name="rut" id="rut"
-                                                                        class="form-control form-control-sm" disabled>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row mb-2">
-                                                                <label
-                                                                    class="col-sm-4 col-form-label col-form-label-sm">Actividad
-                                                                    Económica</label>
-                                                                <div class="col-sm-8">
-                                                                    <input type="text" name="giro" id="giro"
-                                                                        class="form-control form-control-sm" disabled>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row mb-2">
-                                                                <label
-                                                                    class="col-sm-4 col-form-label col-form-label-sm">Dirección</label>
-                                                                <div class="col-sm-8">
-                                                                    <input type="text" name="direccion" id="direccion"
-                                                                        class="form-control form-control-sm" disabled>
-                                                                </div>
-                                                            </div>
-                                                            <div class="row mb-2">
-                                                                <label
-                                                                    class="col-sm-4 col-form-label col-form-label-sm">Comuna</label>
-                                                                <div class="col-sm-8">
-                                                                    <input type="text" name="comuna" id="comuna"
-                                                                        class="form-control form-control-sm" disabled>
+                                                            <div class="col-md-6">
+                                                                <div class="row mx-1">
+                                                                    <div class="row mb-2">
+                                                                        <label
+                                                                            class="col-sm-4 col-form-label col-form-label-sm">Dirección</label>
+                                                                        <div class="col-sm-8">
+                                                                            <input type="text" name="direccion"
+                                                                                id="direccion"
+                                                                                class="form-control form-control-sm"
+                                                                                disabled>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row mb-2">
+                                                                        <label
+                                                                            class="col-sm-4 col-form-label col-form-label-sm">Comuna</label>
+                                                                        <div class="col-sm-8">
+                                                                            <input type="text" name="comuna"
+                                                                                id="comuna"
+                                                                                class="form-control form-control-sm"
+                                                                                disabled>
+                                                                        </div>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-6">
+                                                    <div class="col-md-6 ">
                                                         <div class="mb-2 border-bottom">
                                                             <h5>Información del documento</h5>
                                                         </div>
                                                         <div class="row mx-1">
+
                                                             <div class="row mb-2">
                                                                 <label
                                                                     class="col-sm-4 col-form-label col-form-label-sm">Tipo
@@ -203,6 +222,45 @@
                                                             </div>
                                                             <div class="row mb-2">
                                                                 <label
+                                                                    class="col-sm-4 col-form-label col-form-label-sm">Lista
+                                                                    de Precios</label>
+                                                                <div class="col-sm-8" id="inputListaPrecio">
+                                                                    <select class="form-control form-control-sm"
+                                                                        id="lista_precio" name="lista_precio"
+                                                                        onchange="seleccionarLista()">
+                                                                        <option value="">Seleccione una lista
+                                                                        </option>
+                                                                        @foreach ($listas as $lista)
+                                                                            <option value="{{ $lista->id }}">
+                                                                                {{ $lista->nombre }}</option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row mb-2">
+                                                                <label
+                                                                    class="col-sm-4 col-form-label col-form-label-sm">Nombre
+                                                                    Obra/Proyecto</label>
+                                                                <div class="col-sm-8" id="inputProyecto">
+                                                                    <select class="form-control form-control-sm"
+                                                                        id="nombre_proyecto" name="nombre_proyecto">
+                                                                        <option>Seleccione proyecto</option>
+                                                                        @foreach ($proyectos as $proyecto)
+                                                                            <option value="{{ $proyecto->id }}">
+                                                                                {{ $proyecto->nombre }}</option>
+                                                                        @endforeach
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="mb-2 border-bottom">
+                                                            <h5>Información Traslado</h5>
+                                                        </div>
+                                                        <div class="row mx-1">
+                                                            <div class="row mb-2">
+                                                                <label
                                                                     class="col-sm-4 col-form-label col-form-label-sm">Tipo
                                                                     Despacho</label>
                                                                 <div class="col-sm-8">
@@ -221,7 +279,8 @@
                                                                 <div class="col-sm-8">
                                                                     <select name="ind_traslado" id="ind_traslado"
                                                                         class="form-control form-control-sm">
-                                                                        <option value="1">Operación Constituye Venta</option>
+                                                                        <option value="1">Operación Constituye Venta
+                                                                        </option>
                                                                         <option value="2">Venta Por efectuar</option>
                                                                         <option value="3">Consigación</option>
                                                                         <option value="4">Donación</option>
@@ -233,40 +292,21 @@
                                                             </div>
                                                             <div class="row mb-2">
                                                                 <label
-                                                                    class="col-sm-4 col-form-label col-form-label-sm">Comuna de Destino</label>
+                                                                    class="col-sm-4 col-form-label col-form-label-sm">Comuna
+                                                                    de Destino</label>
                                                                 <div class="col-sm-8">
                                                                     <select name="comuna_destino" id="comuna_destino"
                                                                         class="form-control form-control-sm">
                                                                         <option value="">Seleccione Comuna</option>
-                                                                        @foreach($comunas as $comuna)
-                                                                            <option value="{{ $comuna->id }}">{{ $comuna->nombre }}</option>
+                                                                        @foreach ($comunas as $comuna)
+                                                                            <option value="{{ $comuna->id }}">
+                                                                                {{ $comuna->nombre }}</option>
                                                                         @endforeach
                                                                     </select>
                                                                 </div>
                                                             </div>
                                                         </div>
-                                                        <div class="mb-2 border-bottom">
-                                                            <h5>Información Comercial</h5>
-                                                        </div>
-                                                        <div class="row mx-1">
-                                                            <div class="row mb-2">
-                                                                <label
-                                                                    class="col-sm-4 col-form-label col-form-label-sm">Lista
-                                                                    de Precios</label>
-                                                                <div class="col-sm-8" id="inputProyecto">
-                                                                    <select class="form-control form-control-sm"
-                                                                        id="lista_precio" name="lista_precio"
-                                                                        onchange="seleccionarLista()">
-                                                                        <option value="">Seleccione una lista
-                                                                        </option>
-                                                                        @foreach ($listas as $lista)
-                                                                            <option value="{{ $lista->id }}">
-                                                                                {{ $lista->nombre }}</option>
-                                                                        @endforeach
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -380,49 +420,147 @@
                                                     </table>
                                                 </div>
                                             </div>
-                                            <div class="col-md-7">
+                                            <div class="col-md-8">
                                                 <div class="mb-2 border-bottom">
                                                     <h5>Referencias del documento</h5>
                                                 </div>
                                                 <div class="col-md-12">
-                                                    <table class="table table-sm mb-3">
+                                                    <table id="tablaReferencia" class="table table-sm mb-3">
+                                                        <thead>
+                                                            <th>Tipo Documento</th>
+                                                            <th>Folio</th>
+                                                            <th>Fecha</th>
+                                                        </thead>
                                                         <tbody>
-                                                            <tr>
-                                                                <td>
-                                                                    <select class="form-control form-control-sm">
-                                                                        <option>Tipo de Documento</option>
+                                                            <tr id="rowReferencia">
+                                                                <td style="width: 40%">
+                                                                    <select id="ref_tipo"
+                                                                        class="form-control form-control-sm">
+                                                                        <option></option>
+                                                                        <option value="30">Factura</option>
+                                                                        <option value="32">Factura de venta bienes y
+                                                                            servicios no afectos o exentos de iva </option>
+                                                                        <option value="33">Factura electronica
+                                                                        </option>
+                                                                        <option value="34">Factura no afecta o exenta
+                                                                            electronica </option>
+                                                                        <option value="35">Boleta </option>
+                                                                        <option value="38">Boleta exenta </option>
+                                                                        <option value="39">Boleta electronica </option>
+                                                                        <option value="40">Liquidacion factura
+                                                                        </option>
+                                                                        <option value="41">Boleta exenta electronica
+                                                                        </option>
+                                                                        <option value="43">Liquidacion factura
+                                                                            electronica </option>
+                                                                        <option value="45">Factura de compra </option>
+                                                                        <option value="46">Factura de compra
+                                                                            electronica </option>
+                                                                        <option value="47">Vale electronico especial
+                                                                        </option>
+                                                                        <option value="48">Comprobantes pago
+                                                                            electronico </option>
+                                                                        <option value="50">Guía de despacho </option>
+                                                                        <option value="52">Guía de despacho electronica
+                                                                        </option>
+                                                                        <option value="55">Nota de debito </option>
+                                                                        <option value="56">Nota de debito electronica
+                                                                        </option>
+                                                                        <option value="60">Nota de credito </option>
+                                                                        <option value="61">Nota de credito electronica
+                                                                        </option>
+                                                                        <option value="101">Factura de exportacion
+                                                                        </option>
+                                                                        <option value="102">Factura vta exenta a zona
+                                                                            franca prim </option>
+                                                                        <option value="103">Liquidacion </option>
+                                                                        <option value="104">Nota de debito de
+                                                                            exportacion </option>
+                                                                        <option value="105">Boleta liq res 1423 76
+                                                                        </option>
+                                                                        <option value="106">Nota de credito de
+                                                                            exportacion </option>
+                                                                        <option value="108">Srf solicitud registro de
+                                                                            factura </option>
+                                                                        <option value="109">Factura turista </option>
+                                                                        <option value="110">Factura de exportacion
+                                                                            electronica </option>
+                                                                        <option value="111">Nota de debito de
+                                                                            exportacion electronica </option>
+                                                                        <option value="112">Nota de credito de
+                                                                            exportacion electronica </option>
+                                                                        <option value="801">Orden de compra </option>
+                                                                        <option value="802">Nota de pedido </option>
+                                                                        <option value="803">Contrato </option>
+                                                                        <option value="804">Resolucion </option>
+                                                                        <option value="805">Proceso chilecompra
+                                                                        </option>
+                                                                        <option value="806">Ficha chilecompra </option>
+                                                                        <option value="807">Dus </option>
+                                                                        <option value="808">B l conocimiento de embarque
+                                                                        </option>
+                                                                        <option value="809">Awb air will bill </option>
+                                                                        <option value="810">Mic dta </option>
+                                                                        <option value="811">Carta de porte </option>
+                                                                        <option value="812">Resolucion del sna donde
+                                                                            califica servicios de </option>
+                                                                        <option value="813">Pasaporte </option>
+                                                                        <option value="814">Certificado de deposito
+                                                                            bolsa prod chile v
+                                                                        <option value="815">Vale de prenda bolsa prod
+                                                                            chile </option>
+                                                                        <option value="901">Fact vta emp terr pres res
+                                                                            1057 85 </option>
+                                                                        <option value="902">Conocimiento embarque
+                                                                            maritimo o aereo </option>
+                                                                        <option value="903">Documento unico salida dus
+                                                                        </option>
+                                                                        <option value="904">Factura de traspaso
+                                                                        </option>
+                                                                        <option value="905">Factura de reexpedicion
+                                                                        </option>
+                                                                        <option value="906">Boleta vta modulo zf
+                                                                        </option>
+                                                                        <option value="907">Factura vta modulo zf 907
+                                                                        </option>
+                                                                        <option value="909">Factura vta modulo zf 909
+                                                                        </option>
+                                                                        <option value="910">Solicitud traslado zona
+                                                                            franca zf </option>
+                                                                        <option value="911">Decl de ingreso a zona
+                                                                            franca primaria </option>
+                                                                        <option value="914">Declaracion de ingreso din
+                                                                        </option>
+                                                                        <option value="919">Vta pasaje nac sin factura
+                                                                        </option>
+                                                                        <option value="920">Otros registros no doc
+                                                                            aumenta debito </option>
+                                                                        <option value="922">Otros registros no doc
+                                                                            disminuye debito</option>
+                                                                        <option value="924">Vta pasajes inter sin
+                                                                            factura </option>
+                                                                        <option value="HES">Hoja entrada de servicio
+                                                                        </option>
+                                                                        <option value="OST">Orden de servicio a terceros
+                                                                        </option>
+
                                                                     </select>
                                                                 </td>
-                                                                <td>
-                                                                    <input class="form-control form-control-sm"
+                                                                <td style="width: 30%">
+                                                                    <input id="ref_folio"
+                                                                        class="form-control form-control-sm"
                                                                         type="text" placeholder="Folio" />
                                                                 </td>
-                                                                <td>
-                                                                    <input type="date"
+                                                                <td style="width: 25%">
+                                                                    <input id="ref_fecha" type="date"
                                                                         class="form-control form-control-sm" />
                                                                 </td>
-                                                                <td>
-                                                                    <input class="form-control form-control-sm"
-                                                                        type="text" placeholder="Razón" />
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>
-                                                                    <select class="form-control form-control-sm">
-                                                                        <option>Seleccione tipo documento</option>
-                                                                    </select>
-                                                                </td>
-                                                                <td>
-                                                                    <input class="form-control form-control-sm"
-                                                                        type="text" placeholder="Folio" />
-                                                                </td>
-                                                                <td>
-                                                                    <input type="date"
-                                                                        class="form-control form-control-sm" />
-                                                                </td>
-                                                                <td>
-                                                                    <input class="form-control form-control-sm"
-                                                                        type="text" placeholder="Razón" />
+                                                                <td style="width: 5%">
+                                                                    <button type="button" onclick="agregarReferencia()"
+                                                                        title="Agregar detalle a la lista"
+                                                                        class="btn btn-sm btn-outline-primary"
+                                                                        style="padding:.25em .5em; float:right;">
+                                                                        <span class="mdi mdi-plus"></span></button>
                                                                 </td>
                                                             </tr>
                                                         </tbody>
@@ -435,7 +573,7 @@
                                                     <textarea id="glosaTxt" maxlength="250" class="form-control mt-3" rows="3"></textarea>
                                                 </div>
                                             </div>
-                                            <div class="col-md-5">
+                                            <div class="col-md-4">
                                                 <div class="mb-2 border-bottom">
                                                     <h5>Resumen de montos</h5>
                                                 </div>
@@ -602,7 +740,9 @@
 @push('custom-scripts')
     <script>
         var index = 0;
+        var ref_index = 0;
         var detalles = [];
+        var referencias = [];
         var subtotalDoc = 0;
         var unidades = {!! json_encode($unidades) !!};
         var selectedProducto = null;
@@ -618,6 +758,9 @@
             $("#descuentoglobal").inputmask('percentage', {});
             $('#razon_social').select2();
             $('#comuna_destino').select2();
+            $('#ref_tipo').select2({
+                placeholder: "Tipo de Documento"
+            });
             $('#productosTable').on('click', 'tbody tr', function(event) {
                 $(this).addClass('highlight').siblings().removeClass('highlight');
             });
@@ -681,6 +824,44 @@
 
         function confirmarGuiaDespacho(e) {
             e.preventDefault();
+            // Verificamos que se haya seleccionado un proveedor
+            var clienteId = $('#razon_social').val();
+            if (clienteId == '') {
+                $.toast({
+                    type: 'error',
+                    title: 'Error en formulario',
+                    subtitle: 'ahora',
+                    position: 'top-right',
+                    content: 'Debe seleccionar un cliente para agregar items al documento.',
+                    delay: 15000
+                });
+                return;
+            }
+            var nombreProyecto = $('#nombre_proyecto option:selected').text();
+
+            if (nombreProyecto == 'Seleccione proyecto') {
+                $.toast({
+                    type: 'error',
+                    title: 'Error en formulario',
+                    subtitle: 'ahora',
+                    position: 'top-right',
+                    content: 'Debe seleccionar/añadir un proyecto para generar el documento.',
+                    delay: 15000
+                });
+                return;
+            }
+
+            if (detalles.length == 0) {
+                $.toast({
+                    type: 'error',
+                    title: 'Error en formulario',
+                    subtitle: 'ahora',
+                    position: 'top-right',
+                    content: 'Debe agregar productos al documento para poder procesarlo.',
+                    delay: 15000
+                });
+                return;
+            }
 
             Swal.fire({
                 title: "¿Quieres confirmar esta Guia de Despacho?",
@@ -701,31 +882,7 @@
         function procesarGuiaDespacho(e) {
             $('#loadingModal').modal('show');
             $('#statusTxt').text('Validando información del formulario...');
-            // Verificamos que se haya seleccionado un proveedor
-            var clienteId = $('#razon_social').val();
-            if (clienteId == '') {
-                $.toast({
-                    type: 'error',
-                    title: 'Error en formulario',
-                    subtitle: 'ahora',
-                    position: 'top-right',
-                    content: 'Debe seleccionar un proveedor para agregar items al documento.',
-                    delay: 15000
-                });
-                return;
-            }
 
-            if (detalles.length == 0) {
-                $.toast({
-                    type: 'error',
-                    title: 'Error en formulario',
-                    subtitle: 'ahora',
-                    position: 'top-right',
-                    content: 'Debe agregar productos al documento para poder procesarlo.',
-                    delay: 15000
-                });
-                return;
-            }
             var doc = {
                 cliente: $('#razon_social').val(),
                 fecha_emision: $('#fecha_emision').val(),
@@ -733,6 +890,8 @@
                 tipo_despacho: $('#tipo_despacho').find(":selected").val(),
                 comuna_destino: $('#comuna_destino').val(),
                 items: detalles,
+                referencias: referencias,
+                proyecto: $('#nombre_proyecto option:selected').val(),
                 glosa: $('#glosaTxt').val(),
                 _token: $('meta[name="_token"]').attr('content')
             };
@@ -874,8 +1033,8 @@
             }
 
             // Se verifica si se escribio un SKU, de no haber uno, se rellena con el timestamp
-            if($('#skuTxt').val() == ''){
-                $('#skuTxt').val('AG'+$.now());
+            if ($('#skuTxt').val() == '') {
+                $('#skuTxt').val('AG' + $.now());
             }
 
             // Se recopila toda la información del producto
@@ -932,7 +1091,7 @@
                     <td>${'$ ' + producto.precio.replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}</td>
                     <td>${'$ ' + subtotal.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}</td>
                     <td>
-                        <button type="button" onclick="eliminarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .25em;">
+                        <button type="button" onclick="eliminarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em; float:right;">
                         <span class="mdi mdi-delete"></span></button>
                     </td>
                 </tr>`;
@@ -955,9 +1114,88 @@
             }
         }
 
+        function agregarReferencia() {
+            var ref_tipo = $('#ref_tipo').val();
+            var ref_folio = $('#ref_folio').val();
+            var ref_fecha = $('#ref_fecha').val();
+            if (ref_tipo == '') {
+                $.toast({
+                    type: 'error',
+                    title: 'Error en formulario',
+                    subtitle: 'ahora',
+                    position: 'top-right',
+                    content: 'Debe seleccionar un tipo de documento',
+                    delay: 15000
+                });
+                return;
+            }
+            if(ref_folio == ''){
+                $.toast({
+                    type: 'error',
+                    title: 'Error en formulario',
+                    subtitle: 'ahora',
+                    position: 'top-right',
+                    content: 'Debe incluir un folio en la referencia',
+                    delay: 15000
+                });
+                return;
+            }
+            if(ref_fecha == ''){
+                $.toast({
+                    type: 'error',
+                    title: 'Error en formulario',
+                    subtitle: 'ahora',
+                    position: 'top-right',
+                    content: 'Debe incluir una fecha en la referencia',
+                    delay: 15000
+                });
+                return;
+            }
+            // Se recopila toda la información del producto
+            var referencia = {
+                'tipo': $('#ref_tipo').find(':selected').val(),
+                'folio': $('#ref_folio').val(),
+                'fecha': $('#ref_fecha').val(),
+                'razon': '',
+                'codigo': false
+            };
+
+            // Se crea una fila con toda la información necesaria
+            var row = `
+                <tr refIndex="${ref_index}">
+                    <td>${$('#ref_tipo').find(':selected').text()}</td>
+                    <td>${referencia.folio}</td>
+                    <td>${referencia.fecha}</td>
+                    <td>
+                        <button type="button" onclick="eliminarReferencia(${ref_index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em; float:right;">
+                        <span class="mdi mdi-delete"></span></button>
+                    </td>
+                </tr>`;
+            // Se limpian los inputs
+            $("#ref_tipo").val(null);
+            $('#ref_tipo').trigger('change');
+            $('#ref_folio').val('');
+            $('#ref_fecha').val('');
+
+
+            // Se inserta antes del rowDetalle que es nuestro formulario estatico
+            $(row).insertBefore($('#rowReferencia'));
+            // Se inserta el producto en nuestra lista
+            referencias.push(referencia);
+            ref_index++;
+
+        }
+
         function eliminarDetalle(index) {
             detalles.splice(index, 1);
             $('#tablaDetalle tr[detindex="' + index + '"]').remove();
+            // Se calculan los totales y se aumenta el indice
+            calcularTotales();
+        }
+
+        function eliminarReferencia(ref_indx) {
+            referencias.splice(ref_indx, 1);
+            $('#tablaReferencia tr[refindex="' + ref_indx + '"]').remove();
             // Se calculan los totales y se aumenta el indice
             calcularTotales();
         }

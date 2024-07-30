@@ -26,6 +26,8 @@ return new class extends Migration
             $table->bigInteger('monto_total');
             $table->string('glosa')->nullable();
             $table->foreignIdFor(\App\User::class)->constrained();
+            $table->smallInteger('rev')->default(1);
+            $table->boolean('rev_activa')->default(false);
             $table->timestamps();
         });
     }
