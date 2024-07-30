@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Comuna;
+use App\Helpers\Herramientas;
 use App\Region;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -36,7 +37,7 @@ class ComunasRegionesSeeder extends Seeder
         foreach ($regions as $line) {
             $data = str_getcsv($line);
             Region::create([
-                'nombre' => $data[1],
+                'nombre' =>  Herramientas::sanitizarString($data[1]),
                 'simbolo' => $data[2],
                 'numero' => $data[3]
             ]);
@@ -394,7 +395,7 @@ class ComunasRegionesSeeder extends Seeder
             $data = str_getcsv($line);
 
             Comuna::create([
-                'nombre' => $data[1],
+                'nombre' =>  Herramientas::sanitizarString($data[1]),
                 'region_id' => $data[2],
             ]);
         }
