@@ -2,6 +2,7 @@
 
 use App\Comuna;
 use App\DomicilioContribuyente;
+use App\Helpers\Herramientas;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\GuiaDespachoController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\ProyectoController;
 use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\UserController;
+use App\Region;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use SolucionTotal\CoreDTE\Sii;
@@ -32,6 +34,27 @@ use SolucionTotal\CoreDTE\Sii;
 Route::middleware(['auth:web', 'tenant'])->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
+    });
+
+    Route::get('checkcomunasregiones', function(){
+        $regiones = Region::all();
+        foreach($regiones as $region){
+            Comuna::where('id', $region->id)->update([
+                'nombre' => Herramientas::sanitizarString($region->nombre),
+            ]);
+        }
+
+        $comunas = Comuna::all();
+        foreach($comunas as $comuna){
+            Comuna::where('id', $comuna->id)->update([
+                'nombre' => Herramientas::sanitizarString($comuna->nombre),
+            ]);
+        }
+
+        return response()->json([
+            'sucess' => true,
+            'msg' => 'Comunas y regiones actualizadas'
+        ]);
     });
 
     Route::prefix('reportes')->group(function(){
