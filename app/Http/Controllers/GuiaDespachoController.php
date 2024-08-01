@@ -193,6 +193,8 @@ class GuiaDespachoController extends Controller
             ]);
             curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
             $result = curl_exec($ch);
+            Log::info("Respuesta XML:");
+            Log::info($result);
             curl_close($ch);
 
             $EnvioDTE = new EnvioDte();
