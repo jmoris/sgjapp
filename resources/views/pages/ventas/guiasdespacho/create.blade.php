@@ -305,6 +305,17 @@
                                                                     </select>
                                                                 </div>
                                                             </div>
+                                                            <div class="row mb-2">
+                                                                <label
+                                                                    class="col-sm-4 col-form-label col-form-label-sm">Dirección
+                                                                    de Destino</label>
+                                                                <div class="col-sm-8">
+                                                                    <input type="text" name="direccion_destino"
+                                                                                id="direccion_destino"
+                                                                                class="form-control form-control-sm"
+                                                                                placeholder="Ingrese dirección o deje en blanco">
+                                                                </div>
+                                                            </div>
                                                         </div>
 
                                                     </div>
@@ -889,6 +900,7 @@
                 ind_traslado: $('#ind_traslado').find(":selected").val(),
                 tipo_despacho: $('#tipo_despacho').find(":selected").val(),
                 comuna_destino: $('#comuna_destino').val(),
+                direccion_destino: $('#direccion_destino').val(),
                 items: detalles,
                 referencias: referencias,
                 proyecto: $('#nombre_proyecto option:selected').val(),

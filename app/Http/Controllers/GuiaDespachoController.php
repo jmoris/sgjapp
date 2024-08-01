@@ -101,6 +101,7 @@ class GuiaDespachoController extends Controller
                 'ind_traslado' => ($request->ind_traslado!=null)?$request->ind_traslado:null,
                 'tipo_despacho' => ($request->tipo_despacho!=null)?$request->tipo_despacho:null,
                 'comuna_destino' => $request->comuna_destino,
+                'direccion_destino' => ($request->direccion_destino!=null)?$request->direccion_destino:null,
                 'receptor' => [
                     'rut'=> $cliente->rut,
                     'razon_social'=> $cliente->razon_social,
