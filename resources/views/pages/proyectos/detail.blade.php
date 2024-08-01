@@ -21,6 +21,7 @@
                                     <div class="col-md-3">
                                         <div class="d-flex justify-content-between align-items-baseline mb-3">
                                             <h4 class="card-title mb-0">DETALLES DEL PROYECTO</h4>
+                                            <small><a href="#" id="editText" onclick="editProyecto()">Editar</a></small>
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label">Nombre</label>
@@ -78,6 +79,31 @@
 
 @push('custom-scripts')
     <script>
+
+        function editProyecto(){
+            console.log($('#editText').text());
+            if($('#editText').text() == 'Guardar'){
+                // aqui post a guardar proyecto
+                $.ajax({
+                    type: "POST",
+                    url: '/api/ventas/proyectos/editar/{{$proyecto->id}}',
+                    data: {nombre:$('#nombre').val()}, // serializes the form's elements.
+                    success: function(data){
+                        if(!data.success){
+                            console.log(data.msg);
+                            alert(data.msg);
+                        }else{
+                            $('#editText').text('Editar');
+                            $('#nombre').attr('disabled', true);
+                        }
+                    }
+                });
+            }else{
+                $('#nombre').removeAttr('disabled');
+                $('#editText').text('Guardar');
+            }
+        }
+
         $('#tabla').DataTable({
             layout: {
                 topStart: {

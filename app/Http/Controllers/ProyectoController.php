@@ -99,6 +99,11 @@ class ProyectoController extends Controller
                 'data' => $proyecto
             ]);
         }catch(Exception $ex){
+            return response()->json([
+                'success' => false,
+                'msg' => 'Hubo un problema al intentar actualizar el proyecto',
+                'error' => $ex->getMessage()
+            ]);
             return $ex;
         }
     }
