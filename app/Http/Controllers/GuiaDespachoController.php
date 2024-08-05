@@ -102,6 +102,9 @@ class GuiaDespachoController extends Controller
                 'tipo_despacho' => ($request->tipo_despacho!=null)?$request->tipo_despacho:null,
                 'comuna_destino' => $request->comuna_destino,
                 'direccion_destino' => ($request->direccion_destino!=null)?$request->direccion_destino:null,
+                'patente' => ($request->patente!=null)?$request->patente:null,
+                'rut_chofer' => ($request->rut_chofer!=null)?str_replace('.', '', $request->rut_chofer):null,
+                'nombre_chofer' => ($request->nombre_chofer!=null)?$request->nombre_chofer:null,
                 'receptor' => [
                     'rut'=> $cliente->rut,
                     'razon_social'=> $cliente->razon_social,

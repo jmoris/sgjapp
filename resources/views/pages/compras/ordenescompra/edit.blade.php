@@ -22,10 +22,12 @@
 @section('content')
     <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
         <div>
-            <h4 class="mb-3 mb-md-0">Edición de Orden de Compra <small style="font-size:.75em;color: grey;">#{{ str_pad($oc->folio, 5, '0', STR_PAD_LEFT); }}</small></h4>
+            <h4 class="mb-3 mb-md-0">Edición de Orden de Compra <small
+                    style="font-size:.75em;color: grey;">#{{ str_pad($oc->folio, 5, '0', STR_PAD_LEFT) }}</small></h4>
         </div>
         <div class="align-end">
-            <button class="btn btn-danger" onclick="anularOC({{$oc->id}})"><i class="mdi mdi-trash-can"></i>&nbsp;&nbsp; Anular O/C</button>
+            <button class="btn btn-danger" onclick="anularOC({{ $oc->id }})"><i
+                    class="mdi mdi-trash-can"></i>&nbsp;&nbsp; Anular O/C</button>
         </div>
     </div>
     <div class="row">
@@ -124,12 +126,13 @@
                                                                     Social</label>
                                                                 <div class="col-sm-8">
                                                                     <select name="razon_social" id="razon_social"
-                                                                        class="form-control form-control-sm"
-                                                                        disabled>
+                                                                        class="form-control form-control-sm" disabled>
                                                                         <option value="">Seleccione un proveedor
                                                                         </option>
                                                                         @foreach ($proveedores as $proveedor)
-                                                                            <option @if($proveedor->id == $oc->proveedor_id) selected @endif value="{{ $proveedor->id }}">
+                                                                            <option
+                                                                                @if ($proveedor->id == $oc->proveedor_id) selected @endif
+                                                                                value="{{ $proveedor->id }}">
                                                                                 {{ $proveedor->razon_social }}</option>
                                                                         @endforeach
                                                                     </select>
@@ -205,14 +208,16 @@
                                                                     <div class="form-check form-check-inline">
                                                                         <input class="form-check-input" type="radio"
                                                                             name="tipo_pago" id="tipo_pago"
-                                                                            value="1" @if($oc->tipo_pago == 1) checked @endif>
+                                                                            value="1"
+                                                                            @if ($oc->tipo_pago == 1) checked @endif>
                                                                         <label class="form-check-label"
                                                                             for="tipo_pago">Credito</label>
                                                                     </div>
                                                                     <div class="form-check form-check-inline">
                                                                         <input class="form-check-input" type="radio"
                                                                             name="tipo_pago" id="tipo_pago"
-                                                                            value="2" @if($oc->tipo_pago == 2) checked @endif>
+                                                                            value="2"
+                                                                            @if ($oc->tipo_pago == 2) checked @endif>
                                                                         <label class="form-check-label"
                                                                             for="tipo_pago">Contado</label>
                                                                     </div>
@@ -232,7 +237,9 @@
                                                                         id="nombre_proyecto" name="nombre_proyecto">
                                                                         <option>Seleccione proyecto</option>
                                                                         @foreach ($proyectos as $proyecto)
-                                                                            <option @if($proyecto->id == $oc->proyecto_id) selected @endif value="{{ $proyecto->id }}">
+                                                                            <option
+                                                                                @if ($proyecto->id == $oc->proyecto_id) selected @endif
+                                                                                value="{{ $proyecto->id }}">
                                                                                 {{ $proyecto->nombre }}</option>
                                                                         @endforeach
                                                                     </select>
@@ -522,8 +529,12 @@
 
 @push('custom-scripts')
     <script>
+        var editIndex = null;
+        var editHtml = null;
         var index = 0;
-        var detalles = {!! json_encode($oc->lineas()->select('sku', 'nombre', 'descripcion', 'cantidad', 'unidad', 'precio_unitario as precio')->get()) !!};
+        var detalles = {!! json_encode(
+            $oc->lineas()->select('sku', 'nombre', 'descripcion', 'cantidad', 'unidad', 'precio_unitario as precio')->get(),
+        ) !!};
         var subtotalDoc = 0;
         var unidades = {!! json_encode($unidades) !!};
         var selectedProducto = null;
@@ -536,6 +547,7 @@
                 groupSeparator: '.',
                 rightAlign: false
             });
+
             $('#razon_social').select2();
             $('#productosTable').on('click', 'tbody tr', function(event) {
                 $(this).addClass('highlight').siblings().removeClass('highlight');
@@ -548,8 +560,8 @@
             seleccionarProveedor();
         });
 
-        function renderDetalles(){
-            for(var i = 0; i < detalles.length; i++){
+        function renderDetalles() {
+            for (var i = 0; i < detalles.length; i++) {
                 unidad = $.map(unidades, (item) => {
                     if (item.abreviacion == detalles[i].unidad) {
                         return item;
@@ -579,9 +591,13 @@
                     <td>${producto.cantidad} ${unidad['abreviacion']}</td>
                     <td>${'$ ' + producto.precio.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}</td>
                     <td>${'$ ' + subtotal.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}</td>
-                    <td>
-                        <button type="button" onclick="eliminarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .25em;">
-                        <span class="mdi mdi-delete"></span></button>
+                    <td style="min-width:80px; padding: .75em;">
+                        <button type="button" onclick="editarProducto(${index}, 0)" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em; float:left;">
+                            <span class="mdi mdi-pencil"></span>
+                        </button>
+                        <button type="button" onclick="eliminarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em; float:right;">
+                            <span class="mdi mdi-delete"></span>
+                        </button>
                     </td>
                 </tr>`;
                 // Se inserta antes del rowDetalle que es nuestro formulario estatico
@@ -594,13 +610,13 @@
             calcularTotales();
         }
 
-        function selectDetalle(){
+        function selectDetalle() {
             var item = $('#productosTable tbody tr.highlight');
             var sku = $(item).find('td:eq(0)').text();
             var nombre = $(item).find('td:eq(1)').text();
             var descripcion = $(item).find('td:eq(3)').text();
             var precio = parseInt($(item).find('td:eq(2)').text().replace(/[^0-9]/gi, ''));
-            if(sku == '' && nombre == '' && precio == ''){
+            if (sku == '' && nombre == '' && precio == '') {
                 $.toast({
                     type: 'error',
                     title: 'Error en formulario',
@@ -679,7 +695,7 @@
                 return;
             }
 
-            if (detalles.length  == 0) {
+            if (detalles.length == 0) {
                 $.toast({
                     type: 'error',
                     title: 'Error en formulario',
@@ -700,7 +716,7 @@
                 _token: $('meta[name="_token"]').attr('content')
             };
             console.log(doc);
-            $.post("/api/compras/ordenescompra/editar/{{$oc->id}}", doc)
+            $.post("/api/compras/ordenescompra/editar/{{ $oc->id }}", doc)
                 .done(function(data) {
                     console.log(data);
                     location.href = '/compras/ordenescompra';
@@ -733,11 +749,11 @@
                     });
 
                 });
-            }else{
+            } else {
                 $('#rut').val('');
-                    $('#giro').val('');
-                    $('#direccion').val('');
-                    $('#comuna').val('');
+                $('#giro').val('');
+                $('#direccion').val('');
+                $('#comuna').val('');
             }
         }
 
@@ -769,7 +785,7 @@
                 url: '/api/productos',
                 data: data, // serializes the form's elements.
                 success: function(data) {
-                    if(data.success == true){
+                    if (data.success == true) {
                         var dataJson = {
                             proveedor_id: $('#razon_social').val(),
                             producto_id: data.data.id,
@@ -792,23 +808,23 @@
                             }
                         });
                         Swal.fire({
-                            title: "Producto guardado exitosamente",
-                            text: "La información ingresada es correcta y fue procesada exitosamente.",
-                            icon: "success"
-                        })
-                        .then((result) => {
-                            agregarDetalle();
-                            seleccionarProveedor();
-                        });
-                    }else{
+                                title: "Producto guardado exitosamente",
+                                text: "La información ingresada es correcta y fue procesada exitosamente.",
+                                icon: "success"
+                            })
+                            .then((result) => {
+                                agregarDetalle();
+                                seleccionarProveedor();
+                            });
+                    } else {
                         Swal.fire({
-                            title: "Producto no pudo ser guardado",
-                            text: "La información ingresada no es correcta, verifiquela y vuelva a intentarlo.",
-                            icon: "error"
-                        })
-                        .then((result) => {
-                            agregarDetalle();
-                        });
+                                title: "Producto no pudo ser guardado",
+                                text: "La información ingresada no es correcta, verifiquela y vuelva a intentarlo.",
+                                icon: "error"
+                            })
+                            .then((result) => {
+                                agregarDetalle();
+                            });
                     }
 
                 }
@@ -884,8 +900,12 @@
                     <td>${'$ ' + producto.precio.replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}</td>
                     <td>${'$ ' + subtotal.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}</td>
                     <td>
-                        <button type="button" onclick="eliminarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .25em;">
-                        <span class="mdi mdi-delete"></span></button>
+                        <button type="button" onclick="editarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em;">
+                            <span class="mdi mdi-pencil"></span>
+                        </button>
+                        <button type="button" onclick="eliminarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em;">
+                            <span class="mdi mdi-delete"></span>
+                        </button>
                     </td>
                 </tr>`;
                 // Se limpian los inputs
@@ -907,6 +927,75 @@
             }
         }
 
+        function editarProducto(index, action){
+            if(editIndex != null && !action){
+                alert("Ya esta modificando un producto");
+                return;
+            }
+            if(editIndex != null && action){
+                var row = $('#tablaDetalle tr[detindex="' + index + '"]');
+                var item = detalles[index];
+                var cantidad = $('#cantidadEditTxt').val();
+                var unidad = $('#unidadEditTxt').find(":selected").text();
+                console.log('Unidad: ' + $('#unidadEditTxt').val());
+                var precio = $('#precioEditTxt').inputmask('unmaskedvalue');
+                var subtotal = precio * cantidad;
+
+                detalles[index].cantidad = cantidad;
+                detalles[index].unidad = $('#unidadEditTxt').val();
+                detalles[index].precio = precio;
+
+                calcularTotales();
+
+                row.find('td:eq(2)').html(`${cantidad} ${unidad}`);
+                row.find('td:eq(3)').html(`$ ${precio.replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}`);
+                row.find('td:eq(4)').html(`$ ${subtotal.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}`);
+                row.find('td:eq(5)').html(`
+                        <button type="button" onclick="editarProducto(${index}, 1)" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em; float:left;">
+                            <span class="mdi mdi-pencil"></span>
+                        </button>
+                        <button type="button" onclick="eliminarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em; float:right;">
+                            <span class="mdi mdi-delete"></span>
+                        </button>
+                `);
+                editIndex = null;
+                return;
+            }
+            editIndex = index;
+            var row = $('#tablaDetalle tr[detindex="' + index + '"]');
+            var item = detalles[index];
+            row.find('td:eq(3)').html(`<div class="input-group"><input
+                                            onchange="calcSubtotalFila()" id="precioEditTxt"
+                                            value="${item.precio}" type="text"
+                                            class="form-control" placeholder="PRECIO" />
+                                            </div>`);
+            row.find('td:eq(2)').html(`<div class="input-group">
+                                            <input id="cantidadEditTxt"
+                                                onchange="calcSubtotalFila()" type="number"
+                                                min="1" value="${item.cantidad}"
+                                                class="form-control form-control-sm"
+                                                placeholder="CANT" />
+                                            <select id="unidadEditTxt" class="form-control-sm"
+                                                style="max-width: 100px;">
+                                                @foreach ($unidades as $unidad)
+                                                <option value="{{ $unidad->id }}">{{ $unidad->abreviacion }}</option>
+                                                @endforeach
+                                            </select> &nbsp;
+                                        </div>`);
+            row.find('td:eq(5)').html(` <button type="button" onclick="editarProducto(${index}, 1)" class="btn btn-sm btn-outline-primary" style="padding:.25em .5em;">
+                                            <span class="mdi mdi-content-save-plus"></span>
+                                        </button>
+                                        <button type="button" onclick="eliminarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em;">
+                                            <span class="mdi mdi-delete"></span>
+                                        </button>`);
+            $('#precioEditTxt').inputmask('numeric', {
+                prefix: '$ ',
+                radixPoint: ',',
+                groupSeparator: '.',
+                rightAlign: false
+            });
+        }
+
         function eliminarDetalle(index) {
             detalles.splice(index, 1);
             $('#tablaDetalle tr[detindex="' + index + '"]').remove();
@@ -914,28 +1003,28 @@
             calcularTotales();
         }
 
-        function anularOC(id){
+        function anularOC(id) {
             $.ajax({
-                            type: "POST",
-                            url: '/api/compras/ordenescompra/anular/' + id,
-                            data: {}, // serializes the form's elements.
-                            success: function(data2) {
-                                if (data2.success == true) {
-                                    console.log("precio guardado");
-                                } else {
-                                    console.log("error al guardar el precio");
-                                }
+                type: "POST",
+                url: '/api/compras/ordenescompra/anular/' + id,
+                data: {}, // serializes the form's elements.
+                success: function(data2) {
+                    if (data2.success == true) {
+                        console.log("precio guardado");
+                    } else {
+                        console.log("error al guardar el precio");
+                    }
 
-                            }
-                        });
-                        Swal.fire({
-                            title: "Orden de Compra anulada exitosamente",
-                            text: "Orden de Compra anulada correctamente, recuerde que los cambios realizados no son reversibles.",
-                            icon: "error"
-                        })
-                        .then((result) => {
-                            location.href = "/compras/ordenescompra";
-                        });
+                }
+            });
+            Swal.fire({
+                    title: "Orden de Compra anulada exitosamente",
+                    text: "Orden de Compra anulada correctamente, recuerde que los cambios realizados no son reversibles.",
+                    icon: "error"
+                })
+                .then((result) => {
+                    location.href = "/compras/ordenescompra";
+                });
         }
 
         function calcularTotales() {

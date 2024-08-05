@@ -195,7 +195,7 @@ class OrdenCompraController extends Controller
                     $subtotal += intval($linea->precio_unitario * $linea->cantidad);
                 }
                 $neto = $subtotal;
-                $iva = intval($neto * 0.19);
+                $iva = intval(round($neto * 0.19));
                 $total = $neto + $iva;
 
                 OrdenCompra::where('id', $oc->id)->update([

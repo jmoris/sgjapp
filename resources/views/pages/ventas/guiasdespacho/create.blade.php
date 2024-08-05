@@ -252,13 +252,6 @@
                                                                     </select>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="mb-2 border-bottom">
-                                                            <h5>Información Traslado</h5>
-                                                        </div>
-                                                        <div class="row mx-1">
                                                             <div class="row mb-2">
                                                                 <label
                                                                     class="col-sm-4 col-form-label col-form-label-sm">Tipo
@@ -290,6 +283,14 @@
                                                                     </select>
                                                                 </div>
                                                             </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="mb-2 border-bottom">
+                                                            <h5>Información Traslado</h5>
+                                                        </div>
+                                                        <div class="row mx-1">
+
                                                             <div class="row mb-2">
                                                                 <label
                                                                     class="col-sm-4 col-form-label col-form-label-sm">Comuna
@@ -316,6 +317,38 @@
                                                                                 placeholder="Ingrese dirección o deje en blanco">
                                                                 </div>
                                                             </div>
+                                                            <div class="row mb-2">
+                                                                <label
+                                                                    class="col-sm-4 col-form-label col-form-label-sm">Patente</label>
+                                                                <div class="col-sm-8">
+                                                                    <input type="text" name="patente"
+                                                                                id="patente"
+                                                                                class="form-control form-control-sm"
+                                                                                maxlength="6"
+                                                                                placeholder="Ingrese Patente del vehiculo">
+                                                                </div>
+                                                            </div>
+                                                            <div class="row mb-2">
+                                                                <label
+                                                                    class="col-sm-4 col-form-label col-form-label-sm">RUT Chofer</label>
+                                                                <div class="col-sm-8">
+                                                                    <input type="text" name="rut_chofer"
+                                                                                id="rut_chofer"
+                                                                                class="form-control form-control-sm"
+                                                                                placeholder="Ingrese RUT del chofer">
+                                                                </div>
+                                                            </div>
+                                                            <div class="row mb-2">
+                                                                <label
+                                                                    class="col-sm-4 col-form-label col-form-label-sm">Nombre Chofer</label>
+                                                                <div class="col-sm-8">
+                                                                    <input type="text" name="nombre_chofer"
+                                                                                id="nombre_chofer"
+                                                                                class="form-control form-control-sm"
+                                                                                placeholder="Ingrese Nombre del chofer">
+                                                                </div>
+                                                            </div>
+
                                                         </div>
 
                                                     </div>
@@ -766,6 +799,15 @@
                 groupSeparator: '.',
                 rightAlign: false
             });
+            $('#rut_chofer').inputmask({
+                    mask: '99.999.999-[9|K]',
+                    definitions: {
+                        'K': {
+                        validator: "(k|K)",
+                        casing: "upper"
+                    }
+                }
+            });
             $("#descuentoglobal").inputmask('percentage', {});
             $('#razon_social').select2();
             $('#comuna_destino').select2();
@@ -901,6 +943,9 @@
                 tipo_despacho: $('#tipo_despacho').find(":selected").val(),
                 comuna_destino: $('#comuna_destino').val(),
                 direccion_destino: $('#direccion_destino').val(),
+                patente: $('#patente').val(),
+                nombre_chofer: $('#nombre_chofer').val(),
+                rut_chofer: $('#rut_chofer').val(),
                 items: detalles,
                 referencias: referencias,
                 proyecto: $('#nombre_proyecto option:selected').val(),
