@@ -132,7 +132,12 @@ class GuiaDespachoController extends Controller
             Log::info($result);
             curl_close($ch);
             $docData = json_decode($result);
-
+            if($docData->folio == null){
+                return response()->json([
+                    'success' => 'false',
+                    'msg' => 'No se pudo generar el documento en la API',
+                ]);
+            }
             $guia = new GuiaDespacho();
             $guia->folio = $docData->folio;
             Log::info($str);
@@ -177,9 +182,13 @@ class GuiaDespachoController extends Controller
                 'result' => $result
             ]);
         }catch(Exception $ex){
-            Log::error('Usuario conectado: '.auth()->user());
             Log::error($ex);
-            return $ex;
+            return response()->json([
+                'success' => 'false',
+                'msg' => 'No se pudo generar el documento en la API',
+                'error' => $ex->getMessage()
+            ]);
+
         }
     }
 
