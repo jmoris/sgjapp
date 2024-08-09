@@ -890,6 +890,18 @@
                 });
                 return;
             }
+            var comunaDestId = $('#comuna_destino').val();
+            if (comunaDestId == '') {
+                $.toast({
+                    type: 'error',
+                    title: 'Error en formulario',
+                    subtitle: 'ahora',
+                    position: 'top-right',
+                    content: 'Debe seleccionar una comuna de destino para enviar el documento.',
+                    delay: 15000
+                });
+                return;
+            }
             var nombreProyecto = $('#nombre_proyecto option:selected').text();
 
             if (nombreProyecto == 'Seleccione proyecto') {
@@ -952,6 +964,7 @@
                 glosa: $('#glosaTxt').val(),
                 _token: $('meta[name="_token"]').attr('content')
             };
+            console.log(doc);
             $('#statusTxt').text('Enviando información del documento...');
             $.post("/api/ventas/guiasdespacho", doc)
                 .done(function(data) {
@@ -1095,10 +1108,12 @@
             }
 
             // Se recopila toda la información del producto
+            const descTxt = $('#descripcionTxt').val();
+            const newDescTxt = descTxt.replaceAll("//", "<br>");
             var producto = {
                 'sku': $('#skuTxt').val(),
                 'nombre': $('#nombreTxt').val(),
-                'descripcion': $('#descripcionTxt').val(),
+                'descripcion': newDescTxt,
                 'cantidad': $('#cantidadTxt').val(),
                 'unidad': $('#unidadTxt').val(),
                 'precio': $('#precioTxt').inputmask('unmaskedvalue')
