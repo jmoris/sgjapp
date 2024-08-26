@@ -32,10 +32,10 @@
                                         <thead>
                                             <tr>
                                                 <th>Folio</th>
-                                                <th>Proveedor</th>
+                                                <th>Mandante</th>
                                                 <th>RUT</th>
                                                 <th>Fecha</th>
-                                                <th>Monto Total</th>
+                                                <th>Peso Total</th>
                                                 <th>Estado</th>
                                                 <th></th>
                                             </tr>
@@ -58,11 +58,11 @@
         var ocsTable = null;
         var currentUserId = {{auth()->user()->id}};
 
-        function editarOC(id){
+        function editarPedido(id){
             location.href = '/compras/ordenescompra/editar/' + id
         }
 
-        function vistaPreviaOC(id, rev){
+        function vistaPreviaPedido(id, rev){
             window.open('/api/compras/ordenescompra/vistaprevia/' + id + '/' + rev);
         }
 
@@ -82,11 +82,11 @@
                     responsivePriority: 1
                 },
                 {
-                    data: 'proveedor.razon_social',
+                    data: 'cliente.razon_social',
                     responsivePriority: 2
                 },
                 {
-                    data: 'proveedor.rut',
+                    data: 'cliente.rut',
                     responsivePriority: 3
                 },
                 {
@@ -98,7 +98,7 @@
                     }
                 },
                 {
-                    data: 'monto_total',
+                    data: 'peso_total',
                     responsivePriority: 3,
                     render: function(data,type,row){
                         return '$' + row.monto_total.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.');
@@ -129,9 +129,9 @@
                         if(row.estado != -1){
                             html = '<div>';
                             @if(has_permission('editar-orden-compra'))
-                            html += '<button type="button" title="Editar Orden de Compra" onclick="editarOC('+row.id+')" class="btn btn-outline-primary btnxs px-1 py-0"><i class="mdi mdi-18 mdi-pencil"></i></button>';
+                            html += '<button type="button" title="Editar Pedido Material" onclick="editarPedido('+row.id+')" class="btn btn-outline-primary btnxs px-1 py-0"><i class="mdi mdi-18 mdi-pencil"></i></button>';
                             @endif
-                            html += '<button type="button" title="Ver Orden de Compra" onclick="vistaPreviaOC('+row.folio+', '+row.rev+')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-magnify"></i></button>';
+                            html += '<button type="button" title="Ver Pedido Material" onclick="vistaPreviaPedido('+row.folio+', '+row.rev+')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-magnify"></i></button>';
                             html += '</div>';
                         }
                         //var html = '';

@@ -133,6 +133,9 @@ class ProductoController extends Controller
                 'descripcion' => 'nullable',
                 'categoria' => 'required',
                 'unidad' => 'required',
+                'largo' => 'nullable',
+                'ancho' => 'nullable',
+                'peso' => 'nullable',
                 'es_afecto' => 'boolean',
                 'se_vende' => 'boolean',
                 'se_compra' => 'boolean',
@@ -156,6 +159,17 @@ class ProductoController extends Controller
             $producto->descripcion = $request->descripcion;
             $producto->categoria_id = $request->categoria;
             $producto->unidad_id = $request->unidad;
+
+            if($request->largo != null){
+                $producto->largo = $request->largo;
+            }
+            if($request->ancho != null){
+                $producto->ancho = $request->ancho;
+            }
+            if($request->peso != null){
+                $producto->peso = $request->peso;
+            }
+
             $producto->es_afecto = $request->es_afecto;
             $producto->se_vende = ($request->se_vende==null) ? false : true;
             $producto->se_compra = ($request->se_compra==null) ? false : true;
@@ -179,6 +193,9 @@ class ProductoController extends Controller
                 'descripcion' => 'required',
                 'categoria' => 'required',
                 'unidad' => 'required',
+                'largo' => 'nullable',
+                'ancho' => 'nullable',
+                'peso' => 'nullable',
                 'es_afecto' => 'boolean',
                 'se_vende' => 'boolean',
                 'se_compra' => 'boolean',
@@ -198,6 +215,17 @@ class ProductoController extends Controller
             $producto->descripcion = $request->descripcion;
             $producto->categoria_id = $request->categoria;
             $producto->unidad_id = $request->unidad;
+
+            if($request->largo != null){
+                $producto->largo = $request->largo;
+            }
+            if($request->ancho != null){
+                $producto->ancho = $request->ancho;
+            }
+            if($request->peso != null){
+                $producto->peso = $request->peso;
+            }
+
             $producto->es_afecto = $request->es_afecto;
             $producto->se_vende = ($request->se_vende==null) ? false : true;
             $producto->se_compra = ($request->se_compra==null) ? false : true;

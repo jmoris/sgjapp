@@ -163,7 +163,7 @@
                 </li>
             @endif
 
-            @if (has_permission('ver-inventario'))
+            @if (has_permission('ver-orden-compra'))
             <li class="nav-item {{ active_class(['compras/pedidosmateriales*']) }}">
                 <a href="{{ url('/compras/pedidosmateriales') }}" class="nav-link">
                     <i class="mdi mdi-archive-search-outline mdi-18"></i>

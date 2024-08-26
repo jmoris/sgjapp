@@ -8,7 +8,9 @@ use App\PedidoMaterial;
 use App\Proveedor;
 use App\Proyecto;
 use App\Unidad;
+use Exception;
 use Illuminate\Http\Request;
+use Yajra\DataTables\Facades\DataTables;
 
 class PedidoMaterialController extends Controller
 {
@@ -38,13 +40,13 @@ class PedidoMaterialController extends Controller
         DESDE AQUI HACIA ABAJO ESTARAN LAS FUNCIONES DE LA API
     */
     public function getAll(){
-        $data = OrdenCompra::where('rev_activa', true)->where('estado', '!=', -1)->with('proveedor');
+        $data = PedidoMaterial::where('rev_activa', true)->where('estado', '!=', -1)->with('proveedor');
         return DataTables::eloquent($data)->toJson();
     }
 
     public function getById(Request $request, $id){
         try{
-            $user = OrdenCompra::findOrFail($id);
+            $user = PedidoMaterial::findOrFail($id);
             return response()->json($user);
         }catch(Exception $ex){
             return $ex;

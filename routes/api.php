@@ -9,6 +9,7 @@ use App\Http\Controllers\GuiaDespachoController;
 use App\Http\Controllers\MaestroController;
 use App\Http\Controllers\NotaCreditoController;
 use App\Http\Controllers\OrdenCompraController;
+use App\Http\Controllers\PedidoMaterialController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\ProveedorController;
@@ -108,6 +109,10 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
         Route::post('ordenescompra/editar/{id}', [OrdenCompraController::class, 'update']);
         Route::post('ordenescompra/anular/{id}', [OrdenCompraController::class, 'delete']);
 
+        Route::get('pedidosmateriales', [PedidoMaterialController::class, 'getAll']);
+        Route::post('pedidosmateriales', [PedidoMaterialController::class, 'storePedido']);
+        Route::get('pedidosmateriales/vistaprevia/{folio}', [PedidoMaterialController::class, 'vistaPreviaPedido']);
+
     });
 
     Route::prefix('ventas')->group(function(){
@@ -117,6 +122,7 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
 
         Route::get('guiasdespacho', [GuiaDespachoController::class, 'getAll']);
         Route::post('guiasdespacho', [GuiaDespachoController::class, 'storeGuiaDespacho']);
+        Route::delete('guiasdespacho/anular/{id}', [GuiaDespachoController::class, 'anularGuiaDespacho']);
         Route::get('guiasdespacho/vistaprevia/{folio}', [GuiaDespachoController::class, 'vistaPreviaGuiaDespacho']);
 
         Route::get('notascredito', [NotaCreditoController::class, 'getAll']);

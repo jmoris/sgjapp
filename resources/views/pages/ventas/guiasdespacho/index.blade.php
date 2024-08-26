@@ -63,6 +63,34 @@
             window.open('/api/ventas/guiasdespacho/vistaprevia/' + id);
         }
 
+        function anularGuiaDespacho(id){
+            Swal.fire({
+                title: "Confirmar anulación de documento",
+                text: "La acción que desea realizar es irreversible, ¿desea continuar con la operación?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#6571FF",
+                cancelButtonColor: "#FF3366",
+                confirmButtonText: "Confirmar",
+                cancelButtonText: "Cancelar"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "DELETE",
+                        url: '/api/ventas/guiasdespacho/anular/' + id,
+                        success: function(data){
+                            Swal.fire({
+                                title: "Documento anulado",
+                                text: "El documento seleccionado fue anulado satisfactoriamente",
+                                icon: "success"
+                            });
+                            guiasTable.ajax.reload();
+                        }
+                    });
+                }
+            });
+        }
+
         guiasTable = new DataTable('#example', {
             responsive: true,
             ajax: '/api/ventas/guiasdespacho',
@@ -130,6 +158,9 @@
                         var html = '';
                         if(row.estado != -1){
                             html = '<div>';
+                            if(row.estado != 3){
+                                html += '<button type="button" onclick="anularGuiaDespacho('+row.id+')" title="Anular Guia de Despacho" class="btn btn-outline-danger btnxs ms-1 px-1 py-0"><i class="mdi mdi-trash-can"></i></button>';
+                            }
                             html += '<button type="button" title="Ver Guia de Despacho" onclick="vistaPreviaFactura('+row.folio+')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-magnify"></i></button>';
                             html += '</div>';
                         }

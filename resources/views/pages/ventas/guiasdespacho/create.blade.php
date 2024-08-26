@@ -779,6 +779,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"
         integrity="sha512-efAcjYoYT0sXxQRtxGY37CKYmqsFVOIwMApaEbrxJr4RwqVVGw8o+Lfh/+59TU07+suZn1BWq4fDl5fdgyCNkw=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 @endpush
 
 @push('custom-scripts')
@@ -799,8 +800,15 @@
                 groupSeparator: '.',
                 rightAlign: false
             });
+            $('#rut_chofer').change(function(){
+                var value = $(this).inputmask('unmaskedvalue');
+                console.log(value);
+                if(value.length == 8){
+                    $(this).inputmask('setvalue', '0'+value);
+                }
+            });
             $('#rut_chofer').inputmask({
-                    mask: '99.999.999-[9|K]',
+                    mask: '99.999.999-[9|k|K]',
                     definitions: {
                         'K': {
                         validator: "(k|K)",

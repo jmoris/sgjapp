@@ -30,7 +30,7 @@
 @section('content')
     <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
         <div>
-            <h4 class="mb-3 mb-md-0">Emisión de Orden de Compra</h4>
+            <h4 class="mb-3 mb-md-0">Nuevo Pedido de Materiales</h4>
         </div>
     </div>
     <div class="row">
@@ -40,12 +40,12 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-baseline">
-                                <h4 class="card-title mb-0">FORMULARIO DE NUEVA ORDEN DE COMPRA</h4>
+                                <h4 class="card-title mb-0">FORMULARIO DE NUEVO PEDIDO DE MATERIALES</h4>
                             </div>
                             <div class="row mx-3">
                                 <div style="width:100%; margin-top:24px;"></div>
                                 <div class="col-md-12">
-                                    <form class="form" id="storeForm" method="post" onsubmit="procesarOrden(event)">
+                                    <form class="form" id="storeForm" method="post" onsubmit="procesarPedido(event)">
                                         @csrf
                                         <div class="row">
                                             <div class="col-md-12 mb-3">
@@ -119,7 +119,7 @@
                                                 <div class="row">
                                                     <div class="col-md-6">
                                                         <div class="mb-2 border-bottom">
-                                                            <h5>Información del proveedor</h5>
+                                                            <h5>Información del mandante</h5>
                                                         </div>
                                                         <div class="row mx-1">
                                                             <div class="row mb-2">

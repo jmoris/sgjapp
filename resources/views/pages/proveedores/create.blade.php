@@ -36,6 +36,7 @@
                                                         <label class="form-label">R.U.T.</label>
                                                         <input type="text" name="rut" id="rut"
                                                             class="form-control"
+                                                            maxlength="12"
                                                             placeholder="Ingrese el R.U.T del proveedor">
                                                     </div>
                                                     <div class="mb-2">
@@ -142,11 +143,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"
         integrity="sha512-efAcjYoYT0sXxQRtxGY37CKYmqsFVOIwMApaEbrxJr4RwqVVGw8o+Lfh/+59TU07+suZn1BWq4fDl5fdgyCNkw=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 @endpush
 
 @push('custom-scripts')
     <script>
-        $('#rut').inputmask({
+        /*$('#rut').inputmask({
             mask: '99.999.999-[9|K]',
             definitions: {
                 'K': {
@@ -154,6 +156,11 @@
                     casing: "upper"
                 }
             }
+        });*/
+        $("input#rut").rut({
+            formatOn: 'keyup',
+            minimumLength: 8, // validar largo mínimo; default: 2
+            validateOn: 'change' // si no se quiere validar, pasar null
         });
 
         $('#rut').keypress(function(e){
@@ -173,7 +180,9 @@
             $('#comuna').trigger('change');
             var rut = $(this).inputmask('unmaskedvalue');
             var dv = rut[rut.length - 1];
-            var rutCompleto = rut.slice(0, -1) + '-' + dv;
+            //var rutCompleto = rut.slice(0, -1) + '-' + dv;
+
+            var rutCompleto = $.formatRut(rut, false);
             console.log(rutCompleto);
             $.ajax({
                 url: '/api/infodte/contribuyentes/' + rutCompleto,

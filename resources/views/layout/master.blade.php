@@ -71,6 +71,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
     <script src="https://cdn.datatables.net/v/dt/jq-3.7.0/jszip-3.10.1/dt-2.0.6/b-3.0.2/b-colvis-3.0.2/b-html5-3.0.2/b-print-3.0.2/cr-2.0.1/datatables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery.rut@1.1.2/jquery.rut.min.js"></script>
 
     <script src="{{ asset('assets/plugins/feather-icons/feather.min.js') }}"></script>
     <script src="{{ asset('assets/plugins/perfect-scrollbar/perfect-scrollbar.min.js') }}"></script>

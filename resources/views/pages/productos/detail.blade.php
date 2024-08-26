@@ -65,6 +65,24 @@
                                         </div>
                                         <div class="col-md-6">
                                             <div class="mb-4 border-bottom">
+                                                <h5>Información del producto</h5>
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="form-label">Largo</label>
+                                                <input type="text" name="largo" id="largo" class="form-control"
+                                                    placeholder="Ingrese el largo del producto">
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="form-label">Ancho</label>
+                                                <input type="text" name="ancho" id="ancho" class="form-control"
+                                                    placeholder="Ingrese el ancho del producto">
+                                            </div>
+                                            <div class="mb-2">
+                                                <label class="form-label">Peso (Kg/Mt)</label>
+                                                <input type="text" name="peso" id="peso" class="form-control"
+                                                    placeholder="Ingrese el peso del producto">
+                                            </div>
+                                            <div class="mb-4 border-bottom">
                                                 <h5>Información contable</h5>
                                             </div>
                                             <div class="mb-2">

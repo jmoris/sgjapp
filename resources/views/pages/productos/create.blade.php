@@ -68,18 +68,18 @@
                                                 </div>
                                                 <div class="mb-2">
                                                     <label class="form-label">Largo</label>
-                                                    <input type="text" name="nombre" id="nombre" class="form-control"
-                                                        placeholder="Ingrese el nombre del producto">
+                                                    <input type="text" name="largo" id="largo" class="form-control"
+                                                        placeholder="Ingrese el largo del producto">
                                                 </div>
                                                 <div class="mb-2">
                                                     <label class="form-label">Ancho</label>
-                                                    <input type="text" name="nombre" id="nombre" class="form-control"
-                                                        placeholder="Ingrese el nombre del producto">
+                                                    <input type="text" name="ancho" id="ancho" class="form-control"
+                                                        placeholder="Ingrese el ancho del producto">
                                                 </div>
                                                 <div class="mb-2">
                                                     <label class="form-label">Peso (Kg/Mt)</label>
-                                                    <input type="text" name="nombre" id="nombre" class="form-control"
-                                                        placeholder="Ingrese el nombre del producto">
+                                                    <input type="text" name="peso" id="peso" class="form-control"
+                                                        placeholder="Ingrese el peso del producto">
                                                 </div>
                                                 <div class="mb-4 border-bottom">
                                                     <h5>Información contable</h5>
@@ -178,6 +178,9 @@
                     descripcion: $('#descripcion').val(),
                     categoria: $('#categoria').val(),
                     unidad: $('#unidad').val(),
+                    largo: $('#largo').val(),
+                    ancho: $('#ancho').val(),
+                    peso: $('#peso').val(),
                     es_afecto: $('#es_afecto').val(),
                     se_vende: $('#se_vende').val(),
                     se_compra: $('#se_compra').val(),

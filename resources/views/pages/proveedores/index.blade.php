@@ -97,19 +97,23 @@
             columns: [
                 {
                     data: 'rut',
-                    responsivePriority: 1
+                    responsivePriority: 1,
+                    width: '10%'
                 },
                 {
                     data: 'razon_social',
-                    responsivePriority: 2
+                    responsivePriority: 2,
+                    width: '35%'
                 },
                 {
                     data: 'direccion',
-                    responsivePriority: 3
+                    responsivePriority: 3,
+                    width: '35%'
                 },
                 {
                     data: 'comuna.nombre',
-                    responsivePriority: 3
+                    responsivePriority: 3,
+                    width: '12%'
                 },
                 {
                     data: null,

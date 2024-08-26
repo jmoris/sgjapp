@@ -192,6 +192,18 @@ class GuiaDespachoController extends Controller
 
         }
     }
+    public function anularGuiaDespacho(Request $request, $id){
+        try{
+            $guia = GuiaDespacho::where('id', $id)->update(['estado' => 3]);
+            return response()->json([
+                'success' => true,
+                'msg' => 'Documento anulado exitosamente',
+                'data' => $guia
+            ]);
+        }catch(Exception $ex){
+            return $ex;
+        }
+    }
 
     public function vistaPreviaGuiaDespacho(Request $request, $folio){
         try{

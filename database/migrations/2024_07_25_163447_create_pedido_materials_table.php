@@ -17,12 +17,11 @@ return new class extends Migration
             $table->bigInteger('folio');
             $table->foreignIdFor(Cliente::class)->constrained();
             $table->dateTime('fecha_emision');
-            $table->smallInteger('tipo_pago');
             $table->unsignedBigInteger('proyecto_id');
             $table->smallInteger('estado')->default(0);
-            $table->bigInteger('monto_neto');
-            $table->bigInteger('monto_iva');
-            $table->bigInteger('monto_total');
+            $table->bigInteger('peso_total');
+            $table->bigInteger('peso_faltante');
+            $table->bigInteger('peso_recibido');
             $table->string('glosa')->nullable();
             $table->foreignIdFor(\App\User::class)->constrained();
             $table->smallInteger('rev')->default(1);
