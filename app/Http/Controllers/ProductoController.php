@@ -190,7 +190,7 @@ class ProductoController extends Controller
             $validator = Validator::make($request->all(), [
                 'sku' => 'required',
                 'nombre' => 'required',
-                'descripcion' => 'required',
+                'descripcion' => 'nullable',
                 'categoria' => 'required',
                 'unidad' => 'required',
                 'largo' => 'nullable',
