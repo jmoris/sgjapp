@@ -60,7 +60,7 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
 
     Route::prefix('reportes')->group(function(){
         Route::prefix('excel')->group(function(){
-            Route::get('proyecto/{id}/{detallado?}', [ReporteController::class, 'getReporteProyecto']);
+            Route::get('proyecto/{tipo}/{id}/{detallado?}', [ReporteController::class, 'getReporteProyecto']);
         });
         Route::prefix('pdf')->group(function(){
 

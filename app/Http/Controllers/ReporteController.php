@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Factura;
+use App\GuiaDespacho;
+use App\NotaCredito;
 use App\OrdenCompra;
 use App\Proyecto;
 use Exception;
@@ -14,10 +17,29 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ReporteController extends Controller
 {
-    public function getReporteProyecto($id, $detallado = 0){
+    public function getReporteProyecto($tipo, $id, $detallado = 0){
         try{
             $proyecto = Proyecto::findOrFail($id);
-            $ocs = OrdenCompra::where('proyecto_id', $proyecto->id)->where('rev_activa', true)->where('estado', '!=', -1)->with('proveedor')->get();
+            $docs = null;
+            $titleText = 'Documentos';
+            switch($tipo){
+                case 33:
+                    $titleText = 'Facturas';
+                    $docs = Factura::where('proyecto_id', $proyecto->id)->with('cliente')->get();
+                    break;
+                case 52:
+                    $titleText = 'Guias de Despacho';
+                    $docs = GuiaDespacho::where('proyecto_id', $proyecto->id)->with('cliente')->get();
+                    break;
+                case 61:
+                    $titleText = 'Notas de Credito';
+                    $docs = NotaCredito::where('proyecto_id', $proyecto->id)->with('cliente')->get();
+                    break;
+                case 0:
+                    $titleText = 'Ordenes de Compra';
+                    $docs = OrdenCompra::where('proyecto_id', $proyecto->id)->where('rev_activa', true)->where('estado', '!=', -1)->with('proveedor')->get();
+                    break;
+            }
             $spreadsheet = new Spreadsheet();
             $activeWorksheet = $spreadsheet->getActiveSheet();
             $activeWorksheet->setTitle('Reporte');
@@ -37,7 +59,7 @@ class ReporteController extends Controller
                 $activeWorksheet->getStyle('B2')->getFont()->setBold( true );
                 $activeWorksheet->getStyle('B2')->getAlignment()->setHorizontal('center');
                 $activeWorksheet->getStyle('B2')->getFont()->setSize(18);
-                $activeWorksheet->setCellValue('B3', 'Ordenes de Compra Asociadas');
+                $activeWorksheet->setCellValue('B3', $titleText.' Asociadas');
                 $activeWorksheet->getStyle('B3')->getAlignment()->setHorizontal('center');
                 $activeWorksheet->getStyle('B3')->getFont()->setSize(18);
                 $inicial = 5;
@@ -64,11 +86,11 @@ class ReporteController extends Controller
                 $activeWorksheet->getStyle('E'.$startIndex)->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THIN)->setColor(new Color('DCDCDC'));
                 $startIndex++;
 
-                foreach($ocs as $oc){
-                    $activeWorksheet->setCellValue('B'.$startIndex, $oc->folio);
-                    $activeWorksheet->setCellValue('C'.$startIndex, $oc->proveedor->razon_social);
-                    $activeWorksheet->setCellValue('D'.$startIndex, date('d-m-Y', strtotime($oc->fecha_emision)));
-                    $activeWorksheet->setCellValue('E'.$startIndex, $oc->monto_total);
+                foreach($docs as $doc){
+                    $activeWorksheet->setCellValue('B'.$startIndex, $doc->folio);
+                    $activeWorksheet->setCellValue('C'.$startIndex, ($tipo==0)?$doc->proveedor->razon_social:$doc->cliente->razon_social);
+                    $activeWorksheet->setCellValue('D'.$startIndex, date('d-m-Y', strtotime($doc->fecha_emision)));
+                    $activeWorksheet->setCellValue('E'.$startIndex, $doc->monto_total);
                     $activeWorksheet->getStyle('E'.$startIndex)->getNumberFormat()->setFormatCode('$ #,###0_-');
 
                     $activeWorksheet->getStyle('B'.$startIndex)->getFont()->setSize(16);
@@ -140,11 +162,11 @@ class ReporteController extends Controller
                 $activeWorksheet->getStyle('E'.$startIndex)->getBorders()->getBottom()->setBorderStyle(Border::BORDER_THIN)->setColor(new Color('DCDCDC'));
                 $startIndex++;
                 $celdasTotales = [];
-                foreach($ocs as $oc){
-                    $activeWorksheet->setCellValue('B'.$startIndex, $oc->folio);
-                    $activeWorksheet->setCellValue('C'.$startIndex, $oc->proveedor->razon_social);
-                    $activeWorksheet->setCellValue('D'.$startIndex, date('d-m-Y', strtotime($oc->fecha_emision)));
-                    $activeWorksheet->setCellValue('E'.$startIndex, $oc->monto_total);
+                foreach($docs as $doc){
+                    $activeWorksheet->setCellValue('B'.$startIndex, $doc->folio);
+                    $activeWorksheet->setCellValue('C'.$startIndex, $doc->proveedor->razon_social);
+                    $activeWorksheet->setCellValue('D'.$startIndex, date('d-m-Y', strtotime($doc->fecha_emision)));
+                    $activeWorksheet->setCellValue('E'.$startIndex, $doc->monto_total);
                     $activeWorksheet->getStyle('E'.$startIndex)->getNumberFormat()->setFormatCode('$ #,###0_-');
                     array_push($celdasTotales, 'E'.$startIndex);
                     $activeWorksheet->getStyle('B'.$startIndex)->getFont()->setSize(16);
@@ -155,7 +177,7 @@ class ReporteController extends Controller
                     $activeWorksheet->getStyle('E'.$startIndex)->getFont()->setSize(16);
                     $startIndex++;
 
-                    foreach($oc->lineas as $linea){
+                    foreach($doc->lineas as $linea){
                         $activeWorksheet->setCellValue('C'.$startIndex, $linea->nombre );
                         $activeWorksheet->setCellValue('D'.$startIndex, $linea->cantidad.' '.$linea->unidad);
                         $activeWorksheet->setCellValue('E'.$startIndex, ($linea->precio_unitario*$linea->cantidad)*1.19);
@@ -192,7 +214,7 @@ class ReporteController extends Controller
             }
             $writer = new Xlsx($spreadsheet);
             header('Content-Type: application/vnd.ms-excel');
-            header('Content-Disposition: attachment;filename="sgjapp_'.preg_replace('/\s+/', '', strtolower($proyecto->nombre)).'.xlsx"'); /*-- $filename is  xsl filename ---*/
+            header('Content-Disposition: attachment;filename="sgjapp_'.preg_replace('/\s+/', '', strtolower($proyecto->nombre)).'_'.$tipo.'.xlsx"'); /*-- $filename is  xsl filename ---*/
             header('Cache-Control: max-age=0');
             $writer->save('php://output');
         }catch(Exception $ex){

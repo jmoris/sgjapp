@@ -92,14 +92,14 @@
                 </li>
             @endif
             @if (has_permission('ver-factura')||has_permission('ver-guia-despacho')||has_permission('ver-nota-credito')||has_permission('ver-nota-debito'))
-            <li class="nav-item {{ active_class(['ventas/*']) }}">
+            <li class="nav-item {{ active_class(['ventas/facturas', 'ventas/guiasdespacho', 'ventas/notascredito', 'ventas/notasdebito']) }}">
                 <a class="nav-link" data-bs-toggle="collapse" href="#ventas" role="button"
-                    aria-expanded="{{ is_active_route(['ventas/*']) }}" aria-controls="ventas">
+                    aria-expanded="{{ is_active_route(['ventas/facturas', 'ventas/guiasdespacho', 'ventas/notascredito', 'ventas/notasdebito']) }}" aria-controls="ventas">
                     <i class="mdi mdi-file-document-multiple-outline mdi-18"></i>
                     <span class="link-title" style="margin-left: 12px;">Documentos</span>
                     <i class="link-arrow" data-feather="chevron-down"></i>
                 </a>
-                <div class="collapse {{ show_class(['ventas/*']) }}" id="ventas">
+                <div class="collapse {{ show_class(['ventas/facturas', 'ventas/guiasdespacho', 'ventas/notascredito', 'ventas/notasdebito']) }}" id="ventas">
                     <ul class="nav sub-menu">
                         @if (has_permission('ver-factura'))
                             <li class="nav-item">

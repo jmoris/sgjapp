@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Factura;
+use App\GuiaDespacho;
+use App\NotaCredito;
 use App\OrdenCompra;
 use App\Proyecto;
 use Exception;
@@ -27,9 +30,12 @@ class ProyectoController extends Controller
 
     public function detailProyecto($id){
         $proyecto = Proyecto::find($id);
+        $facturas = Factura::where('proyecto_id', $proyecto->id)->with('cliente')->get();
+        $guias = GuiaDespacho::where('proyecto_id', $proyecto->id)->with('cliente')->get();
+        $nc = NotaCredito::where('proyecto_id', $proyecto->id)->with('cliente')->get();
         $ocs = OrdenCompra::where('proyecto_id', $proyecto->id)->where('rev_activa', true)->where('estado', '!=', -1)->with('proveedor')->get();
         $total = OrdenCompra::where('proyecto_id', $proyecto->id)->sum('monto_total');
-        return view('pages.proyectos.detail', ['proyecto' => $proyecto, 'ocs' => $ocs, 'total' => $total]);
+        return view('pages.proyectos.detail', ['proyecto' => $proyecto, 'facturas' => $facturas, 'guias' => $guias, 'notascredito' => $nc, 'ocs' => $ocs, 'total' => $total]);
     }
 
     /*
