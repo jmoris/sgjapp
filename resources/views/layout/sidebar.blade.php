@@ -10,7 +10,7 @@
     <div class="sidebar-body">
         <ul class="nav">
             <li class="nav-item nav-category">PRINCIPAL</li>
-            <li class="nav-item {{ active_class(['dashboard']) }}">
+            <li class="nav-item {{active_class(['dashboard']) }}">
                 <a href="{{ url('/dashboard') }}" class="nav-link">
                     <i class="link-icon" data-feather="box"></i>
                     <span class="link-title">Dashboard</span>
@@ -163,11 +163,10 @@
                 </li>
             @endif
 
-            @if (has_permission('ver-pedido-material'))
             <li class="nav-item {{ active_class(['compras/pedidosmateriales*']) }}">
                 <a href="{{ url('/compras/pedidosmateriales') }}" class="nav-link">
                     <i class="mdi mdi-archive-search-outline mdi-18"></i>
-                    <span class="link-title" style="margin-left: 12px;">Pedido Materiales</span>
+                    <span class="link-title" style="margin-left: 12px;">Pedido de Materiales</span>
                 </a>
             </li>
                 <li class="nav-item {{ active_class(['apps/inventario']) }}">
@@ -176,7 +175,6 @@
                         <span class="link-title">Inventario</span>
                     </a>
                 </li>
-            @endif
         </ul>
     </div>
 </nav>

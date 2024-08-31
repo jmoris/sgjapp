@@ -12,7 +12,7 @@
                 onclick="location.href = '/compras/pedidosmateriales/nuevo';"
                 @if(!has_permission('crear-orden-compra')) disabled @endif>
                 <div>
-                    <i class="mdi mdi-plus"></i> Nuevo Pedido
+                    <i class="mdi mdi-plus"></i> Nuevo Pedido de Material
                 </div>
             </button>
         </div>
@@ -33,7 +33,6 @@
                                             <tr>
                                                 <th>Folio</th>
                                                 <th>Mandante</th>
-                                                <th>RUT</th>
                                                 <th>Fecha</th>
                                                 <th>Peso Total</th>
                                                 <th>Estado</th>
@@ -84,10 +83,6 @@
                 {
                     data: 'cliente.razon_social',
                     responsivePriority: 2
-                },
-                {
-                    data: 'cliente.rut',
-                    responsivePriority: 3
                 },
                 {
                     data: 'fecha_emision',

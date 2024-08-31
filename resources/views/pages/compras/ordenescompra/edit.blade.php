@@ -846,6 +846,11 @@
                 return;
             }
 
+            // Se verifica si se escribio un SKU, de no haber uno, se rellena con el timestamp
+            if ($('#skuTxt').val() == '') {
+                $('#skuTxt').val('AG' + $.now());
+            }
+
             // Se recopila toda la información del producto
             var producto = {
                 'sku': $('#skuTxt').val(),

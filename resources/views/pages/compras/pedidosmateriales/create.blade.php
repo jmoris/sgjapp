@@ -130,7 +130,7 @@
                                                                     <select name="razon_social" id="razon_social"
                                                                         class="form-control form-control-sm"
                                                                         onchange="seleccionarProveedor()">
-                                                                        <option value="">Seleccione un proveedor
+                                                                        <option value="">Seleccione un cliente
                                                                         </option>
                                                                         @foreach ($proveedores as $proveedor)
                                                                             <option value="{{ $proveedor->id }}">
@@ -185,7 +185,7 @@
                                                                     documento</label>
                                                                 <div class="col-sm-8">
                                                                     <input type="text" name="tipo_doc" id="tipo_doc"
-                                                                        value="Orden de Compra (801)"
+                                                                        value="Pedido de Material"
                                                                         class="form-control form-control-sm" disabled>
                                                                 </div>
                                                             </div>
@@ -199,27 +199,6 @@
                                                                         class="form-control form-control-sm"
                                                                         value="{{ date('Y-m-d') }}"
                                                                         max="{{ date('Y-m-d', strtotime('+1 days')) }}">
-                                                                </div>
-                                                            </div>
-                                                            <div class="row mb-2">
-                                                                <label
-                                                                    class="col-sm-4 col-form-label col-form-label-sm">Tipo
-                                                                    de pago</label>
-                                                                <div class="col-sm-8 align-bottom">
-                                                                    <div class="form-check form-check-inline">
-                                                                        <input class="form-check-input" type="radio"
-                                                                            name="tipo_pago" id="tipo_pago"
-                                                                            value="2" checked>
-                                                                        <label class="form-check-label"
-                                                                            for="tipo_pago">Credito</label>
-                                                                    </div>
-                                                                    <div class="form-check form-check-inline">
-                                                                        <input class="form-check-input" type="radio"
-                                                                            name="tipo_pago" id="tipo_pago"
-                                                                            value="1">
-                                                                        <label class="form-check-label"
-                                                                            for="tipo_pago">Contado</label>
-                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -259,9 +238,9 @@
                                                         <thead>
                                                             <th>SKU</th>
                                                             <th>Item</th>
+                                                            <th>Stock</th>
                                                             <th>Cantidad</th>
-                                                            <th>Precio</th>
-                                                            <th>Subtotal</th>
+                                                            <th>Recibidos</th>
                                                             <th></th>
                                                         </thead>
                                                         <tbody>
@@ -286,28 +265,25 @@
                                                                         placeholder="NOMBRE ITEM" />
                                                                 </td>
                                                                 <td style="width:18%;padding:4px;">
-                                                                    <div class="input-group">
-                                                                        <input id="cantidadTxt"
-                                                                            onchange="calcSubtotalFila()" type="number"
-                                                                            min="1" value="1"
-                                                                            class="form-control form-control-sm"
-                                                                            placeholder="CANT" />
-                                                                        <select id="unidadTxt" class="form-control-sm"
-                                                                            style="max-width: 100px;">
-                                                                            @foreach ($unidades as $unidad)
-                                                                                <option value="{{ $unidad->id }}">
-                                                                                    {{ $unidad->abreviacion }}</option>
-                                                                            @endforeach
-                                                                        </select>
-                                                                    </div>
+                                                                    <input id="stockTxt" type="text"
+                                                                        class="form-control form-control-sm"
+                                                                        value="0"
+                                                                        placeholder="STOCK" />
                                                                 </td>
-                                                                <td style="width:15%;padding:4px;"><input
-                                                                        onchange="calcSubtotalFila()" id="precioTxt"
-                                                                        value="0" type="text"
-                                                                        class="form-control" placeholder="PRECIO" /></td>
-                                                                <td style="width:15%;padding:4px;"><span
-                                                                        style="vertical-align: bottom; text-align:right;"
-                                                                        id="lblSubtotal">$ 0</span></td>
+                                                                <td style="width:15%;padding:4px;">
+                                                                    <input
+                                                                        id="cantidadTxt" type="text"
+                                                                        class="form-control form-control-sm"
+                                                                        value="0"
+                                                                        placeholder="CANTIDAD" />
+                                                                </td>
+                                                                <td style="width:15%;padding:4px;">
+                                                                    <input
+                                                                        id="recibidoTxt" type="text"
+                                                                        class="form-control form-control-sm"
+                                                                        value="0"
+                                                                        placeholder="RECIBIDOS" />
+                                                                </td>
                                                                 <td style="width:10%;padding:4px;">
                                                                     <button type="button" onclick="agregarDetalle()"
                                                                         title="Agregar detalle a la lista"
@@ -366,69 +342,27 @@
                                             </div>
                                             <div class="col-md-5">
                                                 <div class="mb-2 border-bottom">
-                                                    <h5>Resumen de montos</h5>
+                                                    <h5>Resumen de pedido</h5>
                                                 </div>
                                                 <div class="col-md-12">
                                                     <div class="row">
                                                         <div class="col-md-7">
-                                                            <p>Subtotal </p>
+                                                            <p><b>Total de Kg </b></p>
                                                         </div>
                                                         <div class="col-md-5 text-end">
-                                                            <p id="lblSubtotalDoc">$0</p>
+                                                            <p id="lbltotal">0 Kg</p>
                                                         </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-6 pr-0">
-                                                            <p>Descuento global </p>
-                                                        </div>
-                                                        <div class="col-md-3 pl-0">
-                                                            <input value="0" class="form-control form-control-sm"
-                                                                type="text" name="descuentoglobal"
-                                                                id="descuentoglobal" />
-
-                                                        </div>
-                                                        <div class="col-md-3 pl-0 my-0 text-end">
-                                                            <p class="my-0" id="lbldescuentoglobal">$0</p>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
                                                         <div class="col-md-7">
-                                                            <p>Monto exento </p>
+                                                            <p><b>Total de Kg Recibidos </b></p>
                                                         </div>
                                                         <div class="col-md-5 text-end">
-                                                            <p id="lblexento">$0</p>
+                                                            <p id="lbltotal">0 Kg</p>
                                                         </div>
-                                                    </div>
-                                                    <div class="row">
                                                         <div class="col-md-7">
-                                                            <p>Monto neto </p>
+                                                            <p><b>Total de Kg Faltantes </b></p>
                                                         </div>
                                                         <div class="col-md-5 text-end">
-                                                            <p id="lblneto">$0</p>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-7">
-                                                            <p>IVA </p>
-                                                        </div>
-                                                        <div class="col-md-5 text-end">
-                                                            <p id="lbliva">$0</p>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-7">
-                                                            <p>Impuestos adicionales </p>
-                                                        </div>
-                                                        <div class="col-md-5 text-end">
-                                                            <p id="lblimpad">$0</p>
-                                                        </div>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-7">
-                                                            <p><b>Total </b></p>
-                                                        </div>
-                                                        <div class="col-md-5 text-end">
-                                                            <p id="lbltotal">$0</p>
+                                                            <p id="lbltotal">0 Kg</p>
                                                         </div>
                                                     </div>
                                                 </div>
