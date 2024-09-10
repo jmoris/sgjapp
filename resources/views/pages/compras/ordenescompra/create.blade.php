@@ -522,6 +522,8 @@
 
 @push('custom-scripts')
     <script>
+        var editIndex = null;
+        var editHtml = null;
         var index = 0;
         var detalles = [];
         var subtotalDoc = 0;
@@ -842,9 +844,13 @@
                     <td>${producto.cantidad} ${unidad.abreviacion}</td>
                     <td>${'$ ' + producto.precio.replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}</td>
                     <td>${'$ ' + subtotal.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}</td>
-                    <td>
-                        <button type="button" onclick="eliminarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .25em;">
-                        <span class="mdi mdi-delete"></span></button>
+                    <td style="min-width:80px; padding: .75em;">
+                        <button type="button" onclick="editarProducto(${index}, 0)" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em; float:left;">
+                            <span class="mdi mdi-pencil"></span>
+                        </button>
+                        <button type="button" onclick="eliminarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em; float:right;">
+                            <span class="mdi mdi-delete"></span>
+                        </button>
                     </td>
                 </tr>`;
                 // Se limpian los inputs
@@ -893,6 +899,75 @@
             var subtotal = cantidad * precio;
 
             $('#lblSubtotal').text('$ ' + subtotal.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.'));
+        }
+
+        function editarProducto(index, action){
+            if(editIndex != null && !action){
+                alert("Ya esta modificando un producto");
+                return;
+            }
+            if(editIndex != null && action){
+                var row = $('#tablaDetalle tr[detindex="' + index + '"]');
+                var item = detalles[index];
+                var cantidad = $('#cantidadEditTxt').val();
+                var unidad = $('#unidadEditTxt').find(":selected").text();
+                console.log('Unidad: ' + $('#unidadEditTxt').val());
+                var precio = $('#precioEditTxt').inputmask('unmaskedvalue');
+                var subtotal = precio * cantidad;
+
+                detalles[index].cantidad = cantidad;
+                detalles[index].unidad = $('#unidadEditTxt').val();
+                detalles[index].precio = precio;
+
+                calcularTotales();
+
+                row.find('td:eq(2)').html(`${cantidad} ${unidad}`);
+                row.find('td:eq(3)').html(`$ ${precio.replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}`);
+                row.find('td:eq(4)').html(`$ ${subtotal.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}`);
+                row.find('td:eq(5)').html(`
+                        <button type="button" onclick="editarProducto(${index}, 1)" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em; float:left;">
+                            <span class="mdi mdi-pencil"></span>
+                        </button>
+                        <button type="button" onclick="eliminarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em; float:right;">
+                            <span class="mdi mdi-delete"></span>
+                        </button>
+                `);
+                editIndex = null;
+                return;
+            }
+            editIndex = index;
+            var row = $('#tablaDetalle tr[detindex="' + index + '"]');
+            var item = detalles[index];
+            row.find('td:eq(3)').html(`<div class="input-group"><input
+                                            onchange="calcSubtotalFila()" id="precioEditTxt"
+                                            value="${item.precio}" type="text"
+                                            class="form-control" placeholder="PRECIO" />
+                                            </div>`);
+            row.find('td:eq(2)').html(`<div class="input-group">
+                                            <input id="cantidadEditTxt"
+                                                onchange="calcSubtotalFila()" type="number"
+                                                min="1" value="${item.cantidad}"
+                                                class="form-control form-control-sm"
+                                                placeholder="CANT" />
+                                            <select id="unidadEditTxt" class="form-control-sm"
+                                                style="max-width: 100px;">
+                                                @foreach ($unidades as $unidad)
+                                                <option value="{{ $unidad->id }}">{{ $unidad->abreviacion }}</option>
+                                                @endforeach
+                                            </select> &nbsp;
+                                        </div>`);
+            row.find('td:eq(5)').html(` <button type="button" onclick="editarProducto(${index}, 1)" class="btn btn-sm btn-outline-primary" style="padding:.25em .5em;">
+                                            <span class="mdi mdi-content-save-plus"></span>
+                                        </button>
+                                        <button type="button" onclick="eliminarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em;">
+                                            <span class="mdi mdi-delete"></span>
+                                        </button>`);
+            $('#precioEditTxt').inputmask('numeric', {
+                prefix: '$ ',
+                radixPoint: ',',
+                groupSeparator: '.',
+                rightAlign: false
+            });
         }
 
         $(document).on('select2:open', () => {

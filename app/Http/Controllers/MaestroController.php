@@ -34,6 +34,13 @@ class MaestroController extends Controller
     }
 
     public function getListaPrecio(Request $request, $id){
+        if(isset($request->term)){
+            $term = $request->term;
+            $lista = ListaPrecio::where('id', $id)->with(['productos' => function($q) use($term){
+                $q->where('nombre', 'like', '%'.$term.'%');
+            }])->first();
+            return response()->json($lista);
+        }
         $lista = ListaPrecio::where('id', $id)->with('productos')->first();
         return response()->json($lista);
     }

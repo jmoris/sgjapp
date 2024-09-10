@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Cliente;
 use App\Comuna;
 use App\Helpers\Ajustes;
 use App\PedidoMaterial;
@@ -21,10 +22,10 @@ class PedidoMaterialController extends Controller
     public function newPedido(){
         $emisor = Ajustes::getEmisor();
         $comunas = Comuna::all();
-        $proveedores = Proveedor::all();
+        $clientes = Cliente::all();
         $unidades = Unidad::all();
         $proyectos = Proyecto::where('estado', 0)->get();
-        return view('pages.compras.pedidosmateriales.create', ['proveedores' => $proveedores, 'unidades' => $unidades,'comunas' => $comunas, 'emisor' => $emisor, 'proyectos' => $proyectos]);
+        return view('pages.compras.pedidosmateriales.create', ['clientes' => $clientes, 'unidades' => $unidades,'comunas' => $comunas, 'emisor' => $emisor, 'proyectos' => $proyectos]);
     }
 
     public function editPedido($id){

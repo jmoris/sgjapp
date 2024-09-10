@@ -132,9 +132,9 @@
                                                                         onchange="seleccionarProveedor()">
                                                                         <option value="">Seleccione un cliente
                                                                         </option>
-                                                                        @foreach ($proveedores as $proveedor)
-                                                                            <option value="{{ $proveedor->id }}">
-                                                                                {{ $proveedor->razon_social }}</option>
+                                                                        @foreach ($clientes as $cliente)
+                                                                            <option value="{{ $cliente->id }}">
+                                                                                {{ $cliente->razon_social }}</option>
                                                                         @endforeach
                                                                     </select>
                                                                 </div>
@@ -201,7 +201,16 @@
                                                                         max="{{ date('Y-m-d', strtotime('+1 days')) }}">
                                                                 </div>
                                                             </div>
+                                                            <div class="row mb-2">
+                                                                <label
+                                                                    class="col-sm-4 col-form-label col-form-label-sm">Materia</label>
+                                                                <div class="col-sm-8">
+                                                                    <input type="text" name="materia" id="materia"
+                                                                        class="form-control form-control-sm">
+                                                                </div>
+                                                            </div>
                                                         </div>
+
                                                         <div class="mb-2 border-bottom">
                                                             <h5>Información de obra</h5>
                                                         </div>
@@ -228,24 +237,22 @@
                                             <div class="col-md-12 mb-3">
                                                 <div class="col-md-12 mb-2 border-bottom">
                                                     <h5 class="d-inline">Detalle del documento</h5>
-                                                    <div class="d-inline float-end"><a href="javascript:void(0)"
-                                                            id="modoSimple" onclick="modoDetalle(0)">Simple</a> | <a
-                                                            id="modoCompleto" href="javascript:void(0)"
-                                                            onclick="modoDetalle(1)">Avanzado</a></div>
+
                                                 </div>
                                                 <div class="row mx-1">
                                                     <table id="tablaDetalle" class="table mb-4">
                                                         <thead>
-                                                            <th>SKU</th>
+                                                            <!--<th>SKU</th>-->
                                                             <th>Item</th>
                                                             <th>Stock</th>
                                                             <th>Cantidad</th>
                                                             <th>Recibidos</th>
-                                                            <th></th>
+                                                            <th>Total Kgs</th>
+                                                            <th><i class="mdi mdi-dots-vertical"></i></th>
                                                         </thead>
                                                         <tbody>
                                                             <tr class="noBorder" id="rowDetalle">
-                                                                <td style="width:12%;padding:4px;">
+                                                                <!--<td style="width:12%;padding:4px;">
                                                                     <div class="input-group">
                                                                         <input id="skuTxt" type="text"
                                                                             class="form-control form-control-sm p-1"
@@ -258,31 +265,36 @@
                                                                             <i class="mdi mdi-magnify"></i>
                                                                         </button>
                                                                     </div>
-                                                                </td>
-                                                                <td style="width:30%;padding:4px;">
-                                                                    <input id="nombreTxt" type="text"
+                                                                </td>-->
+                                                                <td style="width:35%;padding:4px;">
+                                                                    <!--<input id="nombreTxt" type="text"
                                                                         class="form-control form-control-sm"
-                                                                        placeholder="NOMBRE ITEM" />
+                                                                        placeholder="NOMBRE ITEM" />-->
+                                                                    <select class="form-control form-control-sm" id="selectProductos"></select>
                                                                 </td>
-                                                                <td style="width:18%;padding:4px;">
+                                                                <td style="width:10%;padding:4px;">
                                                                     <input id="stockTxt" type="text"
                                                                         class="form-control form-control-sm"
                                                                         value="0"
                                                                         placeholder="STOCK" />
                                                                 </td>
-                                                                <td style="width:15%;padding:4px;">
+                                                                <td style="width:10%;padding:4px;">
                                                                     <input
                                                                         id="cantidadTxt" type="text"
                                                                         class="form-control form-control-sm"
-                                                                        value="0"
-                                                                        placeholder="CANTIDAD" />
+                                                                        value="1"
+                                                                        placeholder="CANTIDAD"
+                                                                        onchange="calcTotalKg()" />
                                                                 </td>
-                                                                <td style="width:15%;padding:4px;">
+                                                                <td style="width:10%;padding:4px;">
                                                                     <input
                                                                         id="recibidoTxt" type="text"
                                                                         class="form-control form-control-sm"
                                                                         value="0"
                                                                         placeholder="RECIBIDOS" />
+                                                                </td>
+                                                                <td style="width:10%;padding:4px;text-align:center;">
+                                                                    <span id="totalTxt"></span>
                                                                 </td>
                                                                 <td style="width:10%;padding:4px;">
                                                                     <button type="button" onclick="agregarDetalle()"
@@ -290,42 +302,6 @@
                                                                         class="btn btn-sm btn-outline-primary"
                                                                         style="padding:.25em .5em; float:right;">
                                                                         <span class="mdi mdi-plus"></span></button>
-                                                                    <button type="button"
-                                                                        onclick="agregarGuardarDetalle()"
-                                                                        class="btn btn-sm btn-outline-dark"
-                                                                        title="Guardar producto"
-                                                                        style="padding:.25em .5em; margin-right: 0.25em; float:right;">
-                                                                        <span
-                                                                            class="mdi mdi-content-save-plus"></span></button>
-                                                                </td>
-                                                            </tr>
-                                                            <tr id="rowDetalleAvanzado" class="noBorder"
-                                                                style="display: none;">
-                                                                <td colspan="2" style="padding:4px;">
-                                                                    <textarea id="descripcionTxt" rows="2" class="form-control form-control-sm"
-                                                                        placeholder="DESCRIPCION DEL ITEM"></textarea>
-                                                                </td>
-                                                                <td colspan="2" class="align-top"
-                                                                    style="padding:4px;">
-                                                                    <select id="exencion"
-                                                                        class="form-control form-control-sm">
-                                                                        <option>Indicador Exención</option>
-                                                                        <option value="1">No afecto o exento de IVA
-                                                                        </option>
-                                                                        <option value="2">Producto o servicio no
-                                                                            facturable</option>
-                                                                        <option value="3">Item no venta</option>
-                                                                        <option value="4">Producto o servicio no
-                                                                            facturable negativo</option>
-                                                                    </select>
-                                                                </td>
-                                                                <td colspan="2" class="align-top"
-                                                                    style="padding:4px;">
-                                                                    <select id="exencion"
-                                                                        class="form-control form-control-sm">
-                                                                        <option>Impuesto adicional</option>
-                                                                        <option value="1">Impuesto bebidas</option>
-                                                                    </select>
                                                                 </td>
                                                             </tr>
                                                         </tbody>
@@ -356,13 +332,13 @@
                                                             <p><b>Total de Kg Recibidos </b></p>
                                                         </div>
                                                         <div class="col-md-5 text-end">
-                                                            <p id="lbltotal">0 Kg</p>
+                                                            <p id="lblrecibido">0 Kg</p>
                                                         </div>
                                                         <div class="col-md-7">
                                                             <p><b>Total de Kg Faltantes </b></p>
                                                         </div>
                                                         <div class="col-md-5 text-end">
-                                                            <p id="lbltotal">0 Kg</p>
+                                                            <p id="lblfaltante">0 Kg</p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -462,6 +438,7 @@
         var unidades = {!! json_encode($unidades) !!};
         var selectedProducto = null;
         var productos = [];
+        var dataProductos = [];
         // Aqui se inicializan las librerias
         $(document).ready(function() {
             $("#precioTxt").inputmask('numeric', {
@@ -479,13 +456,44 @@
             $('#productosTable').on('dblclick', 'tbody tr', function(event) {
                 selectDetalle();
             });
+
+            $('#selectProductos').change(function(){
+                var id = $(this).val();
+                $.get('/api/productos/' + id, function(data){
+                    selectedProducto = data;
+                    $('#totalTxt').text(parseFloat(data.largo * data.peso).toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.') + ' Kg');
+                    $('#cantidadTxt').select();
+                    $('#cantidadTxt').focus();
+                });
+            });
+
+            $('#selectProductos').select2({
+                placeholder: 'Sin productos en la lista',
+                ajax: {
+                    url: '/api/productos',
+                    dataType: 'json',
+                    processResults: function (response) {
+                        var data = $.map(response.data, function (obj) {
+                            obj.text = obj.text || obj.nombre; // replace name with the property used for the text
+                            return obj;
+                        });
+                        return {
+                            results: data
+                        };
+                    },
+                },
+
+            });
         });
 
         function selectDetalle() {
             var item = $('#productosTable tbody tr.highlight');
+
+            var index = $(item).attr('itemindex');
+
             var sku = $(item).find('td:eq(0)').text();
             var nombre = $(item).find('td:eq(1)').text();
-            var descripcion = $(item).find('td:eq(3)').text();
+            var unidad = $(item).find('td:eq(3)').text();
             var precio = parseInt($(item).find('td:eq(2)').text().replace(/[^0-9]/gi, ''));
             if (sku == '' && nombre == '' && precio == '') {
                 $.toast({
@@ -498,18 +506,12 @@
                 });
                 return;
             }
-            selectedProducto = {
-                sku,
-                nombre,
-                descripcion,
-                precio
-            };
+
+            selectedProducto = dataProductos[index];
+
             $('#skuTxt').val(sku);
             $('#nombreTxt').val(nombre);
-            $('#descripcionTxt').val(descripcion);
-            $('#precioTxt').val(precio);
-            calcSubtotalFila();
-            $('#cantidadTxt').focus();
+            $('#totalTxt').text(selectedProducto.peso + ' Kgs');
             $("#staticBackdrop").modal('hide');
         }
 
@@ -597,7 +599,7 @@
         function seleccionarProveedor() {
             var proveedorId = $('#razon_social').val();
             if (proveedorId != '') {
-                $.get('/api/proveedores/' + proveedorId, function(data) {
+                $.get('/api/clientes/' + proveedorId, function(data) {
                     console.log(data);
                     $('#rut').val(data.rut);
                     $('#giro').val(data.giro);
@@ -607,14 +609,16 @@
                     // Se vacia el contenido actual de la tabla buscador de productos
                     $("#productosTable tbody").empty();
                     // Se obtienen todos los productos del proveedor y se vuelve a llenar
-                    $.get('/api/proveedores/productos/' + proveedorId, function(resp) {
-                        productos = resp;
+                    $.get('/api/listaprecios/1', function(resp) {
+                        productos = resp.productos;
+                        dataProductos = productos;
+                        console.log(resp);
                         productos.forEach(function(producto, index) {
-                            var row = `<tr>
+                            var row = `<tr itemindex="${index}">
                                 <td>${producto.sku}</td>
                                 <td>${producto.nombre}</td>
                                 <td>${producto.pivot.precio.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}</td>
-                                <td style="display:none;"></td>
+                                <td style="display:none;">${producto.unidad_id}</td>
                                 </tr>`;
                             $("#productosTable tbody").append(row);
                         });
@@ -627,80 +631,6 @@
                 $('#direccion').val('');
                 $('#comuna').val('');
             }
-        }
-
-        function agregarGuardarDetalle() {
-            var proveedorId = $('#razon_social').val();
-            if (proveedorId == '') {
-                $.toast({
-                    type: 'error',
-                    title: 'Error en formulario',
-                    subtitle: 'ahora',
-                    position: 'top-right',
-                    content: 'Debe seleccionar un proveedor para agregar items al documento.',
-                    delay: 15000
-                });
-                return;
-            }
-            var data = {
-                sku: $('#skuTxt').val(),
-                nombre: $('#nombreTxt').val(),
-                descripcion: $('#descripcionTxt').val(),
-                categoria: 1,
-                unidad: $('#unidadTxt').val(),
-                es_afecto: 1,
-                se_vende: 1,
-                se_compra: 1,
-            };
-            $.ajax({
-                type: "POST",
-                url: '/api/productos',
-                data: data, // serializes the form's elements.
-                success: function(data) {
-                    if (data.success == true) {
-                        var dataJson = {
-                            proveedor_id: $('#razon_social').val(),
-                            producto_id: data.data.id,
-                            precio: $('#precioTxt').inputmask('unmaskedvalue')
-                        };
-                        $('#skuTxt').val(data.data.sku);
-                        console.log("Precio proveedor : " + dataJson.precio);
-                        // Creamos peticion psot para agregar el precio de venta
-                        $.ajax({
-                            type: "POST",
-                            url: '/api/productos/precioproveedor',
-                            data: dataJson, // serializes the form's elements.
-                            success: function(data2) {
-                                if (data2.success == true) {
-                                    console.log("precio guardado");
-                                } else {
-                                    console.log("error al guardar el precio");
-                                }
-
-                            }
-                        });
-                        Swal.fire({
-                                title: "Producto guardado exitosamente",
-                                text: "La información ingresada es correcta y fue procesada exitosamente.",
-                                icon: "success"
-                            })
-                            .then((result) => {
-                                agregarDetalle();
-                                seleccionarProveedor();
-                            });
-                    } else {
-                        Swal.fire({
-                                title: "Producto no pudo ser guardado",
-                                text: "La información ingresada no es correcta, verifiquela y vuelva a intentarlo.",
-                                icon: "error"
-                            })
-                            .then((result) => {
-                                agregarDetalle();
-                            });
-                    }
-
-                }
-            });
         }
 
         function agregarDetalle() {
@@ -725,13 +655,16 @@
 
             // Se recopila toda la información del producto
             var producto = {
-                'sku': $('#skuTxt').val(),
-                'nombre': $('#nombreTxt').val(),
-                'descripcion': $('#descripcionTxt').val(),
+                'sku': selectedProducto.sku,
+                'nombre': selectedProducto.nombre,
+                'unidad': selectedProducto.unidad_id,
+                'largo': selectedProducto.largo,
+                'peso': selectedProducto.peso,
+                'stock': $('#stockTxt').val(),
                 'cantidad': $('#cantidadTxt').val(),
-                'unidad': $('#unidadTxt').val(),
-                'precio': $('#precioTxt').inputmask('unmaskedvalue')
+                'recibido': $('#recibidoTxt').val(),
             };
+
             // Mapeamos las unidades y seleccionamos la información
             var unidad = $.map(unidades, (item) => {
                 if (item.id == producto.unidad) {
@@ -746,7 +679,7 @@
                 checked.cantidad = total;
                 var itemIndex = detalles.indexOf(checked);
                 var subtotal = total * producto.precio;
-                var tdCant = $('#tablaDetalle tr[detindex="' + itemIndex + '"]').find('td:eq(2)');
+                var tdCant = $('#tablaDetalle tr[detindex="' + itemIndex + '"]').find('td:eq(3)');
                 var tdSubtotal = $('#tablaDetalle tr[detindex="' + itemIndex + '"]').find('td:eq(4)');
                 tdCant.text(total + ' ' + unidad.abreviacion);
                 tdSubtotal.text('$ ' + subtotal.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.'));
@@ -754,11 +687,10 @@
                 // Se limpian los inputs
                 $('#skuTxt').val('');
                 $('#nombreTxt').val('');
-                $('#descripcionTxt').val('');
+                $('#stockTxt').val(1);
                 $('#cantidadTxt').val(1);
+                $('#recibidoTxt').val(1);
                 $('#unidadTxt option:first').attr('selected');
-                $('#precioTxt').val('0');
-                calcSubtotalFila();
                 calcularTotales();
             } else {
                 // Se calcula el subtotal del producto
@@ -768,14 +700,19 @@
                 if (producto.nombre == '' || subtotal == 0) {
                     return;
                 }
+                var unidad = $.map(unidades, (item) => {
+                    if (item.id == producto.unidad) {
+                        return item;
+                    }
+                })[0];
                 // Se crea una fila con toda la información necesaria
                 var row = `
                 <tr detIndex="${index}">
-                    <td>${producto.sku}</td>
-                    <td>${producto.nombre}</td>
-                    <td>${producto.cantidad} ${unidad.abreviacion}</td>
-                    <td>${'$ ' + producto.precio.replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}</td>
-                    <td>${'$ ' + subtotal.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}</td>
+                    <td>${producto.nombre} ${unidad.nombre}</td>
+                    <td>${producto.stock}</td>
+                    <td>${producto.cantidad}</td>
+                    <td>${producto.recibido}</td>
+                    <td>${parseFloat(producto.cantidad * producto.largo * producto.peso) + ' Kgs'}</td>
                     <td>
                         <button type="button" onclick="eliminarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .25em;">
                         <span class="mdi mdi-delete"></span></button>
@@ -784,20 +721,20 @@
                 // Se limpian los inputs
                 $('#skuTxt').val('');
                 $('#nombreTxt').val('');
-                $('#descripcionTxt').val('');
-                $('#cantidadTxt').val(1);
+                $('#stockTxt').val(0);
+                $('#cantidadTxt').val(0);
                 $('#unidadTxt option:first').attr('selected');
-                $('#precioTxt').val('0');
-
+                $('#recibidoTxt').val(0);
+                $('#selectProductos').val(null).trigger('change');
                 // Se inserta antes del rowDetalle que es nuestro formulario estatico
                 $(row).insertBefore($('#rowDetalle'));
                 // Se inserta el producto en nuestra lista
                 detalles.push(producto);
                 // Se calculan los totales y se aumenta el indice
-                calcSubtotalFila();
                 calcularTotales();
                 index++;
             }
+            selectedProducto = null;
         }
 
         function eliminarDetalle(index) {
@@ -808,25 +745,31 @@
         }
 
         function calcularTotales() {
-            subtotalDoc = 0;
+            subtotalKg = 0;
+            subtotalRecibido = 0;
+            subtotalFaltante = 0;
             detalles.forEach(element => {
-                subtotalDoc += element.precio * element.cantidad;
+                subtotalKg += element.largo * element.cantidad * element.peso;
+                subtotalRecibido += element.largo * element.recibido * element.peso;
             });
-            var iva = subtotalDoc * 0.19;
-            var total = subtotalDoc + iva;
-            $('#lblSubtotalDoc').text('$ ' + subtotalDoc.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.'));
-            $('#lblneto').text('$ ' + subtotalDoc.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.'));
-            $('#lbliva').text('$ ' + iva.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.'));
-            $('#lbltotal').text('$ ' + total.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.'));
+            subtotalFaltante = subtotalKg - subtotalRecibido;
+            $('#lbltotal').text(subtotalKg.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.') + ' Kg');
+            $('#lblrecibido').text(subtotalRecibido.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.') + ' Kg');
+            $('#lblfaltante').text(subtotalFaltante.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.') + ' Kg');
+
         }
 
-        function calcSubtotalFila() {
+        function calcTotalKg() {
             var cantidad = $('#cantidadTxt').val();
-            var precio = $('#precioTxt').inputmask('unmaskedvalue');
 
-            var subtotal = cantidad * precio;
-
-            $('#lblSubtotal').text('$ ' + subtotal.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.'));
+            if(selectedProducto == null){
+                console.log('cambio');
+                $('#totalTxt').text('0 Kg');
+            }else{
+                console.log('no cambia');
+                var totalKg = parseFloat(cantidad * selectedProducto.peso * selectedProducto.largo);
+                $('#totalTxt').text(totalKg.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.') + ' Kgs');
+            }
         }
 
         $(document).on('select2:open', () => {

@@ -78,7 +78,7 @@ class AuthController extends Controller
 				'password' => $request->input('password')
 			);
 			// attempt to do the login
-			if (Auth::guard('web')->attempt($userdata, $request->remember_me)){
+			if (Auth::guard('web')->attempt($userdata, ($request->remember_me!=null)?$request->remember_me:false)){
 				// validation successful
                 $user = Auth::user();
 
