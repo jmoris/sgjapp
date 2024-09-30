@@ -11,6 +11,7 @@
 |
 */
 
+use App\Cliente;
 use App\DomicilioContribuyente;
 use App\Helpers\Ajustes;
 use App\Http\Controllers\AjusteController;
@@ -27,6 +28,8 @@ use App\Http\Controllers\ProveedorController;
 use App\Http\Controllers\ProyectoController;
 use App\Http\Controllers\UserController;
 use App\Producto;
+use App\Proveedor;
+use App\Proyecto;
 use App\Tenant;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -127,7 +130,12 @@ Route::get('prueba', function(){
 Route::middleware(['auth:web', 'tenant'])->group(function () {
 
     Route::get('/dashboard', function () {
-        return view('dashboard');
+        $data = [
+            'clientes' => Cliente::count(),
+            'proveedores' => Proveedor::count(),
+            'proyectos' => Proyecto::where('estado', 0)->count()
+        ];
+        return view('dashboard', ['data' => $data]);
     });
 
     Route::prefix('usuarios')->middleware('tag:ver-usuario')->group(function(){
