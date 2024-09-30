@@ -169,12 +169,6 @@
                     <span class="link-title" style="margin-left: 12px;">Pedido de Materiales</span>
                 </a>
             </li>
-                <li class="nav-item {{ active_class(['apps/inventario']) }}">
-                    <a href="#" class="nav-link">
-                        <i class="link-icon" data-feather="message-square"></i>
-                        <span class="link-title">Inventario</span>
-                    </a>
-                </li>
         </ul>
     </div>
 </nav>

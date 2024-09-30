@@ -17,6 +17,7 @@ return new class extends Migration
             $table->bigInteger('folio');
             $table->foreignIdFor(Cliente::class)->constrained();
             $table->dateTime('fecha_emision');
+            $table->string('materia');
             $table->unsignedBigInteger('proyecto_id');
             $table->smallInteger('estado')->default(0);
             $table->bigInteger('peso_total');
@@ -26,6 +27,7 @@ return new class extends Migration
             $table->foreignIdFor(\App\User::class)->constrained();
             $table->smallInteger('rev')->default(1);
             $table->boolean('rev_activa')->default(false);
+            $table->timestamps();
         });
     }
 

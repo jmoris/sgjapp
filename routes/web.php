@@ -33,6 +33,7 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 use SolucionTotal\CoreDTE\Sii;
+use SolucionTotal\CoreDTE\Sii\EnvioDte;
 
 Route::get('login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('login', [AuthController::class, 'doLogin']);
@@ -41,7 +42,86 @@ Route::get('/', function(){
 });
 
 Route::get('prueba', function(){
-    return Ajustes::getEmisor();
+    $XML = '<?xml version="1.0" encoding="ISO-8859-1"?>
+<DTE version="1.0">
+  <Documento ID="CoreDTE_T33F424">
+    <Encabezado>
+      <IdDoc>
+        <TipoDTE>33</TipoDTE>
+        <Folio>424</Folio>
+        <FchEmis>2024-09-12</FchEmis>
+        <TpoTranVenta>1</TpoTranVenta>
+        <FmaPago>2</FmaPago>
+        <FchVenc>2024-09-13</FchVenc>
+      </IdDoc>
+      <Emisor>
+        <RUTEmisor>77192227-9</RUTEmisor>
+        <RznSoc>INGENIERIA Y CONSTRUCCION SOLUCIONTOTAL </RznSoc>
+        <GiroEmis>OTRAS ACTIVIDADES    ESPECIALIZADAS DE CONSTRUCCI�N</GiroEmis>
+        <Acteco>439000</Acteco>
+        <DirOrigen>LAS ARAUCARIAS 025</DirOrigen>
+        <CmnaOrigen>Teno</CmnaOrigen>
+      </Emisor>
+      <Receptor>
+        <RUTRecep>66666666-6</RUTRecep>
+        <CdgIntRecep>Casa Matriz</CdgIntRecep>
+        <RznSocRecep>NICOLAS DIETERICH</RznSocRecep>
+        <GiroRecep>SIN DEFINIR</GiroRecep>
+        <DirRecep>SIN DEFINIR</DirRecep>
+        <CmnaRecep>Teno</CmnaRecep>
+      </Receptor>
+      <Totales>
+        <MntNeto>600000</MntNeto>
+        <TasaIVA>19</TasaIVA>
+        <IVA>114000</IVA>
+        <MntTotal>714000</MntTotal>
+      </Totales>
+    </Encabezado>
+    <Detalle>
+      <NroLinDet>1</NroLinDet>
+      <NmbItem>INSTALACION/PROGRAMACION MOTOR ELECTRICO</NmbItem>
+      <QtyItem>2</QtyItem>
+      <UnmdItem>Und</UnmdItem>
+      <PrcItem>75000</PrcItem>
+      <MontoItem>150000</MontoItem>
+    </Detalle>
+    <Detalle>
+      <NroLinDet>2</NroLinDet>
+      <NmbItem>REPARACION POSTE, EMPALME Y TENDIDO</NmbItem>
+      <QtyItem>1</QtyItem>
+      <UnmdItem>Und</UnmdItem>
+      <PrcItem>250000</PrcItem>
+      <MontoItem>250000</MontoItem>
+    </Detalle>
+    <Detalle>
+      <NroLinDet>3</NroLinDet>
+      <NmbItem>MATERIALES OBRA</NmbItem>
+      <DscItem>CABLE PRE-ENSAMBLADO 160MTS 2X16MM AISLADO\<br\>
+      CABLE CORDON RV-K 1.5MM AISLADO 25MTS
+      CONDUIT PVC 20MM
+      CREMALLERAS PORTON ALUMINIO
+      CONECTORES DENTADOS
+      GRAMPAS DE RETENCION</DscItem>
+      <QtyItem>1</QtyItem>
+      <UnmdItem>Und</UnmdItem>
+      <PrcItem>200000</PrcItem>
+      <MontoItem>200000</MontoItem>
+    </Detalle>
+    <TED/>
+  </Documento>
+</DTE>
+';
+    $EnvioDTE = new EnvioDte();
+            $EnvioDTE->loadXML($XML);
+            $dte = $EnvioDTE->getDocumentos()[0];
+            $caratula = $EnvioDTE->getCaratula();
+            $data = $dte->getDatos();
+
+            $pdf = new \SolucionTotal\CorePDF\PDF($data, 1, 'https://i.imgur.com/oWL7WBw.jpeg', 2, $dte->getTED());
+            $pdf->setCedible(false);
+            //$pdf->setLeyendaImpresion('Sistema de facturacion por SoluciónTotal');
+            $pdf->construir();
+            $pdf->generar(1);
 });
 
 Route::middleware(['auth:web', 'tenant'])->group(function () {

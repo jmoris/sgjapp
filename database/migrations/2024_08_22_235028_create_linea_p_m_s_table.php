@@ -24,8 +24,7 @@ return new class extends Migration
             $table->float('largo');
             $table->float('ancho');
             $table->float('peso');
-            $table->smallInteger('descuento');
-            $table->foreignIdFor(\App\OrdenCompra::class)->constrained();
+            $table->foreignIdFor(\App\PedidoMaterial::class)->constrained();
             $table->timestamps();
         });
     }

@@ -6,10 +6,12 @@ use App\Factura;
 use App\GuiaDespacho;
 use App\NotaCredito;
 use App\OrdenCompra;
+use App\PedidoMaterial;
 use App\Proyecto;
 use Exception;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Color;
@@ -17,6 +19,55 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ReporteController extends Controller
 {
+
+    public function getPedidoMaterial(Request $request, $id){
+        try{
+            $pedido = PedidoMaterial::with('proyecto', 'mandante', 'lineas')->findOrFail($id);
+
+            $spreadsheet = IOFactory::load(storage_path('app/Plantillas/PedidoMaterial.xlsx'));
+            $worksheet = $spreadsheet->getActiveSheet();
+            $worksheet->getCell('O7')->setValue(date('d-m-Y', strtotime($pedido->fecha_emision)));
+            $worksheet->getCell('O8')->setValue(date('d-m-Y', strtotime($pedido->updated_at)));
+            $worksheet->getCell('C8')->setValue($pedido->materia);
+            $worksheet->getCell('C9')->setValue($pedido->mandante->razon_social);
+            $worksheet->getCell('C10')->setValue($pedido->proyecto->nombre);
+            $worksheet->getCell('C12')->setValue($pedido->rev);
+            $worksheet->getCell('C13')->setValue(str_pad($pedido->folio, 5, '0', STR_PAD_LEFT));
+
+            $contador = 16;
+            foreach($pedido->lineas as $detalle){
+                $totalKg = $detalle->peso * $detalle->largo * $detalle->cantidad;
+                $totalRecibidoKg = $detalle->peso * $detalle->largo * ($detalle->stock + $detalle->recibido);
+                $totalFaltanteKg = $totalKg - $totalRecibidoKg;
+                $worksheet->getCell('B' . $contador)->setValue($detalle->nombre);
+                $worksheet->getCell('C' . $contador)->setValue($detalle->unidad);
+                $worksheet->getCell('D' . $contador)->setValue($detalle->stock);
+                $worksheet->getCell('E' . $contador)->setValue($detalle->cantidad);
+                $worksheet->getCell('F' . $contador)->setValue($detalle->recibido);
+                $worksheet->getCell('G' . $contador)->setValue($detalle->cantidad - ($detalle->stock + $detalle->recibido));
+                $worksheet->getCell('H' . $contador)->setValue($detalle->largo);
+                $worksheet->getCell('I' . $contador)->setValue($detalle->peso);
+                $worksheet->getCell('J' . $contador)->setValue($detalle->peso * $detalle->largo);
+                $worksheet->getCell('K' . $contador)->setValue($totalKg);
+                $worksheet->getCell('L' . $contador)->setValue($totalRecibidoKg);
+                $worksheet->getCell('M' . $contador)->setValue($totalFaltanteKg);
+                $contador++;
+            }
+            $writer = new Xlsx($spreadsheet);
+            header('Content-Type: application/vnd.ms-excel');
+            header('Content-Disposition: attachment;filename="pedidomaterial-'.str_replace('.','',explode('-',$pedido->mandante->rut)[0]).'.xlsx"'); /*-- $filename is  xsl filename ---*/
+            header('Cache-Control: max-age=0');
+
+            $writer->save('php://output');
+        }catch(Exception $ex){
+            return response()->json([
+                'success' => false,
+                'error' => $ex->getMessage(),
+                'msg' => 'Hubo un error al crear el pedido de material'
+            ]);
+        }
+    }
+
     public function getReporteProyecto($tipo, $id, $detallado = 0){
         try{
             $proyecto = Proyecto::findOrFail($id);

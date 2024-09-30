@@ -157,10 +157,14 @@
                 }
             }
         });*/
-        $("input#rut").rut({
-            formatOn: 'keyup',
-            minimumLength: 8, // validar largo mínimo; default: 2
-            validateOn: 'change' // si no se quiere validar, pasar null
+        $('#rut').inputmask({
+            mask: '99.999.999-[9|K]',
+            definitions: {
+                'K': {
+                    validator: "(k|K)",
+                    casing: "upper"
+                }
+            }
         });
 
         $('#rut').keypress(function(e){

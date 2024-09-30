@@ -1,6 +1,6 @@
 @extends('layout.master')
 
-@section('title', 'Emisión de Orden de Compra')
+@section('title', 'Emisión de Pedido de Materiales')
 
 @push('style')
     <style>
@@ -253,45 +253,41 @@
                                                         <tbody>
                                                             <tr class="noBorder" id="rowDetalle">
                                                                 <!--<td style="width:12%;padding:4px;">
-                                                                    <div class="input-group">
-                                                                        <input id="skuTxt" type="text"
-                                                                            class="form-control form-control-sm p-1"
-                                                                            placeholder="SKU" />
-                                                                        <button
-                                                                            class="btn btn-sm btn-outline-secondary p-1"
-                                                                            type="button" id="inputGroupFileAddon04"
-                                                                            data-bs-toggle="modal"
-                                                                            data-bs-target="#staticBackdrop">
-                                                                            <i class="mdi mdi-magnify"></i>
-                                                                        </button>
-                                                                    </div>
-                                                                </td>-->
+                                                                        <div class="input-group">
+                                                                            <input id="skuTxt" type="text"
+                                                                                class="form-control form-control-sm p-1"
+                                                                                placeholder="SKU" />
+                                                                            <button
+                                                                                class="btn btn-sm btn-outline-secondary p-1"
+                                                                                type="button" id="inputGroupFileAddon04"
+                                                                                data-bs-toggle="modal"
+                                                                                data-bs-target="#staticBackdrop">
+                                                                                <i class="mdi mdi-magnify"></i>
+                                                                            </button>
+                                                                        </div>
+                                                                    </td>-->
                                                                 <td style="width:35%;padding:4px;">
                                                                     <!--<input id="nombreTxt" type="text"
-                                                                        class="form-control form-control-sm"
-                                                                        placeholder="NOMBRE ITEM" />-->
-                                                                    <select class="form-control form-control-sm" id="selectProductos"></select>
+                                                                            class="form-control form-control-sm"
+                                                                            placeholder="NOMBRE ITEM" />-->
+                                                                    <select class="form-control form-control-sm"
+                                                                        id="selectProductos"></select>
                                                                 </td>
                                                                 <td style="width:10%;padding:4px;">
                                                                     <input id="stockTxt" type="text"
                                                                         class="form-control form-control-sm"
-                                                                        value="0"
-                                                                        placeholder="STOCK" />
+                                                                        value="0" placeholder="STOCK" />
                                                                 </td>
                                                                 <td style="width:10%;padding:4px;">
-                                                                    <input
-                                                                        id="cantidadTxt" type="text"
+                                                                    <input id="cantidadTxt" type="text"
                                                                         class="form-control form-control-sm"
-                                                                        value="1"
-                                                                        placeholder="CANTIDAD"
+                                                                        value="1" placeholder="CANTIDAD"
                                                                         onchange="calcTotalKg()" />
                                                                 </td>
                                                                 <td style="width:10%;padding:4px;">
-                                                                    <input
-                                                                        id="recibidoTxt" type="text"
+                                                                    <input id="recibidoTxt" type="text"
                                                                         class="form-control form-control-sm"
-                                                                        value="0"
-                                                                        placeholder="RECIBIDOS" />
+                                                                        value="0" placeholder="RECIBIDOS" />
                                                                 </td>
                                                                 <td style="width:10%;padding:4px;text-align:center;">
                                                                     <span id="totalTxt"></span>
@@ -432,6 +428,8 @@
 
 @push('custom-scripts')
     <script>
+        var editIndex = null;
+        var editHtml = null;
         var index = 0;
         var detalles = [];
         var subtotalDoc = 0;
@@ -457,11 +455,12 @@
                 selectDetalle();
             });
 
-            $('#selectProductos').change(function(){
+            $('#selectProductos').change(function() {
                 var id = $(this).val();
-                $.get('/api/productos/' + id, function(data){
+                $.get('/api/productos/' + id, function(data) {
                     selectedProducto = data;
-                    $('#totalTxt').text(parseFloat(data.largo * data.peso).toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.') + ' Kg');
+                    $('#totalTxt').text(parseFloat(data.largo * data.peso).toFixed().replace(
+                        /(\d)(?=(\d{3})+(,|$))/g, '$1.') + ' Kg');
                     $('#cantidadTxt').select();
                     $('#cantidadTxt').focus();
                 });
@@ -470,11 +469,13 @@
             $('#selectProductos').select2({
                 placeholder: 'Sin productos en la lista',
                 ajax: {
-                    url: '/api/productos',
+                    url: '/api/productos/lista/compra',
                     dataType: 'json',
-                    processResults: function (response) {
-                        var data = $.map(response.data, function (obj) {
-                            obj.text = obj.text || obj.nombre; // replace name with the property used for the text
+                    processResults: function(response) {
+                        console.log(response);
+                        var data = $.map(response, function(obj) {
+                            obj.text = obj.text || obj
+                            .nombre; // replace name with the property used for the text
                             return obj;
                         });
                         return {
@@ -509,7 +510,6 @@
 
             selectedProducto = dataProductos[index];
 
-            $('#skuTxt').val(sku);
             $('#nombreTxt').val(nombre);
             $('#totalTxt').text(selectedProducto.peso + ' Kgs');
             $("#staticBackdrop").modal('hide');
@@ -535,7 +535,7 @@
             return false;
         }
 
-        function procesarOrden(e) {
+        function procesarPedido(e) {
             e.preventDefault();
 
             // Verificamos que se haya seleccionado un proveedor
@@ -546,13 +546,12 @@
                     title: 'Error en formulario',
                     subtitle: 'ahora',
                     position: 'top-right',
-                    content: 'Debe seleccionar un proveedor para agregar items al documento.',
+                    content: 'Debe seleccionar un mandante para agregar items al documento.',
                     delay: 15000
                 });
                 return;
             }
 
-            var switchProyecto = $('#manualProyecto').is(':checked');
             var nombreProyecto = $('#nombre_proyecto option:selected').text();
             var idProyecto = $('#nombre_proyecto option:selected').val();
 
@@ -580,19 +579,19 @@
                 return;
             }
             var doc = {
-                proveedor: $('#razon_social').val(),
+                mandante: $('#razon_social').val(),
                 fecha_emision: $('#fecha_emision').val(),
-                tipo_pago: $('#tipo_pago').val(),
+                materia: $('#materia').val(),
                 items: detalles,
                 proyecto: idProyecto,
                 glosa: $('#glosaTxt').val(),
                 _token: $('meta[name="_token"]').attr('content')
             };
             console.log(doc);
-            $.post("/api/compras/ordenescompra", doc)
+            $.post("/api/compras/pedidosmateriales", doc)
                 .done(function(data) {
                     console.log(data);
-                    location.href = '/compras/ordenescompra';
+                    location.href = '/compras/pedidosmateriales';
                 });
         }
 
@@ -642,16 +641,12 @@
                     title: 'Error en formulario',
                     subtitle: 'ahora',
                     position: 'top-right',
-                    content: 'Debe seleccionar un proveedor para agregar items al documento.',
+                    content: 'Debe seleccionar un mandante para agregar items al documento.',
                     delay: 15000
                 });
                 return;
             }
 
-            // Se verifica si se escribio un SKU, de no haber uno, se rellena con el timestamp
-            if ($('#skuTxt').val() == '') {
-                $('#skuTxt').val('AG' + $.now());
-            }
 
             // Se recopila toda la información del producto
             var producto = {
@@ -674,30 +669,42 @@
             // Se verifica si el producto existe en la tabla
             var checked = detalles.find(item => item.sku == producto.sku);
             if (checked != null) {
-                var latestSubtotal = producto.precio * producto.cantidad;
-                var total = parseInt(checked.cantidad) + parseInt(producto.cantidad);
-                checked.cantidad = total;
+
+
+
                 var itemIndex = detalles.indexOf(checked);
-                var subtotal = total * producto.precio;
-                var tdCant = $('#tablaDetalle tr[detindex="' + itemIndex + '"]').find('td:eq(3)');
-                var tdSubtotal = $('#tablaDetalle tr[detindex="' + itemIndex + '"]').find('td:eq(4)');
-                tdCant.text(total + ' ' + unidad.abreviacion);
-                tdSubtotal.text('$ ' + subtotal.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.'));
-                console.log(detalles);
+                var tdStock = $('#tablaDetalle tr[detindex="' + itemIndex + '"]').find('td:eq(1)');
+                var tdCant = $('#tablaDetalle tr[detindex="' + itemIndex + '"]').find('td:eq(2)');
+                var tdRec = $('#tablaDetalle tr[detindex="' + itemIndex + '"]').find('td:eq(3)');
+                var tdTotal = $('#tablaDetalle tr[detindex="' + itemIndex + '"]').find('td:eq(4)');
+
+                var stock = parseInt(checked.stock) + parseInt(producto.stock);
+                var cantidad = parseInt(checked.cantidad) + parseInt(producto.cantidad);
+                var recibido = parseInt(checked.recibido) + parseInt(producto.recibido);
+                // Se verifica la actual cantidad, recibidos y stock
+                checked.stock = stock;
+                checked.cantidad = cantidad;
+                checked.recibido = recibido;
+
+                tdStock.text(stock);
+                tdCant.text(cantidad);
+                tdRec.text(recibido);
+
+                var totalKg = checked.cantidad * checked.largo * checked.peso
+
+                tdTotal.text(totalKg + ' Kgs');
+
                 // Se limpian los inputs
-                $('#skuTxt').val('');
                 $('#nombreTxt').val('');
-                $('#stockTxt').val(1);
+                $('#stockTxt').val(0);
                 $('#cantidadTxt').val(1);
-                $('#recibidoTxt').val(1);
                 $('#unidadTxt option:first').attr('selected');
+                $('#recibidoTxt').val(0);
+                $('#selectProductos').val(null).trigger('change');
                 calcularTotales();
             } else {
-                // Se calcula el subtotal del producto
-                var subtotal = producto.precio * producto.cantidad;
-                subtotalDoc += subtotal;
                 // Verificamos que el producto contenga información valida
-                if (producto.nombre == '' || subtotal == 0) {
+                if (producto.nombre == '') {
                     return;
                 }
                 var unidad = $.map(unidades, (item) => {
@@ -712,17 +719,20 @@
                     <td>${producto.stock}</td>
                     <td>${producto.cantidad}</td>
                     <td>${producto.recibido}</td>
-                    <td>${parseFloat(producto.cantidad * producto.largo * producto.peso) + ' Kgs'}</td>
+                    <td><b>${parseFloat((parseInt(producto.stock)+parseInt(producto.recibido)) * producto.largo * producto.peso).toFixed()+'</b>/'+parseFloat(producto.cantidad * producto.largo * producto.peso).toFixed() + ' Kgs'}</td>
                     <td>
-                        <button type="button" onclick="eliminarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .25em;">
-                        <span class="mdi mdi-delete"></span></button>
+                        <button type="button" onclick="editarProducto(${index}, 0)" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em; float:left;">
+                            <span class="mdi mdi-pencil"></span>
+                        </button>
+                        <button type="button" onclick="eliminarDetalle(${index})" class="ms-1 btn btn-sm btn-outline-danger" style="padding:.25em .5em; float:left;">
+                            <span class="mdi mdi-delete"></span>
+                        </button>
                     </td>
                 </tr>`;
                 // Se limpian los inputs
-                $('#skuTxt').val('');
                 $('#nombreTxt').val('');
                 $('#stockTxt').val(0);
-                $('#cantidadTxt').val(0);
+                $('#cantidadTxt').val(1);
                 $('#unidadTxt option:first').attr('selected');
                 $('#recibidoTxt').val(0);
                 $('#selectProductos').val(null).trigger('change');
@@ -735,6 +745,71 @@
                 index++;
             }
             selectedProducto = null;
+            calcTotalKg();
+        }
+
+        function editarProducto(index, action) {
+            if (editIndex != null && !action) {
+                alert("Ya esta modificando un producto");
+                return;
+            }
+            if (editIndex != null && action) {
+                var row = $('#tablaDetalle tr[detindex="' + index + '"]');
+                var item = detalles[index];
+                var cantidad = $('#cantidadEditTxt').val();
+                var stock = $('#stockEditTxt').val();
+                var recibido = $('#recibidoEditTxt').val();
+
+                detalles[index].stock = stock;
+                detalles[index].cantidad = cantidad;
+                detalles[index].recibido = recibido;
+
+                calcularTotales();
+
+                row.find('td:eq(1)').html(`${stock}`);
+                row.find('td:eq(2)').html(`${cantidad}`);
+                row.find('td:eq(3)').html(`${recibido}`);
+                row.find('td:eq(4)').html(
+                `<b>${parseFloat((parseInt(item.stock)+parseInt(item.recibido)) * item.largo * item.peso).toFixed()+'</b>/'+parseFloat(item.cantidad * item.largo * item.peso).toFixed() + ' Kgs'}`
+                );
+                row.find('td:eq(5)').html(`
+                        <button type="button" onclick="editarProducto(${index}, 1)" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em;">
+                            <span class="mdi mdi-pencil"></span>
+                        </button>
+                        <button type="button" onclick="eliminarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em;">
+                            <span class="mdi mdi-delete"></span>
+                        </button>
+                `);
+                editIndex = null;
+                console.log(detalles);
+                return;
+            }
+            editIndex = index;
+            var row = $('#tablaDetalle tr[detindex="' + index + '"]');
+            var item = detalles[index];
+
+            row.find('td:eq(1)').html(`<input id="stockEditTxt" type="text"
+                                                                        class="form-control form-control-sm"
+                                                                        value="${item.stock}"
+                                                                        placeholder="STOCK" />`);
+            row.find('td:eq(2)').html(`<input id="cantidadEditTxt"
+                                                type="number"
+                                                min="1" value="${item.cantidad}"
+                                                class="form-control form-control-sm"
+                                                placeholder="CANT" />`);
+            row.find('td:eq(3)').html(`<input
+                                                                        id="recibidoEditTxt" type="text"
+                                                                        class="form-control form-control-sm"
+                                                                        value="${item.recibido}"
+                                                                        placeholder="RECIBIDOS" />`);
+
+            row.find('td:eq(5)').html(` <button type="button" onclick="editarProducto(${index}, 1)" class="btn btn-sm btn-outline-primary" style="padding:.25em .5em;">
+                                            <span class="mdi mdi-content-save-plus"></span>
+                                        </button>
+                                        <button type="button" onclick="eliminarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em;">
+                                            <span class="mdi mdi-delete"></span>
+                                        </button>`);
+            calcularTotales();
         }
 
         function eliminarDetalle(index) {
@@ -750,7 +825,8 @@
             subtotalFaltante = 0;
             detalles.forEach(element => {
                 subtotalKg += element.largo * element.cantidad * element.peso;
-                subtotalRecibido += element.largo * element.recibido * element.peso;
+                subtotalRecibido += element.largo * (parseInt(element.recibido) + parseInt(element.stock)) * element
+                    .peso;
             });
             subtotalFaltante = subtotalKg - subtotalRecibido;
             $('#lbltotal').text(subtotalKg.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.') + ' Kg');
@@ -761,13 +837,17 @@
 
         function calcTotalKg() {
             var cantidad = $('#cantidadTxt').val();
-
-            if(selectedProducto == null){
+            console.log(cantidad);
+            console.log(selectedProducto);
+            if (selectedProducto == null) {
                 console.log('cambio');
                 $('#totalTxt').text('0 Kg');
-            }else{
+            } else {
                 console.log('no cambia');
                 var totalKg = parseFloat(cantidad * selectedProducto.peso * selectedProducto.largo);
+                if (totalKg == NaN || totalKg == null || totalKg == undefined) {
+                    totalKg = 0;
+                }
                 $('#totalTxt').text(totalKg.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.') + ' Kgs');
             }
         }

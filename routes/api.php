@@ -61,6 +61,7 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
     Route::prefix('reportes')->group(function(){
         Route::prefix('excel')->group(function(){
             Route::get('proyecto/{tipo}/{id}/{detallado?}', [ReporteController::class, 'getReporteProyecto']);
+            Route::get('pedidomaterial/{id}', [ReporteController::class, 'getPedidoMaterial']);
         });
         Route::prefix('pdf')->group(function(){
 
@@ -96,6 +97,7 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
 
     Route::get('/productos', [ProductoController::class, 'getAll']);
     Route::get('/productos/{id}', [ProductoController::class, 'getById']);
+    Route::get('/productos/lista/compra', [ProductoController::class, 'getProductosCompra']);
     Route::post('/productos', [ProductoController::class, 'store']);
     Route::post('/productos/editar/{id}', [ProductoController::class, 'update']);
     Route::delete('/productos/{id}', [ProductoController::class, 'delete']);
@@ -111,6 +113,7 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
 
         Route::get('pedidosmateriales', [PedidoMaterialController::class, 'getAll']);
         Route::post('pedidosmateriales', [PedidoMaterialController::class, 'storePedido']);
+        Route::post('pedidosmateriales/editar/{id}', [PedidoMaterialController::class, 'update']);
         Route::get('pedidosmateriales/vistaprevia/{folio}', [PedidoMaterialController::class, 'vistaPreviaPedido']);
 
     });

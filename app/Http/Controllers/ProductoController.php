@@ -43,6 +43,15 @@ class ProductoController extends Controller
         return DataTables::eloquent($data)->toJson();
     }
 
+    public function getProductosCompra(){
+        try{
+            $productos = Producto::where('se_compra', 1)->get();
+            return response()->json($productos);
+        }catch(Exception $ex){
+            return $ex;
+        }
+    }
+
     public function getById(Request $request, $id){
         try{
             $user = Producto::findOrFail($id);
