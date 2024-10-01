@@ -15,7 +15,7 @@ class PedidoMaterial extends Model
     ];
 
     public function mandante(){
-        return $this->hasOne(Proveedor::class, 'id', 'cliente_id');
+        return $this->hasOne(Cliente::class, 'id', 'cliente_id');
     }
 
     public function proyecto(){
