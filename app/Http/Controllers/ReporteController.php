@@ -33,6 +33,7 @@ class ReporteController extends Controller
             $worksheet->getCell('C10')->setValue($pedido->proyecto->nombre);
             $worksheet->getCell('C12')->setValue($pedido->rev);
             $worksheet->getCell('C13')->setValue(str_pad($pedido->folio, 5, '0', STR_PAD_LEFT));
+            $worksheet->getCell('H54')->setValue($pedido->usuario->name.' '.$pedido->usuario->lastname);
 
             $contador = 16;
             foreach($pedido->lineas as $detalle){
