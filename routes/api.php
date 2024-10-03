@@ -3,6 +3,7 @@
 use App\Comuna;
 use App\DomicilioContribuyente;
 use App\Helpers\Herramientas;
+use App\Http\Controllers\BorradorController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\GuiaDespachoController;
@@ -103,6 +104,12 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
     Route::delete('/productos/{id}', [ProductoController::class, 'delete']);
     Route::post('/productos/listaprecio', [ProductoController::class, 'addPrecioLista']);
     Route::post('/productos/precioproveedor', [ProductoController::class, 'addPrecioProveedor']);
+
+    Route::prefix('borradores')->group(function(){
+        Route::get('/', [BorradorController::class, 'getAll']);
+        Route::get('/{id}', [BorradorController::class, 'getBorrador']);
+        Route::post('/', [BorradorController::class, 'storeBorrador']);
+    });
 
     Route::prefix('compras')->group(function(){
         Route::get('ordenescompra', [OrdenCompraController::class, 'getAll']);

@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Borrador;
 use App\Cliente;
 use App\Comuna;
 use App\DocumentoPendiente;
 use App\GuiaDespacho;
 use App\Helpers\Ajustes;
 use App\Helpers\Herramientas;
+use App\InfoBorrador;
+use App\LineaBorrador;
 use App\LineaGuia;
 use App\ListaPrecio;
 use App\Proyecto;
@@ -33,8 +36,8 @@ class GuiaDespachoController extends Controller
         $unidades = Unidad::all();
         $listas = ListaPrecio::all();
         $proyectos = Proyecto::where('estado', 0)->get();
-
-        return view('pages.ventas.guiasdespacho.create', ['clientes' => $clientes, 'unidades' => $unidades,'comunas' => $comunas, 'emisor' => $emisor, 'listas' => $listas, 'proyectos' => $proyectos]);
+        $borradores = Borrador::where('user_id', auth()->user()->id)->where('tipo_doc', 52)->orderBy('updated_at', 'desc')->get();
+        return view('pages.ventas.guiasdespacho.create', ['clientes' => $clientes, 'unidades' => $unidades,'comunas' => $comunas, 'emisor' => $emisor, 'listas' => $listas, 'proyectos' => $proyectos, 'borradores' => $borradores]);
     }
     /*
         DESDE AQUI HACIA ABAJO ESTARAN LAS FUNCIONES DE LA API
@@ -169,6 +172,11 @@ class GuiaDespachoController extends Controller
                 $linea->descuento = ((!array_key_exists('descuento', $item))?0:$item['descuento']);
                 $linea->guia_despacho_id = $guia->id;
                 $linea->save();
+            }
+            if($request->borrador_id != null){
+                InfoBorrador::where('borrador_id', $request->borrador_id)->delete();
+                LineaBorrador::where('borrador_id', $request->borrador_id)->delete();
+                Borrador::findOrFail($request->borrador_id)->delete();
             }
 
             $pendiente = new DocumentoPendiente();

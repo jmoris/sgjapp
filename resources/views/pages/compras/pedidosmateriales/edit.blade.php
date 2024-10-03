@@ -211,7 +211,7 @@
                                                                 <div class="col-sm-8">
                                                                     <input type="text" name="materia" id="materia"
                                                                         value="{{ $pedido->materia }}"
-                                                                        class="form-control form-control-sm">
+                                                                        class="form-control form-control-sm" required>
                                                                 </div>
                                                             </div>
                                                         </div>

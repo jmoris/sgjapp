@@ -32,6 +32,19 @@
         <div>
             <h4 class="mb-3 mb-md-0">Nuevo Pedido de Materiales</h4>
         </div>
+        <div class="align-end">
+            <div class="btn-group" role="group">
+                <button id="btnGroupDrop1" type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                  Menu Borradores
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                  <li><a class="dropdown-item" href="#" data-bs-toggle="modal"
+                    data-bs-target="#modalBorrador">Cargar Borrador</a></li>
+                  <li><a class="dropdown-item" href="#" onclick="guardarBorrador()">Guardar Borrador</a></li>
+                </ul>
+              </div>
+
+        </div>
     </div>
     <div class="row">
         <div class="col-12 col-xl-12 stretch-card">
@@ -206,7 +219,7 @@
                                                                     class="col-sm-4 col-form-label col-form-label-sm">Materia</label>
                                                                 <div class="col-sm-8">
                                                                     <input type="text" name="materia" id="materia"
-                                                                        class="form-control form-control-sm">
+                                                                        class="form-control form-control-sm" required>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -392,6 +405,30 @@
             </div>
         </div>
     </div>
+    <!-- Modal Cargar Borrador -->
+    <div class="modal fade" id="modalBorrador" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Cargar Borrador de Documento</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <select id="selectBorrador" class="form-control">
+                        <option>Seleccionar borrador</option>
+                        @foreach($borradores as $borrador)
+                        <option value="{{ $borrador->id }}">{{ $borrador->updated_at }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" onclick="cargarBorrador()">Seleccionar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('style')
@@ -437,8 +474,13 @@
         var selectedProducto = null;
         var productos = [];
         var dataProductos = [];
+
+        var borrador = null;
+        var borrador_id = null;
+
         // Aqui se inicializan las librerias
         $(document).ready(function() {
+            setInterval( guardarBorrador, 15000 );
             $("#precioTxt").inputmask('numeric', {
                 prefix: '$ ',
                 radixPoint: ',',
@@ -534,6 +576,118 @@
             }
             return false;
         }
+
+        function renderDetalles() {
+            for (var i = 0; i < detalles.length; i++) {
+                unidad = $.map(unidades, (item) => {
+                    if (item.abreviacion == detalles[i].unidad) {
+                        return item;
+                    }
+                })[0];
+                detalles[i].unidad = unidad.id;
+            }
+
+
+            detalles.forEach(function(producto, index) {
+                // Mapeamos las unidades y seleccionamos la información
+                var unidad = $.map(unidades, (item) => {
+                    if (item.id == producto.unidad) {
+                        return item;
+                    }
+                })[0];
+                console.log(producto);
+                //producto[index].unidad = unidad[1];
+                // Se calcula el subtotal del producto
+                var subtotal = producto.precio * producto.cantidad;
+                subtotalDoc += subtotal;
+
+                var row = `
+                <tr detIndex="${index}">
+                    <td>${producto.nombre} ${unidad.nombre}</td>
+                    <td>${producto.stock}</td>
+                    <td>${producto.cantidad}</td>
+                    <td>${producto.recibido}</td>
+                    <td><b>${parseFloat((parseInt(producto.stock)+parseInt(producto.recibido)) * producto.largo * producto.peso).toFixed()+'</b>/'+parseFloat(producto.cantidad * producto.largo * producto.peso).toFixed() + ' Kgs'}</td>
+                    <td>
+                        <button type="button" onclick="editarProducto(${index}, 0)" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em; float:left;">
+                            <span class="mdi mdi-pencil"></span>
+                        </button>
+                        <button type="button" onclick="eliminarDetalle(${index})" class="ms-1 btn btn-sm btn-outline-danger" style="padding:.25em .5em; float:left;">
+                            <span class="mdi mdi-delete"></span>
+                        </button>
+                    </td>
+                </tr>`;
+                // Se inserta antes del rowDetalle que es nuestro formulario estatico
+                $(row).insertBefore($('#rowDetalle'));
+                index++;
+            });
+            index++;
+            // Se calculan los totales y se aumenta el indice
+            calcTotalKg();
+            calcularTotales();
+        }
+
+        function cargarBorrador(){
+            var idBorrador = $('#selectBorrador option:selected').val();
+            $.get("/api/borradores/" + idBorrador).done(function(resp) {
+                console.log(resp);
+                borrador_id = resp.id;
+                $('#razon_social').val(resp.externo_id);
+                $('#razon_social').trigger('change');
+                $('#nombre_proyecto').val(resp.proyecto_id);
+                $('#modalBorrador').modal('toggle');
+                detalles = resp.lineas;
+                renderDetalles();
+            });
+        }
+
+        function guardarBorrador(){
+
+            // Verificamos que se haya seleccionado un proveedor
+            var proveedorId = $('#razon_social').val();
+            if (proveedorId == '') {
+                console.log("Falta información para guardar el borrador");
+                return;
+            }
+
+            var nombreProyecto = $('#nombre_proyecto option:selected').text();
+            var idProyecto = $('#nombre_proyecto option:selected').val();
+
+            if (nombreProyecto == 'Seleccione proyecto') {
+                console.log("Falta información para guardar el borrador");
+                return;
+            }
+
+            if (detalles.length == 0) {
+                console.log("Falta información para guardar el borrador");
+                return;
+            }
+
+            var doc = {
+                id: borrador_id,
+                tipo_doc: 999,
+                fecha_emision: $('#fecha_emision').val(),
+                externo: $('#razon_social').val(),
+                items: detalles,
+                proyecto: idProyecto,
+                glosa: $('#glosaTxt').val(),
+                _token: $('meta[name="_token"]').attr('content')
+            };
+
+            $.post("/api/borradores", doc).done(function(resp) {
+                console.log(resp);
+                $.toast({
+                    type: 'success',
+                    title: 'Autoguardado del borrador',
+                    subtitle: 'ahora',
+                    position: 'top-right',
+                    content: 'Borrador guardado correctamente.',
+                    delay: 3000
+                });
+                borrador_id = resp.data.id;
+            });
+        }
+
 
         function procesarPedido(e) {
             e.preventDefault();

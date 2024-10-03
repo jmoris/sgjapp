@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Borrador;
 use App\Cliente;
 use App\Comuna;
 use App\Helpers\Ajustes;
@@ -28,7 +29,8 @@ class PedidoMaterialController extends Controller
         $clientes = Cliente::all();
         $unidades = Unidad::all();
         $proyectos = Proyecto::where('estado', 0)->get();
-        return view('pages.compras.pedidosmateriales.create', ['clientes' => $clientes, 'unidades' => $unidades,'comunas' => $comunas, 'emisor' => $emisor, 'proyectos' => $proyectos]);
+        $borradores = Borrador::where('user_id', auth()->user()->id)->where('tipo_doc', 999)->get();
+        return view('pages.compras.pedidosmateriales.create', ['clientes' => $clientes, 'unidades' => $unidades,'comunas' => $comunas, 'emisor' => $emisor, 'proyectos' => $proyectos, 'borradores' => $borradores]);
     }
 
     public function editPedido($id){
