@@ -854,6 +854,10 @@
                         'K': {
                         validator: "(k|K)",
                         casing: "upper"
+                    },
+                        'k': {
+                        validator: "(k|K)",
+                        casing: "upper"
                     }
                 }
             });
