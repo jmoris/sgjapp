@@ -1162,6 +1162,7 @@
     "/assets/plugins/ace-builds/theme-eclipse.js": "/assets/plugins/ace-builds/theme-eclipse.js",
     "/assets/plugins/ace-builds/theme-github.js": "/assets/plugins/ace-builds/theme-github.js",
     "/assets/plugins/ace-builds/theme-github_dark.js": "/assets/plugins/ace-builds/theme-github_dark.js",
+    "/assets/plugins/ace-builds/theme-github_light_default.js": "/assets/plugins/ace-builds/theme-github_light_default.js",
     "/assets/plugins/ace-builds/theme-gob.js": "/assets/plugins/ace-builds/theme-gob.js",
     "/assets/plugins/ace-builds/theme-gruvbox.js": "/assets/plugins/ace-builds/theme-gruvbox.js",
     "/assets/plugins/ace-builds/theme-gruvbox_dark_hard.js": "/assets/plugins/ace-builds/theme-gruvbox_dark_hard.js",

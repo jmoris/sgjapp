@@ -10,7 +10,7 @@
         <div class="d-flex align-items-center flex-wrap text-nowrap">
             <button type="button" class="btn btn-sm btn-primary btn-icon-text mb-2 mb-md-0"
                 onclick="location.href = '/compras/pedidosmateriales/nuevo';"
-                @if(!has_permission('crear-orden-compra')) disabled @endif>
+                >
                 <div>
                     <i class="mdi mdi-plus"></i> Nuevo Pedido de Material
                 </div>
@@ -123,9 +123,7 @@
                         var html = '';
                         if(row.estado != -1){
                             html = '<div>';
-                            @if(has_permission('editar-orden-compra'))
                             html += '<button type="button" title="Editar Pedido Material" onclick="editarPedido('+row.id+')" class="btn btn-outline-primary btnxs px-1 py-0"><i class="mdi mdi-18 mdi-pencil"></i></button>';
-                            @endif
                             html += '<button type="button" title="Ver Pedido Material" onclick="vistaPreviaPedido('+row.id+')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-magnify"></i></button>';
                             html += '</div>';
                         }
