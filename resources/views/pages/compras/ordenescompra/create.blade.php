@@ -716,6 +716,7 @@
                 descripcion: $('#descripcionTxt').val(),
                 categoria: 1,
                 unidad: $('#unidadTxt').val(),
+                es_materiaprima: 0,
                 es_afecto: 1,
                 se_vende: 1,
                 se_compra: 1,
