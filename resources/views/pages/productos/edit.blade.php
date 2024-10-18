@@ -130,6 +130,14 @@
                                                     </div>
                                                     <div class="mb-2">
                                                         <input class="form-check-input" type="checkbox" value="1"
+                                                            id="es_materiaprima" name="es_materiaprima"
+                                                            @if ($producto->es_materiaprima) checked @endif>
+                                                        <label class="form-check-label" for="es_materiaprima">
+                                                            El producto es materia prima
+                                                        </label>
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <input class="form-check-input" type="checkbox" value="1"
                                                             id="es_afecto" name="es_afecto"
                                                             @if ($producto->es_afecto) checked @endif>
                                                         <label class="form-check-label" for="es_afecto">
@@ -317,6 +325,19 @@
                     (new bootstrap.Tab(tabEl)).show();
                 }
             }
+            $('#es_materiaprima').change(function(){
+                var checked = $(this).is(':checked');
+                if(checked){
+                    $('#se_compra').prop('checked', true);
+                    $('#es_afecto').prop('checked', false);
+                    $('#se_vende').prop('checked', false);
+                }else{
+                    $('#se_compra').prop('checked', true);
+                    $('#es_afecto').prop('checked',true);
+                    $('#se_vende').prop('checked', true);
+                }
+            });
+
             $('#precioVentaTxt').inputmask('numeric', {
                 min: 0,
                 prefix: '$ ',
@@ -357,10 +378,25 @@
                 },
             },
             submitHandler: function(form) {
+                var data = {
+                    sku: $('#sku').val(),
+                    nombre: $('#nombre').val(),
+                    descripcion: $('#descripcion').val(),
+                    categoria: $('#categoria').val(),
+                    unidad: $('#unidad').val(),
+                    largo: $('#largo').val(),
+                    ancho: $('#ancho').val(),
+                    peso: $('#peso').val(),
+                    es_materiaprima: ($('#es_materiaprima').is(':checked'))?1:0,
+                    es_afecto: ($('#es_afecto').is(':checked'))?1:0,
+                    se_vende: ($('#se_vende').is(':checked'))?1:0,
+                    se_compra: ($('#se_compra').is(':checked'))?1:0,
+                };
+
                 $.ajax({
                     type: "POST",
                     url: '/api/productos/editar/{{ $producto->id }}',
-                    data: $(form).serialize(), // serializes the form's elements.
+                    data: data, // serializes the form's elements.
                     success: function(data) {
                         Swal.fire({
                             title: "Producto actualizado exitosamente",

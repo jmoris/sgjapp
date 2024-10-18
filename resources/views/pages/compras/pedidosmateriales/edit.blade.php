@@ -251,6 +251,7 @@
                                                         <thead>
                                                             <!--<th>SKU</th>-->
                                                             <th>Item</th>
+                                                            <th>Largo</th>
                                                             <th>Stock</th>
                                                             <th>Cantidad</th>
                                                             <th>Recibidos</th>
@@ -280,6 +281,12 @@
                                                                             placeholder="NOMBRE ITEM" />-->
                                                                     <select class="form-control form-control-sm"
                                                                         id="selectProductos"></select>
+                                                                </td>
+                                                                <td style="width:10%;padding:4px;">
+                                                                    <input id="largoTxt" type="text"
+                                                                        class="form-control form-control-sm"
+                                                                        value="1" placeholder="LARGO"
+                                                                        onchange="calcTotalKg()"/>
                                                                 </td>
                                                                 <td style="width:10%;padding:4px;">
                                                                     <input id="stockTxt" type="text"
@@ -479,8 +486,9 @@
             $('#selectProductos').select2({
                 placeholder: 'Sin productos en la lista',
                 ajax: {
-                    url: '/api/productos/lista/compra',
+                    url: '/api/productos/lista/materiaprima',
                     dataType: 'json',
+                    delay: 250,
                     processResults: function(response) {
                         console.log(response);
                         var data = $.map(response, function(obj) {
@@ -526,10 +534,11 @@
                 var row = `
                 <tr detIndex="${index}">
                     <td>${producto.nombre} ${unidad.nombre}</td>
+                    <td>${producto.largo}</td>
                     <td>${producto.stock}</td>
                     <td>${producto.cantidad}</td>
                     <td>${producto.recibido}</td>
-                    <td><b>${parseFloat((parseInt(producto.stock)+parseInt(producto.recibido)) * producto.largo * producto.peso).toFixed()+'</b>/'+parseFloat(producto.cantidad * producto.largo * producto.peso).toFixed() + ' Kgs'}</td>
+                    <td><b>${parseFloat((parseInt(producto.stock)+parseInt(producto.recibido)) * producto.largo * producto.peso).toFixed(2)+'</b>/'+parseFloat(producto.cantidad * producto.largo * producto.peso).toFixed(2) + ' Kgs'}</td>
                     <td>
                         <button type="button" onclick="editarProducto(${index}, 0)" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em; float:left;">
                             <span class="mdi mdi-pencil"></span>
@@ -780,10 +789,11 @@
                 var row = `
                 <tr detIndex="${index}">
                     <td>${producto.nombre} ${unidad.nombre}</td>
+                    <td>${producto.largo}</td>
                     <td>${producto.stock}</td>
                     <td>${producto.cantidad}</td>
                     <td>${producto.recibido}</td>
-                    <td><b>${parseFloat((parseInt(producto.stock)+parseInt(producto.recibido)) * producto.largo * producto.peso).toFixed()+'</b>/'+parseFloat(producto.cantidad * producto.largo * producto.peso).toFixed() + ' Kgs'}</td>
+                    <td><b>${parseFloat((parseInt(producto.stock)+parseInt(producto.recibido)) * producto.largo * producto.peso).toFixed(2)+'</b>/'+parseFloat(producto.cantidad * producto.largo * producto.peso).toFixed(2) + ' Kgs'}</td>
                     <td>
                         <button type="button" onclick="eliminarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .25em;">
                         <span class="mdi mdi-delete"></span></button>
@@ -817,23 +827,31 @@
             if (editIndex != null && action) {
                 var row = $('#tablaDetalle tr[detindex="' + index + '"]');
                 var item = detalles[index];
+                var largo = $('#largoEditTxt').val();
                 var cantidad = $('#cantidadEditTxt').val();
                 var stock = $('#stockEditTxt').val();
                 var recibido = $('#recibidoEditTxt').val();
 
+                if((parseFloat(stock)+parseFloat(recibido)) > cantidad){
+                    alert("La cantidad de productos recibidos supera la cantidad necesitada");
+                    return;
+                }
+
+                detalles[index].largo = largo;
                 detalles[index].stock = stock;
                 detalles[index].cantidad = cantidad;
                 detalles[index].recibido = recibido;
 
                 calcularTotales();
 
-                row.find('td:eq(1)').html(`${stock}`);
-                row.find('td:eq(2)').html(`${cantidad}`);
-                row.find('td:eq(3)').html(`${recibido}`);
-                row.find('td:eq(4)').html(
-                `<b>${parseFloat((parseInt(item.stock)+parseInt(item.recibido)) * item.largo * item.peso).toFixed()+'</b>/'+parseFloat(item.cantidad * item.largo * item.peso).toFixed() + ' Kgs'}`
+                row.find('td:eq(1)').html(`${largo}`);
+                row.find('td:eq(2)').html(`${stock}`);
+                row.find('td:eq(3)').html(`${cantidad}`);
+                row.find('td:eq(4)').html(`${recibido}`);
+                row.find('td:eq(5)').html(
+                `<b>${parseFloat((parseInt(item.stock)+parseInt(item.recibido)) * item.largo * item.peso).toFixed(2)+'</b>/'+parseFloat(item.cantidad * item.largo * item.peso).toFixed(2) + ' Kgs'}`
                 );
-                row.find('td:eq(5)').html(`
+                row.find('td:eq(6)').html(`
                         <button type="button" onclick="editarProducto(${index}, 1)" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em;">
                             <span class="mdi mdi-pencil"></span>
                         </button>
@@ -849,21 +867,26 @@
             var row = $('#tablaDetalle tr[detindex="' + index + '"]');
             var item = detalles[index];
 
-            row.find('td:eq(1)').html(`<input id="stockEditTxt" type="text"
+            row.find('td:eq(1)').html(`<input id="largoEditTxt" type="text"
+                                                                        class="form-control form-control-sm"
+                                                                        value="${item.largo}"
+                                                                        placeholder="LARGO" />`);
+
+            row.find('td:eq(2)').html(`<input id="stockEditTxt" type="text"
                                                                         class="form-control form-control-sm"
                                                                         value="${item.stock}"
                                                                         placeholder="STOCK" />`);
-            row.find('td:eq(2)').html(`<input id="cantidadEditTxt"
+            row.find('td:eq(3)').html(`<input id="cantidadEditTxt"
                                                 type="number"
                                                 min="1" value="${item.cantidad}"
                                                 class="form-control form-control-sm"
                                                 placeholder="CANT" />`);
-            row.find('td:eq(3)').html(`<input
+            row.find('td:eq(4)').html(`<input
                                                                         id="recibidoEditTxt" type="text"
                                                                         class="form-control form-control-sm"
                                                                         value="${item.recibido}"
                                                                         placeholder="RECIBIDOS" />`);
-            row.find('td:eq(5)').html(` <button type="button" onclick="editarProducto(${index}, 1)" class="btn btn-sm btn-outline-primary" style="padding:.25em .5em;">
+            row.find('td:eq(6)').html(` <button type="button" onclick="editarProducto(${index}, 1)" class="btn btn-sm btn-outline-primary" style="padding:.25em .5em;">
                                             <span class="mdi mdi-content-save-plus"></span>
                                         </button>
                                         <button type="button" onclick="eliminarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em;">
@@ -888,9 +911,9 @@
                     .peso;
             });
             subtotalFaltante = subtotalKg - subtotalRecibido;
-            $('#lbltotal').text(subtotalKg.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.') + ' Kg');
-            $('#lblrecibido').text(subtotalRecibido.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.') + ' Kg');
-            $('#lblfaltante').text(subtotalFaltante.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.') + ' Kg');
+            $('#lbltotal').text(subtotalKg.toFixed(2).replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.') + ' Kg');
+            $('#lblrecibido').text(subtotalRecibido.toFixed(2).replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.') + ' Kg');
+            $('#lblfaltante').text(subtotalFaltante.toFixed(2).replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.') + ' Kg');
 
         }
 
@@ -907,7 +930,7 @@
                 if (totalKg == NaN || totalKg == null || totalKg == undefined) {
                     totalKg = 0;
                 }
-                $('#totalTxt').text(totalKg.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.') + ' Kgs');
+                $('#totalTxt').text(totalKg.toFixed(2).replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.') + ' Kgs');
             }
         }
 

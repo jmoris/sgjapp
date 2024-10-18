@@ -43,9 +43,26 @@ class ProductoController extends Controller
         return DataTables::eloquent($data)->toJson();
     }
 
-    public function getProductosCompra(){
+    public function getProductosCompra(Request $request){
         try{
-            $productos = Producto::where('se_compra', 1)->get();
+            $productos = Producto::where('se_compra', 1);
+            if(isset($request->term)){
+                $productos->where('nombre', 'ilike', '%'.$request->term.'%');
+            }
+            $productos = $productos->get();
+            return response()->json($productos);
+        }catch(Exception $ex){
+            return $ex;
+        }
+    }
+
+    public function getProductosMateriaPrima(Request $request){
+        try{
+            $productos = Producto::where('es_materiaprima', 1);
+            if(isset($request->term)){
+                $productos->where('nombre', 'ilike', '%'.$request->term.'%');
+            }
+            $productos = $productos->get();
             return response()->json($productos);
         }catch(Exception $ex){
             return $ex;
@@ -145,6 +162,7 @@ class ProductoController extends Controller
                 'largo' => 'nullable',
                 'ancho' => 'nullable',
                 'peso' => 'nullable',
+                'es_materiaprima' => 'boolean',
                 'es_afecto' => 'boolean',
                 'se_vende' => 'boolean',
                 'se_compra' => 'boolean',
@@ -179,9 +197,10 @@ class ProductoController extends Controller
                 $producto->peso = $request->peso;
             }
 
+            $producto->es_materiaprima = $request->es_materiaprima;
             $producto->es_afecto = $request->es_afecto;
-            $producto->se_vende = ($request->se_vende==null) ? false : true;
-            $producto->se_compra = ($request->se_compra==null) ? false : true;
+            $producto->se_vende = $request->se_vende;
+            $producto->se_compra = $request->se_compra;
             $producto->save();
 
             return response()->json([
@@ -205,6 +224,7 @@ class ProductoController extends Controller
                 'largo' => 'nullable',
                 'ancho' => 'nullable',
                 'peso' => 'nullable',
+                'es_materiaprima' => 'boolean',
                 'es_afecto' => 'boolean',
                 'se_vende' => 'boolean',
                 'se_compra' => 'boolean',
@@ -235,9 +255,10 @@ class ProductoController extends Controller
                 $producto->peso = $request->peso;
             }
 
+            $producto->es_materiaprima = $request->es_materiaprima;
             $producto->es_afecto = $request->es_afecto;
-            $producto->se_vende = ($request->se_vende==null) ? false : true;
-            $producto->se_compra = ($request->se_compra==null) ? false : true;
+            $producto->se_vende = $request->se_vende;
+            $producto->se_compra = $request->se_compra;
             $producto->save();
 
             return response()->json([

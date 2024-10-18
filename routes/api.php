@@ -99,6 +99,7 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
     Route::get('/productos', [ProductoController::class, 'getAll']);
     Route::get('/productos/{id}', [ProductoController::class, 'getById']);
     Route::get('/productos/lista/compra', [ProductoController::class, 'getProductosCompra']);
+    Route::get('/productos/lista/materiaprima', [ProductoController::class, 'getProductosMateriaPrima']);
     Route::post('/productos', [ProductoController::class, 'store']);
     Route::post('/productos/editar/{id}', [ProductoController::class, 'update']);
     Route::delete('/productos/{id}', [ProductoController::class, 'delete']);

@@ -85,6 +85,12 @@
                                                     <h5>Información contable</h5>
                                                 </div>
                                                 <div class="mb-2">
+                                                    <input class="form-check-input" type="checkbox" value="1" id="es_materiaprima" name="es_materiaprima">
+                                                    <label class="form-check-label" for="es_materiaprima">
+                                                        El producto es materia prima
+                                                    </label>
+                                                </div>
+                                                <div class="mb-2">
                                                     <input class="form-check-input" type="checkbox" value="1" id="es_afecto" name="es_afecto" checked>
                                                     <label class="form-check-label" for="es_afecto">
                                                         El producto es afecto
@@ -134,6 +140,20 @@
 
 @push('custom-scripts')
     <script>
+
+        $('#es_materiaprima').change(function(){
+            var checked = $(this).is(':checked');
+            if(checked){
+                $('#se_compra').prop('checked', true);
+                $('#es_afecto').prop('checked', false);
+                $('#se_vende').prop('checked', false);
+            }else{
+                $('#se_compra').prop('checked', true);
+                $('#es_afecto').prop('checked',true);
+                $('#se_vende').prop('checked', true);
+            }
+        });
+
         $("#storeForm").validate({
             rules: {
                 sku: {
@@ -149,6 +169,9 @@
                     required: true,
                 },
                 unidad: {
+                    required: true,
+                },
+                es_materiaprima: {
                     required: true,
                 },
                 es_afecto: {
@@ -181,9 +204,10 @@
                     largo: $('#largo').val(),
                     ancho: $('#ancho').val(),
                     peso: $('#peso').val(),
-                    es_afecto: $('#es_afecto').val(),
-                    se_vende: $('#se_vende').val(),
-                    se_compra: $('#se_compra').val(),
+                    es_materiaprima: ($('#es_materiaprima').is(':checked'))?1:0,
+                    es_afecto: ($('#es_afecto').is(':checked'))?1:0,
+                    se_vende: ($('#se_vende').is(':checked'))?1:0,
+                    se_compra: ($('#se_compra').is(':checked'))?1:0,
                 };
                 $.ajax({
                     type: "POST",
