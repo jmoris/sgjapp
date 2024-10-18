@@ -146,11 +146,15 @@
             if(checked){
                 $('#se_compra').prop('checked', true);
                 $('#es_afecto').prop('checked', false);
+                $('#es_afecto').prop('disabled', true);
                 $('#se_vende').prop('checked', false);
+                $('#se_vende').prop('disabled', true);
             }else{
                 $('#se_compra').prop('checked', true);
                 $('#es_afecto').prop('checked',true);
+                $('#es_afecto').prop('disabled', false);
                 $('#se_vende').prop('checked', true);
+                $('#se_vende').prop('disabled', false);
             }
         });
 
