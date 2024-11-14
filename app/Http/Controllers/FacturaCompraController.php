@@ -30,10 +30,7 @@ class FacturaCompraController extends Controller
             curl_close($ch);
             $docData = json_decode($result);
             Log::info("ENDPOINT FACTURAS COMPRA: ". $endpoint);
-            Log::info(print_r($docData, true));
-            if($docData->success!=null){
-                return $result;
-            }
+
             return DataTables::of($docData)->toJson();
 
     }
