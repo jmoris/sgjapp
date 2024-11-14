@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Borrador;
 use App\Cliente;
 use App\Comuna;
 use App\DocumentoPendiente;
@@ -32,8 +33,8 @@ class FacturaController extends Controller
         $unidades = Unidad::all();
         $listas = ListaPrecio::all();
         $proyectos = Proyecto::where('estado', 0)->get();
-
-        return view('pages.ventas.facturas.create', ['clientes' => $clientes, 'unidades' => $unidades,'comunas' => $comunas, 'emisor' => $emisor, 'listas' => $listas, 'proyectos' => $proyectos]);
+        $borradores = Borrador::where('user_id', auth()->user()->id)->where('tipo_doc', 33)->orderBy('updated_at', 'desc')->get();
+        return view('pages.ventas.facturas.create', ['borradores'=>$borradores, 'clientes' => $clientes, 'unidades' => $unidades,'comunas' => $comunas, 'emisor' => $emisor, 'listas' => $listas, 'proyectos' => $proyectos]);
     }
     /*
         DESDE AQUI HACIA ABAJO ESTARAN LAS FUNCIONES DE LA API
@@ -127,8 +128,13 @@ class FacturaController extends Controller
             Log::info("Datos recibidos Factura:");
             Log::info($result);
             curl_close($ch);
-
             $docData = json_decode($result);
+            if($docData->folio == null){
+                return response()->json([
+                    'success' => 'false',
+                    'msg' => 'No se pudo generar el documento en la API',
+                ]);
+            }
 
             $fact = new Factura();
             $fact->folio = $docData->folio;

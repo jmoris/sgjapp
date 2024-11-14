@@ -5,6 +5,7 @@ use App\DomicilioContribuyente;
 use App\Helpers\Herramientas;
 use App\Http\Controllers\BorradorController;
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\FacturaCompraController;
 use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\GuiaDespachoController;
 use App\Http\Controllers\MaestroController;
@@ -113,6 +114,8 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
     });
 
     Route::prefix('compras')->group(function(){
+        Route::get('facturas', [FacturaCompraController::class, 'getAll']);
+
         Route::get('ordenescompra', [OrdenCompraController::class, 'getAll']);
         Route::get('ordenescompra/vistaprevia/{folio}/{rev?}', [OrdenCompraController::class, 'vistaPreviaOC']);
         Route::post('ordenescompra', [OrdenCompraController::class, 'store']);
@@ -164,7 +167,7 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
     Route::post('/config/certificado', [MaestroController::class, 'storeCertificado']);
 
 
-    Route::get('/listaprecios', [MaestroController::class, 'getListaPrecios']);
+    Route::get('/listaprecios', [MaestroController::class, 'getListasPrecios']);
     Route::get('/listaprecios/{id}', [MaestroController::class, 'getListaPrecio']);
     Route::post('/unidades', [MaestroController::class, 'storeUnidad']);
     Route::post('/categorias', [MaestroController::class, 'storeCategoria']);

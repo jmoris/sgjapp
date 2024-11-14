@@ -773,7 +773,7 @@
                     <select id="selectBorrador" class="form-control">
                         <option>Seleccionar borrador</option>
                         @foreach($borradores as $borrador)
-                        <option value="{{ $borrador->id }}">{{ \App\Cliente::find($borrador->externo_id)->razon_social.' ('.date('d/m/Y h:i', strtotime($borrador->updated_at)).')' }}</option>
+                        <option value="{{ $borrador->id }}">{{ \App\Cliente::find($borrador->externo_id)->razon_social.' ('.date('d/m/Y H:i', strtotime($borrador->updated_at)).')' }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -1028,7 +1028,7 @@
                     <td>${'$ ' + producto.precio.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}</td>
                     <td>${'$ ' + subtotal.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}</td>
                     <td>
-                        <button type="button" onclick="eliminarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .25em;">
+                        <button type="button" onclick="eliminarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em;">
                         <span class="mdi mdi-delete"></span></button>
                     </td>
                 </tr>`;

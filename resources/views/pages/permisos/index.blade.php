@@ -251,6 +251,7 @@
 
         function guardarPermisos(){
             var datos = {
+                'administracion': [tienePermiso('#verAdministracion'),tienePermiso('#editarAdministracion'),tienePermiso('#crearAdministracion'),tienePermiso('#eliminarAdministracion')],
                 'usuarios': [tienePermiso('#verUsuarios'),tienePermiso('#editarUsuarios'),tienePermiso('#crearUsuarios'),tienePermiso('#eliminarUsuarios')],
                 'proveedores': [tienePermiso('#verProveedor'),tienePermiso('#editarProveedor'),tienePermiso('#crearProveedor'),tienePermiso('#eliminarProveedor')],
                 'clientes': [tienePermiso('#verCliente'),tienePermiso('#editarCliente'),tienePermiso('#crearCliente'),tienePermiso('#eliminarCliente')],

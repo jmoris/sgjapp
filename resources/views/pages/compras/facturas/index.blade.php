@@ -1,0 +1,117 @@
+@extends('layout.master')
+
+@section('title', 'Gestión de Facturas')
+
+@section('content')
+    <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
+        <div>
+            <h4 class="mb-3 mb-md-0">Gestión de Facturas de Compra</h4>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12 col-xl-12 stretch-card">
+            <div class="row flex-grow-1">
+                <div class="col-md-12 grid-margin stretch-card">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-baseline">
+                                <h6 class="card-title mb-3">LISTA DE FACTURAS DE COMPRA</h6>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <table id="example" class="compact hover order-column row-border" style="width:100%">
+                                        <thead>
+                                            <tr>
+                                                <th>Folio</th>
+                                                <th>Emisor</th>
+                                                <th>RUT</th>
+                                                <th>Fecha</th>
+                                                <th>Monto Total</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+@endsection
+
+@push('plugin-scripts')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment-with-locales.min.js"
+        integrity="sha512-4F1cxYdMiAW98oomSLaygEwmCnIP38pb4Kx70yQYqRwLVCs3DbRumfBq82T08g/4LJ/smbFGFpmeFlQgoDccgg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+@endpush
+
+@push('custom-scripts')
+    <script>
+        var facturasTable = null;
+        var currentUserId = {{ auth()->user()->id }};
+
+        function vistaPreviaFactura(id) {
+            window.open('/api/ventas/facturas/vistaprevia/' + id);
+        }
+
+        facturasTable = new DataTable('#example', {
+            responsive: true,
+            ajax: '/api/compras/facturas',
+            search: {
+                return: true
+            },
+            language: {
+                url: '/assets/js/datatables/es-ES.json',
+            },
+            order: [
+                [0, 'desc']
+            ],
+            columns: [{
+                    data: 'folio',
+                    responsivePriority: 1
+                },
+                {
+                    data: 'razonsocial_emisor',
+                    responsivePriority: 2
+                },
+                {
+                    data: 'rut_emisor',
+                    responsivePriority: 3
+                },
+                {
+                    data: 'fecha_emision',
+                    responsivePriority: 3,
+                    render: function(data, type, row) {
+                        var fecha = moment(row.fecha_emision, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY');
+                        return fecha;
+                    }
+                },
+                {
+                    data: 'monto_total',
+                    responsivePriority: 3,
+                    render: function(data, type, row) {
+                        return '$' + row.monto_total.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.');
+                    }
+                },
+                {
+                    data: null,
+                    orderable: false,
+                    render: function(data, type, row) {
+                        var html = '';
+                        html = '<div>';
+                        html += '<button type="button" title="Ver Factura" onclick="vistaPreviaFactura(' +
+                            row.folio +
+                            ')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-magnify"></i></button>';
+                        html += '</div>';
+                        //var html = '';
+                        return html;
+                    }
+                },
+            ],
+            processing: true,
+            serverSide: true
+        });
+    </script>
+@endpush

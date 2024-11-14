@@ -169,6 +169,53 @@
                     <span class="link-title" style="margin-left: 12px;">Pedido de Materiales</span>
                 </a>
             </li>
+
+            @if (has_permission('ver-factura')||has_permission('ver-guia-despacho')||has_permission('ver-nota-credito')||has_permission('ver-nota-debito'))
+            <li class="nav-item {{ active_class(['compras/facturas', 'compras/guiasdespacho', 'compras/notascredito', 'compras/notasdebito']) }}">
+                <a class="nav-link" data-bs-toggle="collapse" href="#compras" role="button"
+                    aria-expanded="{{ is_active_route(['compras/facturas', 'compras/guiasdespacho', 'compras/notascredito', 'compras/notasdebito']) }}" aria-controls="compras">
+                    <i class="mdi mdi-file-document-multiple-outline mdi-18"></i>
+                    <span class="link-title" style="margin-left: 12px;">Documentos</span>
+                    <i class="link-arrow" data-feather="chevron-down"></i>
+                </a>
+                <div class="collapse {{ show_class(['compras/facturas', 'compras/guiasdespacho', 'compras/notascredito', 'compras/notasdebito']) }}" id="compras">
+                    <ul class="nav sub-menu">
+                        @if (has_permission('ver-factura'))
+                            <li class="nav-item">
+                                <a href="{{ url('/compras/facturas') }}"
+                                    class="nav-link {{ active_class(['compras/facturas*']) }}">
+                                    Facturas
+                                </a>
+                            </li>
+                        @endif
+                        @if (has_permission('ver-guia-despacho'))
+                        <li class="nav-item">
+                            <a href="{{ url('/compras/guiasdespacho') }}"
+                                class="nav-link {{ active_class(['compras/guiasdespacho*']) }}">
+                                Guias de Despacho
+                            </a>
+                        </li>
+                        @endif
+                        @if (has_permission('ver-nota-credito'))
+                        <li class="nav-item">
+                            <a href="{{ url('/compras/notascredito') }}"
+                                class="nav-link {{ active_class(['compras/notascredito*']) }}">
+                                Notas de Credito
+                            </a>
+                        </li>
+                        @endif
+                        @if (has_permission('ver-nota-debito'))
+                        <li class="nav-item">
+                            <a href="{{ url('/compras/notasdebito') }}"
+                                class="nav-link {{ active_class(['compras/notasdebito*']) }}">
+                                Notas de Debito
+                            </a>
+                        </li>
+                        @endif
+                    </ul>
+                </div>
+            </li>
+            @endif
         </ul>
     </div>
 </nav>
