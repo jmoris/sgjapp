@@ -30,6 +30,18 @@
                                                 <th></th>
                                             </tr>
                                         </thead>
+                                        <tbody>
+                                            @foreach($documentos as $doc)
+                                            <tr>
+                                                <td>{{ $doc->folio }}</td>
+                                                <td>{{ $doc->razonsocial_emisor }}</td>
+                                                <td>{{ $doc->rut_emisor }}</td>
+                                                <td>{{ $doc->fecha_emision }}</td>
+                                                <td>{{ $doc->monto_total }}</td>
+                                                <td>...</td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
                                     </table>
                                 </div>
                             </div>
@@ -58,7 +70,7 @@
 
         facturasTable = new DataTable('#example', {
             responsive: true,
-            ajax: '/api/compras/facturas',
+            /*ajax: '/api/compras/facturas',*/
             search: {
                 return: true
             },
@@ -68,7 +80,7 @@
             order: [
                 [0, 'desc']
             ],
-            columns: [{
+            /*columns: [{
                     data: 'folio',
                     responsivePriority: 1
                 },
@@ -111,7 +123,7 @@
                 },
             ],
             processing: true,
-            serverSide: true
+            serverSide: true*/
         });
     </script>
 @endpush

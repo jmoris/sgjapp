@@ -10,7 +10,20 @@ use Yajra\DataTables\Facades\DataTables;
 class FacturaCompraController extends Controller
 {
     public function index(){
-        return view('pages.compras.facturas.index');
+        $emisor = Ajustes::getEmisor();
+        $endpoint =  env('FACTURAPI_ENDPOINT').'documentos/compras?contribuyente='.$emisor['rut'];
+        $ch = curl_init( $endpoint );
+            curl_setopt( $ch, CURLOPT_POST, false);
+            curl_setopt( $ch, CURLOPT_HTTPHEADER, [
+                'Content-Type:application/json',
+                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
+            ]);
+            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+            $result = curl_exec($ch);
+            curl_close($ch);
+            Log::info("ENDPOINT FACTURAS COMPRA: ". $endpoint);
+
+        return view('pages.compras.facturas.index', ['documentos' => $result]);
     }
 
     /*
