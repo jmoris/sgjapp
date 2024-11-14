@@ -37,7 +37,7 @@
                                                 <td>{{ $doc->razonsocial_emisor }}</td>
                                                 <td>{{ $doc->rut_emisor }}</td>
                                                 <td>{{ $doc->fecha_emision }}</td>
-                                                <td>{{ $doc->monto_total }}</td>
+                                                <td>$ {{ number_format($doc->monto_total, 0, ',', '.') }}</td>
                                                 <td>...</td>
                                             </tr>
                                             @endforeach
