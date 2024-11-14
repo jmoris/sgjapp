@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\Ajustes;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Yajra\DataTables\Facades\DataTables;
 
 class FacturaCompraController extends Controller
@@ -28,8 +29,11 @@ class FacturaCompraController extends Controller
             $result = curl_exec($ch);
             curl_close($ch);
             $docData = json_decode($result);
+            Log::info("ENDPOINT FACTURAS COMPRA: ". $endpoint);
+            if($docData['success']){
+                return DataTables::of($docData)->toJson();
+            }
             return $result;
-        return DataTables::of($docData)->toJson();
     }
 
 }
