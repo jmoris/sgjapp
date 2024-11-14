@@ -20,10 +20,11 @@ class FacturaCompraController extends Controller
             ]);
             curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
             $result = curl_exec($ch);
+            $data = json_decode($result);
             curl_close($ch);
             Log::info("ENDPOINT FACTURAS COMPRA: ". $endpoint);
 
-        return view('pages.compras.facturas.index', ['documentos' => $result]);
+        return view('pages.compras.facturas.index', ['documentos' => $data]);
     }
 
     /*
