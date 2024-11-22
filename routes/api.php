@@ -115,7 +115,7 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
 
     Route::prefix('compras')->group(function(){
         Route::get('facturas', [FacturaCompraController::class, 'getAll']);
-        Route::get('facturas/vistaprevia/{rutEmisor}/{tipo}/{folio}', [FacturaController::class, 'vistaPreviaFactura']);
+        Route::get('facturas/vistaprevia/{rutEmisor}/{tipo}/{folio}', [FacturaCompraController::class, 'vistaPreviaFactura']);
 
         Route::get('ordenescompra', [OrdenCompraController::class, 'getAll']);
         Route::get('ordenescompra/vistaprevia/{folio}/{rev?}', [OrdenCompraController::class, 'vistaPreviaOC']);
