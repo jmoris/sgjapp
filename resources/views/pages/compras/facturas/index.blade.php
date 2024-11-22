@@ -38,7 +38,7 @@
                                                 <td>{{ $doc->rut_emisor }}</td>
                                                 <td>{{ $doc->fecha_emision }}</td>
                                                 <td>$ {{ number_format($doc->monto_total, 0, ',', '.') }}</td>
-                                                <td>...</td>
+                                                <td><button type="button" title="Ver Factura de Compra" onclick="vistaPreviaDocumento({{$doc->rut_emisor}}, {{$doc->tipo}}, {{$doc->folio}})" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-magnify"></i></button></td>
                                             </tr>
                                             @endforeach
                                         </tbody>
@@ -64,8 +64,8 @@
         var facturasTable = null;
         var currentUserId = {{ auth()->user()->id }};
 
-        function vistaPreviaFactura(id) {
-            window.open('/api/ventas/facturas/vistaprevia/' + id);
+        function vistaPreviaDocumento(emisor, tipo, folio) {
+            window.open(`/api/compras/facturas/vistaprevia/${emisor}/${tipo}/${folio}`);
         }
 
         facturasTable = new DataTable('#example', {
