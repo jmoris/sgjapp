@@ -50,7 +50,7 @@ class FacturaCompraController extends Controller
 
     public function vistaPreviaFactura(Request $request, $rutEmisor, $tipo, $folio){
         $emisor = Ajustes::getEmisor();
-        $endpoint =  env('FACTURAPI_ENDPOINT').'documentos/compras/generar/xml/'.$rutEmisor.'/'.$tipo.'/'.$folio;
+        $endpoint =  env('FACTURAPI_ENDPOINT').'documentos/compras/generar/xml/'.$rutEmisor.'/'.$tipo.'/'.$folio.'?contribuyente='.$emisor['rut'];
         $ch = curl_init( $endpoint );
             curl_setopt( $ch, CURLOPT_POST, false);
             curl_setopt( $ch, CURLOPT_HTTPHEADER, [
