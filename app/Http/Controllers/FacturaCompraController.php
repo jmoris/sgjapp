@@ -67,7 +67,7 @@ class FacturaCompraController extends Controller
             $caratula = $EnvioDTE->getCaratula();
             $data = $dte->getDatos();
 
-            $pdf = new \SolucionTotal\CorePDF\PDF($data, 1, '', 1, $dte->getTED());
+            $pdf = new \SolucionTotal\CorePDF\PDF($data, 1, url('/vacio.png'), 2, $dte->getTED());
             $pdf->setCedible(false);
             //$pdf->setLeyendaImpresion('Sistema de facturacion por SoluciónTotal');
             $pdf->setResolucion(date('Y', strtotime($caratula['FchResol'])), $caratula['NroResol']);
