@@ -6,13 +6,12 @@ use App\Helpers\Ajustes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use SolucionTotal\CoreDTE\Sii\EnvioDte;
-use Yajra\DataTables\Facades\DataTables;
 
-class FacturaCompraController extends Controller
+class GuiaDespachoCompraController extends Controller
 {
     public function index(){
         $emisor = Ajustes::getEmisor();
-        $endpoint =  env('FACTURAPI_ENDPOINT').'documentos/compras?contribuyente='.$emisor['rut'].'&tipo=33';
+        $endpoint =  env('FACTURAPI_ENDPOINT').'documentos/compras?contribuyente='.$emisor['rut'].'&tipo=52';
         $ch = curl_init( $endpoint );
             curl_setopt( $ch, CURLOPT_POST, false);
             curl_setopt( $ch, CURLOPT_HTTPHEADER, [
@@ -25,7 +24,7 @@ class FacturaCompraController extends Controller
             curl_close($ch);
             Log::info("ENDPOINT FACTURAS COMPRA: ". $endpoint);
 
-        return view('pages.compras.facturas.index', ['documentos' => $data]);
+        return view('pages.compras.guias.index', ['documentos' => $data]);
     }
 
     /*
@@ -33,7 +32,7 @@ class FacturaCompraController extends Controller
     */
     public function getAll(){
         $emisor = Ajustes::getEmisor();
-        $endpoint =  env('FACTURAPI_ENDPOINT').'documentos/compras?contribuyente='.$emisor['rut'].'&tipo=33';
+        $endpoint =  env('FACTURAPI_ENDPOINT').'documentos/compras?contribuyente='.$emisor['rut'].'&tipo=52';
         $ch = curl_init( $endpoint );
             curl_setopt( $ch, CURLOPT_POST, false);
             curl_setopt( $ch, CURLOPT_HTTPHEADER, [
@@ -73,7 +72,4 @@ class FacturaCompraController extends Controller
             $pdf->construir();
             $pdf->generar(1);
     }
-
-
-
 }

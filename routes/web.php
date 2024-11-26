@@ -19,6 +19,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\FacturaCompraController;
 use App\Http\Controllers\FacturaController;
+use App\Http\Controllers\GuiaDespachoCompraController;
 use App\Http\Controllers\GuiaDespachoController;
 use App\Http\Controllers\NotaCreditoController;
 use App\Http\Controllers\OrdenCompraController;
@@ -166,6 +167,9 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
     Route::prefix('compras')->group(function(){
         Route::prefix('facturas')->middleware('tag:ver-factura')->group(function(){
             Route::get('/', [FacturaCompraController::class, 'index']);
+        });
+        Route::prefix('guiasdespacho')->middleware('tag:ver-guia-despacho')->group(function(){
+            Route::get('/', [GuiaDespachoCompraController::class, 'index']);
         });
         Route::prefix('ordenescompra')->middleware('tag:ver-orden-compra')->group(function(){
             Route::get('/', [OrdenCompraController::class, 'index']);

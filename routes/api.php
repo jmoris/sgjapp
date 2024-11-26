@@ -7,6 +7,7 @@ use App\Http\Controllers\BorradorController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\FacturaCompraController;
 use App\Http\Controllers\FacturaController;
+use App\Http\Controllers\GuiaDespachoCompraController;
 use App\Http\Controllers\GuiaDespachoController;
 use App\Http\Controllers\MaestroController;
 use App\Http\Controllers\NotaCreditoController;
@@ -116,6 +117,9 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
     Route::prefix('compras')->group(function(){
         Route::get('facturas', [FacturaCompraController::class, 'getAll']);
         Route::get('facturas/vistaprevia/{rutEmisor}/{tipo}/{folio}', [FacturaCompraController::class, 'vistaPreviaFactura']);
+
+        Route::get('guiasdespacho', [GuiaDespachoCompraController::class, 'getAll']);
+        Route::get('guiasdespacho/vistaprevia/{rutEmisor}/{tipo}/{folio}', [GuiaDespachoCompraController::class, 'vistaPreviaFactura']);
 
         Route::get('ordenescompra', [OrdenCompraController::class, 'getAll']);
         Route::get('ordenescompra/vistaprevia/{folio}/{rev?}', [OrdenCompraController::class, 'vistaPreviaOC']);
