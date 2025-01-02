@@ -247,8 +247,8 @@
                                                                 <td>-</td>
                                                                 <td>{{ $det['NmbItem'] }}</td>
                                                                 <td>{{ $det['QtyItem'] }}</td>
-                                                                <td>{{ $det['PrcItem'] }}</td>
-                                                                <td>{{ $det['MontoItem'] }}</td>
+                                                                <td>$ {{ number_format($det['PrcItem'], 0, ',', '.') }}</td>
+                                                                <td>$ {{ number_format($det['MontoItem'], 0, ',', '.') }}</td>
                                                             </tr>
                                                             @endforeach
                                                         </tbody>
@@ -268,12 +268,6 @@
                                                         </thead>
                                                         <tbody></tbody>
                                                     </table>
-                                                </div>
-                                                <div class="mb-2 border-bottom">
-                                                    <h5>Glosa documento</h5>
-                                                </div>
-                                                <div class="col-md-12">
-                                                    <textarea id="glosaTxt" maxlength="250" class="form-control mt-3" rows="3"></textarea>
                                                 </div>
                                             </div>
                                             <div class="col-md-4">
@@ -316,7 +310,7 @@
                                                             <p>Monto neto </p>
                                                         </div>
                                                         <div class="col-md-5 text-end">
-                                                            <p id="lblneto">{{ $documento['Encabezado']['Totales']['MntNeto'] }}</p>
+                                                            <p id="lblneto">$ {{ number_format($documento['Encabezado']['Totales']['MntNeto'], 0, ',', '.') }}</p>
                                                         </div>
                                                     </div>
                                                     <div class="row">
@@ -324,7 +318,7 @@
                                                             <p>IVA </p>
                                                         </div>
                                                         <div class="col-md-5 text-end">
-                                                            <p id="lbliva">{{ $documento['Encabezado']['Totales']['IVA'] }}</p>
+                                                            <p id="lbliva">$ {{ number_format($documento['Encabezado']['Totales']['IVA'], 0, ',', '.') }}</p>
                                                         </div>
                                                     </div>
                                                     <div class="row">
@@ -340,7 +334,7 @@
                                                             <p><b>Total </b></p>
                                                         </div>
                                                         <div class="col-md-5 text-end">
-                                                            <p id="lbltotal">{{ $documento['Encabezado']['Totales']['MntTotal'] }}</p>
+                                                            <p id="lbltotal">$ {{ number_format($documento['Encabezado']['Totales']['MntTotal'], 0, ',', '.') }}</p>
                                                         </div>
                                                     </div>
                                                 </div>
