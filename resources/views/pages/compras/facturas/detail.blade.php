@@ -292,19 +292,6 @@
                                                     </div>
                                                 </div>
                                                 <div class="row">
-                                                    <div class="col-md-6 pr-0">
-                                                        <p>Descuento global </p>
-                                                    </div>
-                                                    <div class="col-md-3 pl-0">
-                                                        <input value="0" class="form-control form-control-sm"
-                                                            type="text" name="descuentoglobal" id="descuentoglobal" />
-
-                                                    </div>
-                                                    <div class="col-md-3 pl-0 my-0 text-end">
-                                                        <p class="my-0" id="lbldescuentoglobal">$0</p>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
                                                     <div class="col-md-7">
                                                         <p>Monto exento </p>
                                                     </div>
@@ -337,7 +324,25 @@
                                                         <p>Impuestos adicionales </p>
                                                     </div>
                                                     <div class="col-md-5 text-end">
-                                                        <p id="lblimpad">$0</p>
+                                                        @php
+                                                        $impadicional = 0;
+                                                        if(isset($documento['Encabezado']['Totales']['ImptoReten'])){
+                                                            $impadicionales = $documento['Encabezado']['Totales']['ImptoReten'];
+                                                            if (!isset($impadicionales[0])){
+                                                                $impadicionales = [$impadicionales];
+                                                            }
+                                                            foreach($impadicionales as $impuesto){
+                                                                if(isset($impuesto['MontoImp'])){
+                                                                    if($impuesto!=false||$impuesto!=null){
+                                                                        if($impuesto['MontoImp']!=false){
+                                                                            $impadicional += $impuesto['MontoImp'];
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                        @endphp
+                                                        <p id="lblimpad">{{ number_format($impadicional, 0, ',', '.') }}</p>
                                                     </div>
                                                 </div>
                                                 <div class="row">
