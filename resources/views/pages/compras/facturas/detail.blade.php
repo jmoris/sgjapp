@@ -288,7 +288,11 @@
                                                     </div>
                                                     <div class="col-md-5 text-end">
                                                         <p id="lblSubtotalDoc">
-                                                            {{ $documento['Encabezado']['Totales']['MntNeto'] }}</p>
+                                                            @php
+                                                            $neto = $documento['Encabezado']['Totales']['MntNeto'];
+                                                            $exento = (isset($documento['Encabezado']['Totales']['MntExe']))?$documento['Encabezado']['Totales']['MntExe']:0;
+                                                            @endphp
+                                                            $ {{ number_format($neto+$exento, 0, ',', '.') }}</p>
                                                     </div>
                                                 </div>
                                                 <div class="row">
@@ -296,7 +300,7 @@
                                                         <p>Monto exento </p>
                                                     </div>
                                                     <div class="col-md-5 text-end">
-                                                        <p id="lblexento">$0</p>
+                                                        <p id="lblexento">$ {{number_format($exento, 0, ',', '.')}}</p>
                                                     </div>
                                                 </div>
                                                 <div class="row">
@@ -304,8 +308,7 @@
                                                         <p>Monto neto </p>
                                                     </div>
                                                     <div class="col-md-5 text-end">
-                                                        <p id="lblneto">$
-                                                            {{ number_format($documento['Encabezado']['Totales']['MntNeto'], 0, ',', '.') }}
+                                                        <p id="lblneto">$ {{ number_format($documento['Encabezado']['Totales']['MntNeto'], 0, ',', '.') }}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -314,8 +317,7 @@
                                                         <p>IVA </p>
                                                     </div>
                                                     <div class="col-md-5 text-end">
-                                                        <p id="lbliva">$
-                                                            {{ number_format($documento['Encabezado']['Totales']['IVA'], 0, ',', '.') }}
+                                                        <p id="lbliva">$ {{ number_format($documento['Encabezado']['Totales']['IVA'], 0, ',', '.') }}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -342,7 +344,7 @@
                                                             }
                                                         }
                                                         @endphp
-                                                        <p id="lblimpad">{{ number_format($impadicional, 0, ',', '.') }}</p>
+                                                        <p id="lblimpad">$ {{ number_format($impadicional, 0, ',', '.') }}</p>
                                                     </div>
                                                 </div>
                                                 <div class="row">
@@ -361,7 +363,7 @@
                                 </div>
                             </div>
                             <button type="button" class="btn btn-danger"
-                                onclick="location.href = '/compras/ordenescompra'">
+                                onclick="location.href = '/compras/facturas'">
                                 <i class="mdi mdi-cancel"></i>
                                 Cerrar
                             </button>
