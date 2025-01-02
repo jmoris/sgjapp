@@ -90,7 +90,7 @@
                                                         </label>
                                                       </div>
                                                       <div class="form-check form-check-inline">
-                                                        <input type="radio" class="form-check-input" value="2" name="tipo_pago" id="modalidad_pago">
+                                                        <input type="radio" class="form-check-input" checked value="2" name="tipo_pago" id="modalidad_pago">
                                                         <label class="form-check-label" for="modalidad2">
                                                           Credito
                                                         </label>
