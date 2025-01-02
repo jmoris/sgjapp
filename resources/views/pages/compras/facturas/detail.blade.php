@@ -102,11 +102,10 @@
                                                                             class="col-sm-4 col-form-label col-form-label-sm">Razón
                                                                             Social</label>
                                                                         <div class="col-sm-8">
-                                                                            <select name="razon_social" id="razon_social"
-                                                                                class="form-control form-control-sm">
-                                                                                <option value="">Seleccione un cliente
-                                                                                </option>
-                                                                            </select>
+                                                                            <input type="text" name="razon_social_emisor"
+                                                                        id="razon_social_emisor"
+                                                                        class="form-control form-control-sm"
+                                                                        value="{{ $documento['Encabezado']['Receptor']['RznSocRecep'] }}" disabled>
                                                                         </div>
                                                                     </div>
                                                                     <div class="row mb-2">
@@ -116,7 +115,7 @@
                                                                             <input type="text" name="rut"
                                                                                 id="rut"
                                                                                 class="form-control form-control-sm"
-                                                                                disabled>
+                                                                                value="{{ $documento['Encabezado']['Receptor']['RUTRecep'] }}" disabled>
                                                                         </div>
                                                                     </div>
                                                                     <div class="row mb-2">
@@ -127,7 +126,7 @@
                                                                             <input type="text" name="giro"
                                                                                 id="giro"
                                                                                 class="form-control form-control-sm"
-                                                                                disabled>
+                                                                                value="{{ $documento['Encabezado']['Receptor']['GiroRecep'] }}" disabled>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -141,7 +140,7 @@
                                                                             <input type="text" name="direccion"
                                                                                 id="direccion"
                                                                                 class="form-control form-control-sm"
-                                                                                disabled>
+                                                                                value="{{ $documento['Encabezado']['Receptor']['DirRecep'] }}" disabled>
                                                                         </div>
                                                                     </div>
                                                                     <div class="row mb-2">
@@ -151,7 +150,7 @@
                                                                             <input type="text" name="comuna"
                                                                                 id="comuna"
                                                                                 class="form-control form-control-sm"
-                                                                                disabled>
+                                                                                value="{{ $documento['Encabezado']['Receptor']['CmnaRecep'] }}" disabled>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -182,8 +181,7 @@
                                                                     <input type="date" name="fecha_emision"
                                                                         id="fecha_emision"
                                                                         class="form-control form-control-sm"
-                                                                        value="{{ date('Y-m-d') }}"
-                                                                        max="{{ date('Y-m-d', strtotime('+1 days')) }}">
+                                                                        value="{{ $documento['Encabezado']['IdDoc']['FchEmis'] }}" disabled>
                                                                 </div>
                                                             </div>
 
@@ -202,8 +200,8 @@
                                                                 <div class="col-sm-8">
                                                                     <select name="tipo_pago" id="tipo_pago"
                                                                         class="form-control form-control-sm">
-                                                                        <option value="1">Contado</option>
-                                                                        <option value="2">Credito</option>
+                                                                        <option @if($documento['Encabezado']['IdDoc']['FmaPago'] == 1) selected @endif value="1">Contado</option>
+                                                                        <option @if($documento['Encabezado']['IdDoc']['FmaPago'] == 2) selected @endif value="2">Credito</option>
                                                                     </select>
                                                                 </div>
                                                             </div>
@@ -215,8 +213,7 @@
                                                                     <input type="date" name="fecha_vencimiento"
                                                                         id="fecha_vencimiento"
                                                                         class="form-control form-control-sm"
-                                                                        value="{{ date('Y-m-d') }}"
-                                                                        min="{{ date('Y-m-d') }}">
+                                                                        value="{{ $documento['Encabezado']['IdDoc']['FchVenc'] }}" disabled>
                                                                 </div>
                                                             </div>
 
