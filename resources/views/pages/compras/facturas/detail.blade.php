@@ -236,7 +236,13 @@
                                                             <th>Subtotal</th>
                                                         </thead>
                                                         <tbody>
-                                                            @foreach($documento['Detalle'] as $det)
+                                                            @php
+                                                            $detalles = $documento['Detalle'];
+                                                            if (!isset($detalles[0])){
+                                                                $detalles = [$detalles];
+                                                            }
+                                                            @endphp
+                                                            @foreach($detalles as $det)
                                                             <tr>
                                                                 <td>-</td>
                                                                 <td>{{ $det['NmbItem'] }}</td>
