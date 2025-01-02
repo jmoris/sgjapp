@@ -199,7 +199,7 @@
                                                                     Pago</label>
                                                                 <div class="col-sm-8">
                                                                     <select name="tipo_pago" id="tipo_pago"
-                                                                        class="form-control form-control-sm">
+                                                                        class="form-control form-control-sm" disabled>
                                                                         <option @if($documento['Encabezado']['IdDoc']['FmaPago'] == 1) selected @endif value="1">Contado</option>
                                                                         <option @if($documento['Encabezado']['IdDoc']['FmaPago'] == 2) selected @endif value="2">Credito</option>
                                                                     </select>
@@ -213,7 +213,7 @@
                                                                     <input type="date" name="fecha_vencimiento"
                                                                         id="fecha_vencimiento"
                                                                         class="form-control form-control-sm"
-                                                                        value="{{ (isset($documento['Encabezado']['IdDoc']['FchVenc']))?$documento['Encabezado']['IdDoc']['FchVenc']:date('Y-m-d') }}" disabled>
+                                                                        value="{{ (isset($documento['Encabezado']['IdDoc']['FchVenc']))?$documento['Encabezado']['IdDoc']['FchVenc']:$documento['Encabezado']['IdDoc']['FchEmis'] }}" disabled>
                                                                 </div>
                                                             </div>
 
@@ -234,10 +234,17 @@
                                                             <th>Cantidad</th>
                                                             <th>Precio</th>
                                                             <th>Subtotal</th>
-                                                            <th></th>
                                                         </thead>
                                                         <tbody>
-
+                                                            @foreach($documento['Detalle'] as $det)
+                                                            <tr>
+                                                                <td>-</td>
+                                                                <td>{{ $det['NmbItem'] }}</td>
+                                                                <td>{{ $det['QtyItem'] }}</td>
+                                                                <td>{{ $det['PrcItem'] }}</td>
+                                                                <td>{{ $det['MontoItem'] }}</td>
+                                                            </tr>
+                                                            @endforeach
                                                         </tbody>
                                                     </table>
                                                 </div>
@@ -273,7 +280,7 @@
                                                             <p>Subtotal </p>
                                                         </div>
                                                         <div class="col-md-5 text-end">
-                                                            <p id="lblSubtotalDoc">$0</p>
+                                                            <p id="lblSubtotalDoc">{{ $documento['Encabezado']['Totales']['MntNeto'] }}</p>
                                                         </div>
                                                     </div>
                                                     <div class="row">
@@ -303,7 +310,7 @@
                                                             <p>Monto neto </p>
                                                         </div>
                                                         <div class="col-md-5 text-end">
-                                                            <p id="lblneto">$0</p>
+                                                            <p id="lblneto">{{ $documento['Encabezado']['Totales']['MntNeto'] }}</p>
                                                         </div>
                                                     </div>
                                                     <div class="row">
@@ -311,7 +318,7 @@
                                                             <p>IVA </p>
                                                         </div>
                                                         <div class="col-md-5 text-end">
-                                                            <p id="lbliva">$0</p>
+                                                            <p id="lbliva">{{ $documento['Encabezado']['Totales']['IVA'] }}</p>
                                                         </div>
                                                     </div>
                                                     <div class="row">
@@ -327,7 +334,7 @@
                                                             <p><b>Total </b></p>
                                                         </div>
                                                         <div class="col-md-5 text-end">
-                                                            <p id="lbltotal">$0</p>
+                                                            <p id="lbltotal">{{ $documento['Encabezado']['Totales']['MntTotal'] }}</p>
                                                         </div>
                                                     </div>
                                                 </div>
