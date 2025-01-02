@@ -213,7 +213,7 @@
                                                                     <input type="date" name="fecha_vencimiento"
                                                                         id="fecha_vencimiento"
                                                                         class="form-control form-control-sm"
-                                                                        value="{{ $documento['Encabezado']['IdDoc']['FchVenc'] }}" disabled>
+                                                                        value="{{ (isset($documento['Encabezado']['IdDoc']['FchVenc']))?$documento['Encabezado']['IdDoc']['FchVenc']:date('Y-m-d') }}" disabled>
                                                                 </div>
                                                             </div>
 
