@@ -56,7 +56,7 @@
                                                                     <input type="text" name="giro_emisor"
                                                                         id="giro_emisor"
                                                                         class="form-control form-control-sm"
-                                                                        value="{{ {{ $documento['Encabezado']['Emisor']['GiroEmis'] }} }}" disabled>
+                                                                        value="{{ $documento['Encabezado']['Emisor']['GiroEmis'] }}" disabled>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -70,7 +70,7 @@
                                                                     <input type="text" name="direccion_emisor"
                                                                         id="direccion_emisor"
                                                                         class="form-control form-control-sm" disabled
-                                                                        value="{{ {{ $documento['Encabezado']['Emisor']['DirOrigen'] }} }}">
+                                                                        value="{{ $documento['Encabezado']['Emisor']['DirOrigen'] }}">
                                                                 </div>
                                                             </div>
                                                             <div class="row mb-2">
@@ -80,7 +80,7 @@
                                                                     <input type="text" name="comuna_emisor"
                                                                         id="communa_emisor"
                                                                         class="form-control form-control-sm"
-                                                                        value="{{ {{ $documento['Encabezado']['Emisor']['CmnaOrigen'] }} }}"
+                                                                        value="{{ $documento['Encabezado']['Emisor']['CmnaOrigen'] }}"
                                                                         disabled>
                                                                 </div>
                                                             </div>
