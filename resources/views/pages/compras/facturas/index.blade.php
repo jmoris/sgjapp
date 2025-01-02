@@ -38,7 +38,7 @@
                                                 <td>{{ $doc->rut_emisor }}</td>
                                                 <td>{{ $doc->fecha_emision }}</td>
                                                 <td>$ {{ number_format($doc->monto_total, 0, ',', '.') }}</td>
-                                                <td><button type="button" title="Ver Factura de Compra" onclick="vistaPreviaDocumento('{{$doc->rut_emisor}}', {{$doc->tipo_doc}}, {{$doc->folio}})" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-magnify"></i></button></td>
+                                                <td><button type="button" title="Ver Factura de Compra" onclick="verDocumento('{{$doc->rut_emisor}}', {{$doc->folio}})" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-document"></i></button><button type="button" title="Ver Vista Previa Factura de Compra" onclick="vistaPreviaDocumento('{{$doc->rut_emisor}}', {{$doc->tipo_doc}}, {{$doc->folio}})" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-magnify"></i></button></td>
                                             </tr>
                                             @endforeach
                                         </tbody>
@@ -63,6 +63,11 @@
     <script>
         var facturasTable = null;
         var currentUserId = {{ auth()->user()->id }};
+
+
+        function verDocumento(emisor, folio) {
+            window.open(`/compras/facturas/detalle/${emisor}/${folio}`);
+        }
 
         function vistaPreviaDocumento(emisor, tipo, folio) {
             window.open(`/api/compras/facturas/vistaprevia/${emisor}/${tipo}/${folio}`);
