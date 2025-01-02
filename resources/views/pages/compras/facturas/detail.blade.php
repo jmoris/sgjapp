@@ -341,6 +341,7 @@
                                             </div>
                                         </div>
                                 </div>
+                                </div>
                             </div>
                             <button type="button" class="btn btn-danger"
                                 onclick="location.href = '/compras/ordenescompra'">
