@@ -354,27 +354,28 @@
                                         </div>
                                     </div>
                                 </div>
-                                <button type="button" class="btn btn-danger"
-                                    onclick="location.href = '/compras/ordenescompra'">
-                                    <i class="mdi mdi-cancel"></i>
-                                    Cerrar
-                                </button>
                             </div>
+                            <button type="button" class="btn btn-danger"
+                                onclick="location.href = '/compras/ordenescompra'">
+                                <i class="mdi mdi-cancel"></i>
+                                Cerrar
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    @endsection
+    </div>
+@endsection
 
-    @push('plugin-scripts')
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment-with-locales.min.js"
-            integrity="sha512-4F1cxYdMiAW98oomSLaygEwmCnIP38pb4Kx70yQYqRwLVCs3DbRumfBq82T08g/4LJ/smbFGFpmeFlQgoDccgg=="
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    @endpush
+@push('plugin-scripts')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment-with-locales.min.js"
+        integrity="sha512-4F1cxYdMiAW98oomSLaygEwmCnIP38pb4Kx70yQYqRwLVCs3DbRumfBq82T08g/4LJ/smbFGFpmeFlQgoDccgg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+@endpush
 
-    @push('custom-scripts')
-        <script>
-            var currentUserId = {{ auth()->user()->id }};
-        </script>
-    @endpush
+@push('custom-scripts')
+    <script>
+        var currentUserId = {{ auth()->user()->id }};
+    </script>
+@endpush
