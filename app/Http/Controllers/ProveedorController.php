@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Comuna;
+use App\Helpers\Herramientas;
 use App\Proveedor;
 use App\Tenant;
 use Exception;
@@ -79,8 +80,8 @@ class ProveedorController extends Controller
                     $tenant->makeCurrent();
                     $proveedor = new Proveedor();
                     $proveedor->rut = substr($request->rut, 0, -1).'-'.$request->rut[strlen($request->rut)-1];
-                    $proveedor->razon_social = $request->razon_social;
-                    $proveedor->giro = $request->giro;
+                    $proveedor->razon_social = Herramientas::sanitizarString($request->razon_social);
+                    $proveedor->giro = Herramientas::sanitizarString($request->giro);
                     $proveedor->direccion = $request->direccion;
                     $proveedor->comuna_id = $request->comuna;
                     $proveedor->telefono = $request->telefono;
@@ -92,8 +93,8 @@ class ProveedorController extends Controller
             }else{
                 $proveedor = new Proveedor();
                 $proveedor->rut = substr($request->rut, 0, -1).'-'.$request->rut[strlen($request->rut)-1];
-                $proveedor->razon_social = $request->razon_social;
-                $proveedor->giro = $request->giro;
+                $proveedor->razon_social = Herramientas::sanitizarString($request->razon_social);
+                $proveedor->giro = Herramientas::sanitizarString($request->giro);
                 $proveedor->direccion = $request->direccion;
                 $proveedor->comuna_id = $request->comuna;
                 $proveedor->telefono = $request->telefono;

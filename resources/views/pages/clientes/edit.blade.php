@@ -69,6 +69,31 @@
                                                 </div>
                                             </div>
                                             <div class="col-sm-6">
+                                                <div class="mx-2">
+                                                    <div class="mb-2">
+                                                        <label class="form-label">Modalidad de pago</label>
+                                                        <div class="mb-2">
+                                                          <div class="form-check form-check-inline">
+                                                            <input type="radio" class="form-check-input" value="1" @if($cliente->tipo_pago == 1) checked @endif id="modalidad_pago" name="tipo_pago">
+                                                            <label class="form-check-label" for="modalidad1">
+                                                              Contado
+                                                            </label>
+                                                          </div>
+                                                          <div class="form-check form-check-inline">
+                                                            <input type="radio" class="form-check-input" value="2" @if($cliente->tipo_pago == 2) checked @endif id="modalidad_pago" name="tipo_pago">
+                                                            <label class="form-check-label" for="modalidad2">
+                                                              Credito
+                                                            </label>
+                                                          </div>
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            <label class="form-label">Dias de credito</label>
+                                                            <input type="number" name="dias_credito" id="dias_credito"
+                                                                class="form-control"
+                                                                min="0" value="{{ $cliente->dias_credito }}">
+                                                        </div>
+                                                      </div>
+                                                    </div>
                                                 <div class="mb-2 border-bottom">
                                                     <h5>Información de contacto</h5>
                                                 </div>
@@ -124,6 +149,13 @@
         $(document).on('select2:open', () => {
             document.querySelector('.select2-search__field').focus();
         });
+        $("input[name=tipo_pago]").change(function () {
+			if($(this).val() == 2){
+                $("#dias_credito").prop('disabled', false);
+            }else{
+                $("#dias_credito").prop('disabled', true);
+            }
+	    });
         $("#storeForm").validate({
             rules: {
                 rut: {
@@ -154,11 +186,26 @@
                 correo_dte: "El campo correo de intercambio es obligatorio"
             },
             submitHandler: function(form) {
+                var data = {
+                    rut: $('#rut').val(),
+                    razon_social: $('#razon_social').val(),
+                    giro: $('#giro').val(),
+                    direccion: $('#direccion').val(),
+                    comuna: $('#comuna').val(),
+                    correo_dte: $('#correo_dte').val(),
+                    tipo_pago: $('input:radio[name=tipo_pago]:checked').val(),
+                    dias_credito: $('#dias_credito').val(),
+                    telefono: $('#telefono').val(),
+                    correo_contacto: $('#correo_contacto').val(),
+                    web: $('#web').val(),
+                    sincronizar: ($('#sincronizar').is(':checked') == true) ? 1 : 0,
+                };
                 $.ajax({
                     type: "POST",
                     url: '/api/clientes/editar/{{ $cliente->id }}',
-                    data: $(form).serialize(), // serializes the form's elements.
+                    data: data, // serializes the form's elements.
                     success: function(data) {
+                        console.log(data);
                         Swal.fire({
                             title: "Proveedor actualizado exitosamente",
                             text: "La información ingresada es correcta y fue procesada exitosamente.",

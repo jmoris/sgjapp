@@ -556,51 +556,15 @@
                                                                         <option value="807">Dus </option>
                                                                         <option value="808">B l conocimiento de embarque
                                                                         </option>
-                                                                        <option value="809">Awb air will bill </option>
-                                                                        <option value="810">Mic dta </option>
+                                                                        <option value="809">AWB (Air Will Bill)</option>
+                                                                        <option value="810">MIC/DTA </option>
                                                                         <option value="811">Carta de porte </option>
-                                                                        <option value="812">Resolucion del sna donde
-                                                                            califica servicios de </option>
+                                                                        <option value="812">Resolución del SNA donde
+                                                                            califica Servicios de Exportación</option>
                                                                         <option value="813">Pasaporte </option>
-                                                                        <option value="814">Certificado de deposito
-                                                                            bolsa prod chile v
-                                                                        <option value="815">Vale de prenda bolsa prod
-                                                                            chile </option>
-                                                                        <option value="901">Fact vta emp terr pres res
-                                                                            1057 85 </option>
-                                                                        <option value="902">Conocimiento embarque
-                                                                            maritimo o aereo </option>
-                                                                        <option value="903">Documento unico salida dus
-                                                                        </option>
-                                                                        <option value="904">Factura de traspaso
-                                                                        </option>
-                                                                        <option value="905">Factura de reexpedicion
-                                                                        </option>
-                                                                        <option value="906">Boleta vta modulo zf
-                                                                        </option>
-                                                                        <option value="907">Factura vta modulo zf 907
-                                                                        </option>
-                                                                        <option value="909">Factura vta modulo zf 909
-                                                                        </option>
-                                                                        <option value="910">Solicitud traslado zona
-                                                                            franca zf </option>
-                                                                        <option value="911">Decl de ingreso a zona
-                                                                            franca primaria </option>
-                                                                        <option value="914">Declaracion de ingreso din
-                                                                        </option>
-                                                                        <option value="919">Vta pasaje nac sin factura
-                                                                        </option>
-                                                                        <option value="920">Otros registros no doc
-                                                                            aumenta debito </option>
-                                                                        <option value="922">Otros registros no doc
-                                                                            disminuye debito</option>
-                                                                        <option value="924">Vta pasajes inter sin
-                                                                            factura </option>
-                                                                        <option value="HES">Hoja entrada de servicio
-                                                                        </option>
-                                                                        <option value="OST">Orden de servicio a terceros
-                                                                        </option>
-
+                                                                        <option value="814"> Certificado de Depósito Bolsa
+                                                                            Prod. Chile.
+                                                                        <option value="815">Vale de Prenda Bolsa Prod. Chile</option>
                                                                     </select>
                                                                 </td>
                                                                 <td style="width: 30%">
@@ -874,6 +838,8 @@
             $('#productosTable').on('dblclick', 'tbody tr', function(event) {
                 selectDetalle();
             });
+            $('#lista_precio').val(1);
+            seleccionarLista();
         });
 
         function selectDetalle() {

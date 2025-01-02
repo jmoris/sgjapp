@@ -28,6 +28,27 @@ class FacturaCompraController extends Controller
         return view('pages.compras.facturas.index', ['documentos' => $data]);
     }
 
+    public function show($rutEmisor, $folio){
+        $emisor = Ajustes::getEmisor();
+        $endpoint =  env('FACTURAPI_ENDPOINT').'documentos/compras/generar/xml/'.$rutEmisor.'/33/'.$folio.'?contribuyente='.$emisor['rut'];
+        $ch = curl_init( $endpoint );
+            curl_setopt( $ch, CURLOPT_POST, false);
+            curl_setopt( $ch, CURLOPT_HTTPHEADER, [
+                'Content-Type:application/json',
+                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
+            ]);
+            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+            $result = curl_exec($ch);
+            curl_close($ch);
+            $EnvioDTE = new EnvioDte();
+            $EnvioDTE->loadXML($result);
+            $dte = $EnvioDTE->getDocumentos()[0];
+            $caratula = $EnvioDTE->getCaratula();
+            $data = $dte->getDatos();
+
+            return view('pages.compras.facturas.detail', ['documento' => $data]);
+    }
+
     /*
         DESDE AQUI HACIA ABAJO ESTARAN LAS FUNCIONES DE LA API
     */

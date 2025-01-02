@@ -77,6 +77,34 @@
                                             </div>
                                             <div class="col-sm-6">
                                                 <div class="mb-2 border-bottom">
+                                                    <h5>Información de pago</h5>
+                                                </div>
+                                                <div class="mx-2">
+                                                <div class="mb-2">
+                                                    <label class="form-label">Modalidad de pago</label>
+                                                    <div class="mb-2">
+                                                      <div class="form-check form-check-inline">
+                                                        <input type="radio" class="form-check-input" value="1" name="tipo_pago" id="modalidad_pago">
+                                                        <label class="form-check-label" for="modalidad1">
+                                                          Contado
+                                                        </label>
+                                                      </div>
+                                                      <div class="form-check form-check-inline">
+                                                        <input type="radio" class="form-check-input" value="2" name="tipo_pago" id="modalidad_pago">
+                                                        <label class="form-check-label" for="modalidad2">
+                                                          Credito
+                                                        </label>
+                                                      </div>
+                                                    </div>
+                                                    <div class="mb-2">
+                                                        <label class="form-label">Dias de credito</label>
+                                                        <input type="number" name="dias_credito" id="dias_credito"
+                                                            class="form-control"
+                                                            min="0" value="30">
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                                <div class="mb-2 border-bottom">
                                                     <h5>Información de contacto</h5>
                                                 </div>
                                                 <div class="mx-2">
@@ -223,6 +251,13 @@
         $(document).on('select2:open', () => {
             document.querySelector('.select2-search__field').focus();
         });
+        $("input[name=tipo_pago]").change(function () {
+			if($(this).val() == 2){
+                $("#dias_credito").prop('disabled', false);
+            }else{
+                $("#dias_credito").prop('disabled', true);
+            }
+	    });
         var validator = $("#storeForm").validate({
             rules: {
                 rut: {
@@ -261,6 +296,8 @@
                     direccion: $('#direccion').val(),
                     comuna: $('#comuna').val(),
                     correo_dte: $('#correo_dte').val(),
+                    tipo_pago: $('#modalidad_pago :checked').val(),
+                    dias_credito: $('#dias_credito').val(),
                     telefono: $('#telefono').val(),
                     correcto_contacto: $('#correcto_contacto').val(),
                     web: $('#web').val(),

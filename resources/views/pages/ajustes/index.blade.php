@@ -29,7 +29,7 @@
                             </li>
                         </ul>
                         <div class="tab-content">
-                            <div class="tab-pane container active" id="tributario">
+                            <div class="tab-pane container mx-0 active" id="tributario">
                                 <div class="card">
                                     <div class="card-body">
                                         <div class="container">
@@ -135,7 +135,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="tab-pane container fade" id="unidades">
+                            <div class="tab-pane container mx-0  fade" id="unidades">
                                 <div class="card">
                                     <div class="card-body">
                                         <div class="container">
@@ -195,7 +195,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="tab-pane container fade" id="categorias">
+                            <div class="tab-pane container mx-0  fade" id="categorias">
                                 <div class="card">
                                     <div class="card-body">
                                         <div class="container">

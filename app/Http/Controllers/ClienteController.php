@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Cliente;
 use App\Comuna;
+use App\Helpers\Herramientas;
 use App\Proveedor;
 use App\Tenant;
 use Exception;
@@ -81,28 +82,32 @@ class ClienteController extends Controller
                     $tenant->makeCurrent();
                     $cliente = new Cliente();
                     $cliente->rut = substr($request->rut, 0, -1).'-'.$request->rut[strlen($request->rut)-1];
-                    $cliente->razon_social = $request->razon_social;
-                    $cliente->giro = $request->giro;
+                    $cliente->razon_social = Herramientas::sanitizarString($request->razon_social);
+                    $cliente->giro = Herramientas::sanitizarString($request->giro);
                     $cliente->direccion = $request->direccion;
                     $cliente->comuna_id = $request->comuna;
                     $cliente->email_dte = $request->correo_dte;
                     $cliente->telefono = $request->telefono;
                     $cliente->email = $request->correo_contacto;
                     $cliente->web = $request->web;
+                    $cliente->tipo_pago = $request->tipo_pago;
+                    $cliente->dias_credito = $request->dias_credito;
                     $cliente->save();
                 }
                 $currentTenant->makeCurrent();
             }else{
                 $cliente = new Cliente();
                 $cliente->rut = substr($request->rut, 0, -1).'-'.$request->rut[strlen($request->rut)-1];
-                $cliente->razon_social = $request->razon_social;
-                $cliente->giro = $request->giro;
+                $cliente->razon_social = Herramientas::sanitizarString($request->razon_social);
+                $cliente->giro = Herramientas::sanitizarString($request->giro);
                 $cliente->direccion = $request->direccion;
                 $cliente->comuna_id = $request->comuna;
                 $cliente->email_dte = $request->correo_dte;
                 $cliente->telefono = $request->telefono;
                 $cliente->email = $request->correo_contacto;
                 $cliente->web = $request->web;
+                $cliente->tipo_pago = $request->tipo_pago;
+                $cliente->dias_credito = $request->dias_credito;
                 $cliente->save();
             }
 
@@ -146,6 +151,8 @@ class ClienteController extends Controller
             $cliente->email_dte = $request->correo_dte;
             $cliente->telefono = $request->telefono;
             $cliente->email = $request->correo_contacto;
+            $cliente->tipo_pago = $request->tipo_pago;
+            $cliente->dias_credito = $request->dias_credito;
             $cliente->web = $request->web;
             $cliente->save();
 
