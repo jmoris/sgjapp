@@ -28,11 +28,11 @@ class FacturaController extends Controller
 
     public function newFactura(){
         $emisor = Ajustes::getEmisor();
-        $comunas = Comuna::all();
-        $clientes = Cliente::all(); // aqui clientes
-        $unidades = Unidad::all();
+        $comunas = Comuna::orderBy('nombre', 'asc')->get();
+        $clientes = Cliente::orderBy('razon_social', 'asc')->get(); // aqui clientes
+        $unidades = Unidad::orderBy('nombre', 'asc');
         $listas = ListaPrecio::all();
-        $proyectos = Proyecto::where('estado', 0)->get();
+        $proyectos = Proyecto::where('estado', 0)->orderBy('nombre', 'asc')->get();
         $borradores = Borrador::where('user_id', auth()->user()->id)->where('tipo_doc', 33)->orderBy('updated_at', 'desc')->get();
         return view('pages.ventas.facturas.create', ['borradores'=>$borradores, 'clientes' => $clientes, 'unidades' => $unidades,'comunas' => $comunas, 'emisor' => $emisor, 'listas' => $listas, 'proyectos' => $proyectos]);
     }
