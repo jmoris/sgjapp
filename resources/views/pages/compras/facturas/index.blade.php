@@ -38,7 +38,7 @@
                                                 <td>{{ $doc->rut_emisor }}</td>
                                                 <td>{{ $doc->fecha_emision }}</td>
                                                 <td>$ {{ number_format($doc->monto_total, 0, ',', '.') }}</td>
-                                                <td><button type="button" title="Ver Factura de Compra" onclick="verDocumento('{{$doc->rut_emisor}}', {{$doc->folio}})" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-text-box-search-outline"></i></button><button type="button" title="Ver Vista Previa Factura de Compra" onclick="vistaPreviaDocumento('{{$doc->rut_emisor}}', {{$doc->tipo_doc}}, {{$doc->folio}})" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-magnify"></i></button></td>
+                                                <td><div><button type="button" title="Ver Factura de Compra" onclick="verDocumento('{{$doc->rut_emisor}}', {{$doc->folio}})" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-text-box-search-outline"></i></button><button type="button" title="Ver Vista Previa Factura de Compra" onclick="vistaPreviaDocumento('{{$doc->rut_emisor}}', {{$doc->tipo_doc}}, {{$doc->folio}})" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-magnify"></i></button></div></td>
                                             </tr>
                                             @endforeach
                                         </tbody>
