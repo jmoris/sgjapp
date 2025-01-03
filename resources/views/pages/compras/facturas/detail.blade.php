@@ -375,10 +375,6 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                            <div class="card">
-                                <div class="card-body">
                             <div class="col-md-12">
                                 <div class="d-flex justify-content-between align-items-baseline">
                                     <h4 class="card-title mb-0">PAGOS ASOCIADOS AL DOCUMENTO</h4>
@@ -391,6 +387,24 @@
                                     </thead>
                                 </table>
                             </div>
+
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="col-md-12">
+                                <div class="d-flex justify-content-between align-items-baseline">
+                                    <h4 class="card-title mb-0">PAGOS ASOCIADOS AL DOCUMENTO</h4>
+                                </div>
+                                <table class="table">
+                                    <thead>
+                                        <th>Tipo</th>
+                                        <th>Fecha</th>
+                                        <th>Monto</th>
+                                    </thead>
+                                </table>
+                            </div>
+
                         </div>
                     </div>
                 </div>
