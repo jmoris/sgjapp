@@ -171,9 +171,9 @@
             </li>
 
             @if (has_permission('ver-factura')||has_permission('ver-guia-despacho')||has_permission('ver-nota-credito')||has_permission('ver-nota-debito'))
-            <li class="nav-item {{ active_class(['compras/facturas', 'compras/guiasdespacho', 'compras/notascredito', 'compras/notasdebito']) }}">
+            <li class="nav-item {{ active_class(['compras/facturas*', 'compras/guiasdespacho*', 'compras/notascredito*', 'compras/notasdebito*']) }}">
                 <a class="nav-link" data-bs-toggle="collapse" href="#compras" role="button"
-                    aria-expanded="{{ is_active_route(['compras/facturas', 'compras/guiasdespacho', 'compras/notascredito', 'compras/notasdebito']) }}" aria-controls="compras">
+                    aria-expanded="{{ is_active_route(['compras/facturas*', 'compras/guiasdespacho*', 'compras/notascredito*', 'compras/notasdebito*']) }}" aria-controls="compras">
                     <i class="mdi mdi-file-document-multiple-outline mdi-18"></i>
                     <span class="link-title" style="margin-left: 12px;">Documentos</span>
                     <i class="link-arrow" data-feather="chevron-down"></i>
