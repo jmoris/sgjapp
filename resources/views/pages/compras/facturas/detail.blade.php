@@ -297,7 +297,7 @@
                                 <div class="d-flex justify-content-between align-items-baseline">
                                     <h4 class="card-title mb-0">INFORMACION DOCUMENTO Y MONTOS</h4>
                                 </div>
-                                <div class="col-md-12">
+                                <div class="col-md-12 mx-2 my-2">
                                     <div class="row">
                                         <div class="col-md-7">
                                             <p>Subtotal </p>
