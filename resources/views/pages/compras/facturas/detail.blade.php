@@ -228,6 +228,21 @@
                                             </div>
                                         </div>
                                         <div class="col-md-12 mb-3">
+                                            <div class="mb-2 border-bottom">
+                                                <h5>Referencias del documento</h5>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <table id="tablaReferencia" class="table table-sm mb-3">
+                                                    <thead>
+                                                        <th>Tipo Documento</th>
+                                                        <th>Folio</th>
+                                                        <th>Fecha</th>
+                                                    </thead>
+                                                    <tbody></tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 mb-3">
                                             <div class="col-md-12 mb-2 border-bottom">
                                                 <h5 class="d-inline">Detalle del documento</h5>
                                             </div>
@@ -262,22 +277,7 @@
                                                 </table>
                                             </div>
                                         </div>
-                                        <div class="col-md-8">
-                                            <div class="mb-2 border-bottom">
-                                                <h5>Referencias del documento</h5>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <table id="tablaReferencia" class="table table-sm mb-3">
-                                                    <thead>
-                                                        <th>Tipo Documento</th>
-                                                        <th>Folio</th>
-                                                        <th>Fecha</th>
-                                                    </thead>
-                                                    <tbody></tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-12">
                                             <div class="mb-2 border-bottom">
                                                 <h5>Resumen de montos</h5>
                                             </div>
