@@ -247,7 +247,22 @@
                                                         <th>Folio</th>
                                                         <th>Fecha</th>
                                                     </thead>
-                                                    <tbody></tbody>
+                                                    <tbody>
+                                                        @php
+                                                        $referencias = $documento['Referencia'];
+                                                        if (!isset($referencias[0])) {
+                                                            $referencias = [$referencias];
+                                                        }
+                                                    @endphp
+                                                    @foreach ($referencias as $ref)
+                                                        <tr>
+                                                            <td>{{ $det['TpoDocRef'] }}</td>
+                                                            <td>{{ $det['FolioRef'] }}</td>
+                                                            <td>{{ $det['FchRef'] }}</td>
+                                                        </tr>
+                                                    @endforeach
+
+                                                    </tbody>
                                                 </table>
                                             </div>
                                         </div>
