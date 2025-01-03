@@ -249,8 +249,8 @@
                                                     </thead>
                                                     <tbody>
                                                         @php
-                                                        $referencias = isset($documento['Referencia'])?$documento['Referencia']:null;
-                                                        if($referencias!=null){
+                                                        $referencias = isset($documento['Referencia'])?$documento['Referencia']:[];
+                                                        if(!is_array($referencias)){
                                                             if (!isset($referencias[0])) {
                                                                 $referencias = [$referencias];
                                                             }
