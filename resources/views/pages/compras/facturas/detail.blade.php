@@ -7,6 +7,13 @@
         <div>
             <h4 class="mb-3 mb-md-0">Factura de Compra #{{ $documento['Encabezado']['IdDoc']['Folio'] }}</h4>
         </div>
+        <div class="align-end">
+            <button type="button" class="btn btn-danger"
+            onclick="location.href = '/compras/facturas'">
+            <i class="mdi mdi-arrow-left"></i>
+            Volver
+        </button>
+        </div>
     </div>
     <div class="row">
         <div class="col-12 col-xl-12 stretch-card">
@@ -362,11 +369,6 @@
                                     </div>
                                 </div>
                             </div>
-                            <button type="button" class="btn btn-danger"
-                                onclick="location.href = '/compras/facturas'">
-                                <i class="mdi mdi-cancel"></i>
-                                Cerrar
-                            </button>
                         </div>
                     </div>
                 </div>
