@@ -278,7 +278,7 @@
                                                                     <select name="tipo_pago" id="tipo_pago"
                                                                         class="form-control form-control-sm">
                                                                         <option value="1">Contado</option>
-                                                                        <option value="2">Credito</option>
+                                                                        <option selected value="2">Credito</option>
                                                                     </select>
                                                                 </div>
                                                             </div>
@@ -1014,7 +1014,12 @@
                     $('#giro').val(data.giro);
                     $('#direccion').val(data.direccion);
                     $('#comuna').val(data.comuna.nombre);
+                    const fch_venc = new Date(new Date().getTime() + data.dias_credito * 24 * 60 * 60 * 1000);
+                    var day = ("0" + fch_venc.getDate()).slice(-2);
+                    var month = ("0" + (fch_venc.getMonth() + 1)).slice(-2);
+                    var strFecha = fch_venc.getFullYear()+"-"+(month)+"-"+(day) ;
 
+                    $('#fecha_vencimiento').val(strFecha);
                 });
             } else {
                 $('#rut').val('');

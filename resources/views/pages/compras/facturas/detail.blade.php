@@ -11,7 +11,7 @@
     <div class="row">
         <div class="col-12 col-xl-12 stretch-card">
             <div class="row flex-grow-1">
-                <div class="col-md-12 grid-margin stretch-card">
+                <div class="col-md-8 grid-margin stretch-card">
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-baseline">
@@ -356,6 +356,43 @@
                                                             {{ number_format($documento['Encabezado']['Totales']['MntTotal'], 0, ',', '.') }}
                                                         </p>
                                                     </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-danger"
+                                onclick="location.href = '/compras/facturas'">
+                                <i class="mdi mdi-cancel"></i>
+                                Cerrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 grid-margin stretch-card">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-baseline">
+                                <h4 class="card-title mb-0">VISOR DE FACTURAS DE COMPRA ELECTRONICA</h4>
+                            </div>
+                            <div class="row mx-3">
+                                <div style="width:100%; margin-top:24px;"></div>
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="col-md-12 mb-3">
+                                            <div class="mb-2 border-bottom">
+                                                <h5>Pagos asociados</h5>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <table class="table">
+                                                        <thead>
+                                                            <th>Tipo</th>
+                                                            <th>Fecha</th>
+                                                            <th>Monto</th>
+                                                        </thead>
+                                                    </table>
                                                 </div>
                                             </div>
                                         </div>
