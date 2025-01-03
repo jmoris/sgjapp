@@ -256,9 +256,9 @@
                                                     @endphp
                                                     @foreach ($referencias as $ref)
                                                         <tr>
-                                                            <td>{{ $det['TpoDocRef'] }}</td>
-                                                            <td>{{ $det['FolioRef'] }}</td>
-                                                            <td>{{ $det['FchRef'] }}</td>
+                                                            <td>{{ $ref['TpoDocRef'] }}</td>
+                                                            <td>{{ $ref['FolioRef'] }}</td>
+                                                            <td>{{ $ref['FchRef'] }}</td>
                                                         </tr>
                                                     @endforeach
 
