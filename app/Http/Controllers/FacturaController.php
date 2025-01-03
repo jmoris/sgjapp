@@ -30,7 +30,7 @@ class FacturaController extends Controller
         $emisor = Ajustes::getEmisor();
         $comunas = Comuna::orderBy('nombre', 'asc')->get();
         $clientes = Cliente::orderBy('razon_social', 'asc')->get(); // aqui clientes
-        $unidades = Unidad::orderBy('nombre', 'asc');
+        $unidades = Unidad::orderBy('nombre', 'asc')->get();
         $listas = ListaPrecio::all();
         $proyectos = Proyecto::where('estado', 0)->orderBy('nombre', 'asc')->get();
         $borradores = Borrador::where('user_id', auth()->user()->id)->where('tipo_doc', 33)->orderBy('updated_at', 'desc')->get();
