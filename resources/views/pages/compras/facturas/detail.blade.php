@@ -8,11 +8,10 @@
             <h4 class="mb-3 mb-md-0">Factura de Compra #{{ $documento['Encabezado']['IdDoc']['Folio'] }}</h4>
         </div>
         <div class="align-end">
-            <button type="button" class="btn btn-danger"
-            onclick="location.href = '/compras/facturas'">
-            <i class="mdi mdi-arrow-left"></i>
-            Volver
-        </button>
+            <button type="button" class="btn btn-danger" onclick="location.href = '/compras/facturas'">
+                <i class="mdi mdi-arrow-left"></i>
+                Volver
+            </button>
         </div>
     </div>
     <div class="row">
@@ -292,124 +291,116 @@
                 </div>
                 <div class="col-md-4 grid-margin stretch-card">
                     <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="col-md-12">
-                                <div class="d-flex justify-content-between align-items-baseline">
-                                    <h4 class="card-title mb-0">INFORMACION DOCUMENTO Y MONTOS</h4>
-                                </div>
-                                <div class="col-md-12 mx-2 my-2">
-                                    <div class="row">
-                                        <div class="col-md-7">
-                                            <p>Subtotal </p>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="col-md-12">
+                                    <div class="d-flex justify-content-between align-items-baseline">
+                                        <h4 class="card-title mb-0">INFORMACION DOCUMENTO Y MONTOS</h4>
+                                    </div>
+                                    <div class="col-md-12 mx-2 my-2">
+                                        <div class="row">
+                                            <div class="col-md-7">
+                                                <p>Subtotal </p>
+                                            </div>
+                                            <div class="col-md-5 text-end">
+                                                <p id="lblSubtotalDoc">
+                                                    @php
+                                                        $neto = $documento['Encabezado']['Totales']['MntNeto'];
+                                                        $exento = isset($documento['Encabezado']['Totales']['MntExe'])
+                                                            ? $documento['Encabezado']['Totales']['MntExe']
+                                                            : 0;
+                                                    @endphp
+                                                    $ {{ number_format($neto + $exento, 0, ',', '.') }}</p>
+                                            </div>
                                         </div>
-                                        <div class="col-md-5 text-end">
-                                            <p id="lblSubtotalDoc">
+                                        <div class="row">
+                                            <div class="col-md-7">
+                                                <p>Monto exento </p>
+                                            </div>
+                                            <div class="col-md-5 text-end">
+                                                <p id="lblexento">$ {{ number_format($exento, 0, ',', '.') }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-7">
+                                                <p>Monto neto </p>
+                                            </div>
+                                            <div class="col-md-5 text-end">
+                                                <p id="lblneto">$
+                                                    {{ number_format($documento['Encabezado']['Totales']['MntNeto'], 0, ',', '.') }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-7">
+                                                <p>IVA </p>
+                                            </div>
+                                            <div class="col-md-5 text-end">
+                                                <p id="lbliva">$
+                                                    {{ number_format($documento['Encabezado']['Totales']['IVA'], 0, ',', '.') }}
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-7">
+                                                <p>Impuestos adicionales </p>
+                                            </div>
+                                            <div class="col-md-5 text-end">
                                                 @php
-                                                $neto = $documento['Encabezado']['Totales']['MntNeto'];
-                                                $exento = (isset($documento['Encabezado']['Totales']['MntExe']))?$documento['Encabezado']['Totales']['MntExe']:0;
-                                                @endphp
-                                                $ {{ number_format($neto+$exento, 0, ',', '.') }}</p>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-7">
-                                            <p>Monto exento </p>
-                                        </div>
-                                        <div class="col-md-5 text-end">
-                                            <p id="lblexento">$ {{number_format($exento, 0, ',', '.')}}</p>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-7">
-                                            <p>Monto neto </p>
-                                        </div>
-                                        <div class="col-md-5 text-end">
-                                            <p id="lblneto">$ {{ number_format($documento['Encabezado']['Totales']['MntNeto'], 0, ',', '.') }}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-7">
-                                            <p>IVA </p>
-                                        </div>
-                                        <div class="col-md-5 text-end">
-                                            <p id="lbliva">$ {{ number_format($documento['Encabezado']['Totales']['IVA'], 0, ',', '.') }}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-7">
-                                            <p>Impuestos adicionales </p>
-                                        </div>
-                                        <div class="col-md-5 text-end">
-                                            @php
-                                            $impadicional = 0;
-                                            if(isset($documento['Encabezado']['Totales']['ImptoReten'])){
-                                                $impadicionales = $documento['Encabezado']['Totales']['ImptoReten'];
-                                                if (!isset($impadicionales[0])){
-                                                    $impadicionales = [$impadicionales];
-                                                }
-                                                foreach($impadicionales as $impuesto){
-                                                    if(isset($impuesto['MontoImp'])){
-                                                        if($impuesto!=false||$impuesto!=null){
-                                                            if($impuesto['MontoImp']!=false){
-                                                                $impadicional += $impuesto['MontoImp'];
+                                                    $impadicional = 0;
+                                                    if (isset($documento['Encabezado']['Totales']['ImptoReten'])) {
+                                                        $impadicionales =
+                                                            $documento['Encabezado']['Totales']['ImptoReten'];
+                                                        if (!isset($impadicionales[0])) {
+                                                            $impadicionales = [$impadicionales];
+                                                        }
+                                                        foreach ($impadicionales as $impuesto) {
+                                                            if (isset($impuesto['MontoImp'])) {
+                                                                if ($impuesto != false || $impuesto != null) {
+                                                                    if ($impuesto['MontoImp'] != false) {
+                                                                        $impadicional += $impuesto['MontoImp'];
+                                                                    }
+                                                                }
                                                             }
                                                         }
                                                     }
-                                                }
-                                            }
-                                            @endphp
-                                            <p id="lblimpad">$ {{ number_format($impadicional, 0, ',', '.') }}</p>
+                                                @endphp
+                                                <p id="lblimpad">$ {{ number_format($impadicional, 0, ',', '.') }}</p>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-7">
-                                            <p><b>Total </b></p>
-                                        </div>
-                                        <div class="col-md-5 text-end">
-                                            <p id="lbltotal">$
-                                                {{ number_format($documento['Encabezado']['Totales']['MntTotal'], 0, ',', '.') }}
-                                            </p>
+                                        <div class="row">
+                                            <div class="col-md-7">
+                                                <p><b>Total </b></p>
+                                            </div>
+                                            <div class="col-md-5 text-end">
+                                                <p id="lbltotal">$
+                                                    {{ number_format($documento['Encabezado']['Totales']['MntTotal'], 0, ',', '.') }}
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-12">
-                                <div class="d-flex justify-content-between align-items-baseline">
-                                    <h4 class="card-title mb-0">PAGOS ASOCIADOS AL DOCUMENTO</h4>
-                                </div>
-                                <table class="table">
-                                    <thead>
-                                        <th>Tipo</th>
-                                        <th>Fecha</th>
-                                        <th>Monto</th>
-                                    </thead>
-                                </table>
-                            </div>
-
                         </div>
-                    </div>
                     </div>
                     <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="col-md-12">
-                                <div class="d-flex justify-content-between align-items-baseline">
-                                    <h4 class="card-title mb-0">PAGOS ASOCIADOS AL DOCUMENTO</h4>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="col-md-12">
+                                    <div class="d-flex justify-content-between align-items-baseline">
+                                        <h4 class="card-title mb-0">PAGOS ASOCIADOS AL DOCUMENTO</h4>
+                                    </div>
+                                    <table class="table">
+                                        <thead>
+                                            <th>Tipo</th>
+                                            <th>Fecha</th>
+                                            <th>Monto</th>
+                                        </thead>
+                                    </table>
                                 </div>
-                                <table class="table">
-                                    <thead>
-                                        <th>Tipo</th>
-                                        <th>Fecha</th>
-                                        <th>Monto</th>
-                                    </thead>
-                                </table>
-                            </div>
 
+                            </div>
                         </div>
-                    </div>
                     </div>
                 </div>
             </div>
