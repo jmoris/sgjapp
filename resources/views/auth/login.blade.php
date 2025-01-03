@@ -49,13 +49,6 @@
                                     @enderror
                                 </div>
 
-                                <div class="form-check mb-3">
-                                    <input type="checkbox" class="form-check-input" name="remember_me" value="false"
-                                        id="remember_me">
-                                    <label class="form-check-label" for="remember_me">
-                                        Recordarme
-                                    </label>
-                                </div>
                                 <!-- if there are login errors, show them here -->
                                 <div>
 
