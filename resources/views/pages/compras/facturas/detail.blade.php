@@ -250,8 +250,10 @@
                                                     <tbody>
                                                         @php
                                                         $referencias = isset($documento['Referencia'])?$documento['Referencia']:null;
-                                                        if (!isset($referencias[0])&&$referencias!=null) {
-                                                            $referencias = [$referencias];
+                                                        if($referencias!=null){
+                                                            if (!isset($referencias[0])) {
+                                                                $referencias = [$referencias];
+                                                            }
                                                         }
                                                     @endphp
                                                     @foreach ($referencias as $ref)
