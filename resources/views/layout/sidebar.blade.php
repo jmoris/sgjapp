@@ -178,7 +178,7 @@
                     <span class="link-title" style="margin-left: 12px;">Documentos</span>
                     <i class="link-arrow" data-feather="chevron-down"></i>
                 </a>
-                <div class="collapse {{ show_class(['compras/facturas', 'compras/guiasdespacho', 'compras/notascredito', 'compras/notasdebito']) }}" id="compras">
+                <div class="collapse {{ show_class(['compras/facturas*', 'compras/guiasdespacho*', 'compras/notascredito*', 'compras/notasdebito*']) }}" id="compras">
                     <ul class="nav sub-menu">
                         @if (has_permission('ver-factura'))
                             <li class="nav-item">
