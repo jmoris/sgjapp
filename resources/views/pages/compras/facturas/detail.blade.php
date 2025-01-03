@@ -249,7 +249,7 @@
                                                     </thead>
                                                     <tbody>
                                                         @php
-                                                        $referencias = $documento['Referencia'];
+                                                        $referencias = isset($documento['Referencia'])?$documento['Referencia']:[];
                                                         if (!isset($referencias[0])) {
                                                             $referencias = [$referencias];
                                                         }
