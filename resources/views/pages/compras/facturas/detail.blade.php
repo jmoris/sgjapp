@@ -253,14 +253,9 @@
                                                         if (!isset($referencias[0])) {
                                                             $referencias = [$referencias];
                                                         }
+                                                        dd($referencias);
                                                     @endphp
-                                                    @foreach ($referencias as $ref)
-                                                        <tr>
-                                                            <td>{{ $ref['TpoDocRef'] }}</td>
-                                                            <td>{{ $ref['FolioRef'] }}</td>
-                                                            <td>{{ $ref['FchRef'] }}</td>
-                                                        </tr>
-                                                    @endforeach
+
 
                                                     </tbody>
                                                 </table>
