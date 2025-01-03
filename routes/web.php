@@ -171,6 +171,7 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
         });
         Route::prefix('guiasdespacho')->middleware('tag:ver-guia-despacho')->group(function(){
             Route::get('/', [GuiaDespachoCompraController::class, 'index']);
+            Route::get('/detalle/{rutEmisor}/{folio}', [GuiaDespachoCompraController::class, 'show']);
         });
         Route::prefix('ordenescompra')->middleware('tag:ver-orden-compra')->group(function(){
             Route::get('/', [OrdenCompraController::class, 'index']);
