@@ -207,11 +207,14 @@
                                                             <div class="col-sm-8">
                                                                 <select name="tipo_pago" id="tipo_pago"
                                                                     class="form-control form-control-sm" disabled>
+                                                                    @php
+                                                                        $fma_pago = isset($documento['Encabezado']['IdDoc']['FmaPago'])?$documento['Encabezado']['IdDoc']['FmaPago']:null;;
+                                                                    @endphp
                                                                     <option
-                                                                        @if ($documento['Encabezado']['IdDoc']['FmaPago'] == 1) selected @endif
+                                                                        @if ($fma_pago == 1) selected @endif
                                                                         value="1">Contado</option>
                                                                     <option
-                                                                        @if ($documento['Encabezado']['IdDoc']['FmaPago'] == 2) selected @endif
+                                                                        @if ($fma_pago == 2) selected @endif
                                                                         value="2">Credito</option>
                                                                 </select>
                                                             </div>
