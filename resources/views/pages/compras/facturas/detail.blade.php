@@ -249,18 +249,18 @@
                                                     </thead>
                                                     <tbody>
                                                         @php
-                                                        $referencias = isset($documento['Referencia'])?$documento['Referencia']:false;
-                                                        if (!isset($referencias[0])) {
+                                                        $referencias = isset($documento['Referencia'])?$documento['Referencia']:null;
+                                                        if (!isset($referencias[0]&&$referencias!=null)) {
                                                             $referencias = [$referencias];
                                                         }
                                                     @endphp
-@foreach ($referencias as $ref)
-<tr>
-    <td>{{ $ref['TpoDocRef'] }}</td>
-    <td>{{ $ref['FolioRef'] }}</td>
-    <td>{{ $ref['FchRef'] }}</td>
-</tr>
-@endforeach
+                                                    @foreach ($referencias as $ref)
+                                                    <tr>
+                                                        <td>{{ $ref['TpoDocRef'] }}</td>
+                                                        <td>{{ $ref['FolioRef'] }}</td>
+                                                        <td>{{ $ref['FchRef'] }}</td>
+                                                    </tr>
+                                                    @endforeach
 
                                                     </tbody>
                                                 </table>
