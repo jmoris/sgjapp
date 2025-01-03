@@ -290,7 +290,7 @@
                     </div>
                 </div>
                 <div class="col-md-4 grid-margin stretch-card">
-                    <div class="row">
+                    <div class="row align-items-start">
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-body">
