@@ -241,7 +241,8 @@
                                                                 <input type="text" name="comuna_destino"
                                                                             id="comuna_destino"
                                                                             class="form-control form-control-sm"
-                                                                            placeholder="Ingrese dirección o deje en blanco">
+                                                                            value="{{ isset($documento['Encabezado']['Transporte']['CmnaDest'])?$documento['Encabezado']['Transporte']['CmnaDest']:'' }}"
+                                                                            disabled>
                                                             </div>
                                                         </div>
                                                         <div class="row mb-2">
@@ -252,7 +253,8 @@
                                                                 <input type="text" name="direccion_destino"
                                                                             id="direccion_destino"
                                                                             class="form-control form-control-sm"
-                                                                            placeholder="Ingrese dirección o deje en blanco">
+                                                                            value="{{ isset($documento['Encabezado']['Transporte']['DirDest'])?$documento['Encabezado']['Transporte']['DirDest']:'' }}"
+                                                                            disabled>
                                                             </div>
                                                         </div>
                                                         <div class="row mb-2">
@@ -263,7 +265,8 @@
                                                                             id="patente"
                                                                             class="form-control form-control-sm"
                                                                             maxlength="6"
-                                                                            placeholder="Ingrese Patente del vehiculo">
+                                                                            value="{{ isset($documento['Encabezado']['Transporte']['Patente'])?$documento['Encabezado']['Transporte']['Patente']:'' }}"
+                                                                            disabled>
                                                             </div>
                                                         </div>
                                                         <div class="row mb-2">
@@ -273,7 +276,8 @@
                                                                 <input type="text" name="rut_chofer"
                                                                             id="rut_chofer"
                                                                             class="form-control form-control-sm"
-                                                                            placeholder="Ingrese RUT del chofer">
+                                                                            value="{{ isset($documento['Encabezado']['Transporte']['Chofer']['RUTChofer'])?$documento['Encabezado']['Transporte']['Chofer']['RUTChofer']:'' }}"
+                                                                            disabled>
                                                             </div>
                                                         </div>
                                                         <div class="row mb-2">
