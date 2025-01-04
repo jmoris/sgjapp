@@ -201,9 +201,11 @@
                                                             <div class="col-sm-8">
                                                                 <select name="tipo_despacho" id="tipo_despacho"
                                                                     class="form-control form-control-sm" disabled>
-                                                                    <option @if($documento['Encabezado']['TipoDespacho']==1) selected @endif value="1">Comprador</option>
-                                                                    <option @if($documento['Encabezado']['TipoDespacho']==2) selected @endif value="2">Emisor al Comprador</option>
-                                                                    <option @if($documento['Encabezado']['TipoDespacho']==3) selected @endif value="3">Emisor a Otro</option>
+                                                                    @php $despacho = isset($documento['Encabezado']['TipoDespacho'])?$documento['Encabezado']['TipoDespacho']:null; @endphp
+                                                                    <option value="">Sin Tipo de Despacho</option>
+                                                                    <option @if($despacho==1) selected @endif value="1">Comprador</option>
+                                                                    <option @if($despacho==2) selected @endif value="2">Emisor al Comprador</option>
+                                                                    <option @if($despacho==3) selected @endif value="3">Emisor a Otro</option>
                                                                 </select>
                                                             </div>
                                                         </div>
@@ -214,13 +216,15 @@
                                                             <div class="col-sm-8">
                                                                 <select name="ind_traslado" id="ind_traslado"
                                                                     class="form-control form-control-sm" disabled>
-                                                                    <option @if($documento['Encabezado']['IndTraslado']==1) selected @endif value="1">Operación Constituye Venta</option>
-                                                                    <option @if($documento['Encabezado']['IndTraslado']==2) selected @endif value="2">Venta Por efectuar</option>
-                                                                    <option @if($documento['Encabezado']['IndTraslado']==3) selected @endif value="3">Consigación</option>
-                                                                    <option @if($documento['Encabezado']['IndTraslado']==4) selected @endif value="4">Donación</option>
-                                                                    <option @if($documento['Encabezado']['IndTraslado']==5) selected @endif value="5">Traslado Interno</option>
-                                                                    <option @if($documento['Encabezado']['IndTraslado']==6) selected @endif value="6">No Constituye Venta</option>
-                                                                    <option @if($documento['Encabezado']['IndTraslado']==7) selected @endif value="7">Devolución</option>
+                                                                    @php $traslado = isset($documento['Encabezado']['IndTraslado'])?$documento['Encabezado']['IndTraslado']:null; @endphp
+                                                                    <option value="">Sin Tipo de Traslado</option>
+                                                                    <option @if($traslado==1) selected @endif value="1">Operación Constituye Venta</option>
+                                                                    <option @if($traslado==2) selected @endif value="2">Venta Por efectuar</option>
+                                                                    <option @if($traslado==3) selected @endif value="3">Consigación</option>
+                                                                    <option @if($traslado==4) selected @endif value="4">Donación</option>
+                                                                    <option @if($traslado==5) selected @endif value="5">Traslado Interno</option>
+                                                                    <option @if($traslado==6) selected @endif value="6">No Constituye Venta</option>
+                                                                    <option @if($traslado==7) selected @endif value="7">Devolución</option>
                                                                 </select>
                                                             </div>
                                                         </div>
