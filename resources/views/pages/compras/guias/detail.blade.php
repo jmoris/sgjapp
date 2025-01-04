@@ -1,11 +1,11 @@
 @extends('layout.master')
 
-@section('title', 'Visor de Facturas de Compra')
+@section('title', 'Visor de Guias de Despacho Electrónica - Compra')
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
         <div>
-            <h4 class="mb-3 mb-md-0">Factura de Compra #{{ $documento['Encabezado']['IdDoc']['Folio'] }}</h4>
+            <h4 class="mb-3 mb-md-0">Guia de Despacho Electrónica #{{ $documento['Encabezado']['IdDoc']['Folio'] }} - Compra</h4>
         </div>
         <div class="align-end">
             <button type="button" class="btn btn-danger" onclick="location.href = '/compras/facturas'">
@@ -21,7 +21,7 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-baseline">
-                                <h4 class="card-title mb-0">VISOR DE FACTURAS DE COMPRA ELECTRONICA</h4>
+                                <h4 class="card-title mb-0">VISOR DE GUIAS DE DESPACHO ELECTRONICA - COMPRA </h4>
                             </div>
                             <div class="row mx-3">
                                 <div style="width:100%; margin-top:24px;"></div>
@@ -190,8 +190,8 @@
                                                                 <input type="date" name="fecha_emision"
                                                                     id="fecha_emision"
                                                                     class="form-control form-control-sm"
-                                                                    value="{{ date('Y-m-d') }}"
-                                                                    max="{{ date('Y-m-d', strtotime('+1 days')) }}">
+                                                                    value="{{ date('Y-m-d', strtotime($documento['Encabezado']['IdDoc']['FchEmis'])) }}"
+                                                                    disabled>
                                                             </div>
                                                         </div>
                                                         <div class="row mb-2">
@@ -200,10 +200,10 @@
                                                                 Despacho</label>
                                                             <div class="col-sm-8">
                                                                 <select name="tipo_despacho" id="tipo_despacho"
-                                                                    class="form-control form-control-sm">
-                                                                    <option value="1">Comprador</option>
-                                                                    <option value="2">Emisor al Comprador</option>
-                                                                    <option value="3">Emisor a Otro</option>
+                                                                    class="form-control form-control-sm" disabled>
+                                                                    <option @if($documento['Encabezado']['TipoDespacho']==1) selected @endif value="1">Comprador</option>
+                                                                    <option @if($documento['Encabezado']['TipoDespacho']==2) selected @endif value="2">Emisor al Comprador</option>
+                                                                    <option @if($documento['Encabezado']['TipoDespacho']==3) selected @endif value="3">Emisor a Otro</option>
                                                                 </select>
                                                             </div>
                                                         </div>
@@ -213,15 +213,14 @@
                                                                 Traslado</label>
                                                             <div class="col-sm-8">
                                                                 <select name="ind_traslado" id="ind_traslado"
-                                                                    class="form-control form-control-sm">
-                                                                    <option value="1">Operación Constituye Venta
-                                                                    </option>
-                                                                    <option value="2">Venta Por efectuar</option>
-                                                                    <option value="3">Consigación</option>
-                                                                    <option value="4">Donación</option>
-                                                                    <option value="5">Traslado Interno</option>
-                                                                    <option value="6">No Constituye Venta</option>
-                                                                    <option value="7">Devolución</option>
+                                                                    class="form-control form-control-sm" disabled>
+                                                                    <option @if($documento['Encabezado']['IndTraslado']==1) selected @endif value="1">Operación Constituye Venta</option>
+                                                                    <option @if($documento['Encabezado']['IndTraslado']==2) selected @endif value="2">Venta Por efectuar</option>
+                                                                    <option @if($documento['Encabezado']['IndTraslado']==3) selected @endif value="3">Consigación</option>
+                                                                    <option @if($documento['Encabezado']['IndTraslado']==4) selected @endif value="4">Donación</option>
+                                                                    <option @if($documento['Encabezado']['IndTraslado']==5) selected @endif value="5">Traslado Interno</option>
+                                                                    <option @if($documento['Encabezado']['IndTraslado']==6) selected @endif value="6">No Constituye Venta</option>
+                                                                    <option @if($documento['Encabezado']['IndTraslado']==7) selected @endif value="7">Devolución</option>
                                                                 </select>
                                                             </div>
                                                         </div>

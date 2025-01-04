@@ -1,11 +1,11 @@
 @extends('layout.master')
 
-@section('title', 'Visor de Facturas de Compra')
+@section('title', 'Visor de Facturas Electrónicas - Compra')
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
         <div>
-            <h4 class="mb-3 mb-md-0">Factura de Compra #{{ $documento['Encabezado']['IdDoc']['Folio'] }}</h4>
+            <h4 class="mb-3 mb-md-0">Factura Electrónica #{{ $documento['Encabezado']['IdDoc']['Folio'] }} - Compra</h4>
         </div>
         <div class="align-end">
             <button type="button" class="btn btn-danger" onclick="location.href = '/compras/facturas'">
@@ -21,7 +21,7 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-baseline">
-                                <h4 class="card-title mb-0">VISOR DE FACTURAS DE COMPRA ELECTRONICA</h4>
+                                <h4 class="card-title mb-0">VISOR DE FACTURAS ELECTRÓNICAS - COMPRA</h4>
                             </div>
                             <div class="row mx-3">
                                 <div style="width:100%; margin-top:24px;"></div>
