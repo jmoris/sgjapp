@@ -201,7 +201,7 @@
                                                             <div class="col-sm-8">
                                                                 <select name="tipo_despacho" id="tipo_despacho"
                                                                     class="form-control form-control-sm" disabled>
-                                                                    @php $despacho = isset($documento['Encabezado']['TipoDespacho'])?$documento['Encabezado']['TipoDespacho']:null; @endphp
+                                                                    @php $despacho = isset($documento['Encabezado']['IdDoc']['TipoDespacho'])?$documento['Encabezado']['IdDoc']['TipoDespacho']:null; @endphp
                                                                     <option value="">Sin Tipo de Despacho</option>
                                                                     <option @if($despacho==1) selected @endif value="1">Comprador</option>
                                                                     <option @if($despacho==2) selected @endif value="2">Emisor al Comprador</option>
@@ -216,7 +216,7 @@
                                                             <div class="col-sm-8">
                                                                 <select name="ind_traslado" id="ind_traslado"
                                                                     class="form-control form-control-sm" disabled>
-                                                                    @php $traslado = isset($documento['Encabezado']['IndTraslado'])?$documento['Encabezado']['IndTraslado']:null; @endphp
+                                                                    @php $traslado = isset($documento['Encabezado']['IdDoc']['IndTraslado'])?$documento['Encabezado']['IdDoc']['IndTraslado']:null; @endphp
                                                                     <option value="">Sin Tipo de Traslado</option>
                                                                     <option @if($traslado==1) selected @endif value="1">Operación Constituye Venta</option>
                                                                     <option @if($traslado==2) selected @endif value="2">Venta Por efectuar</option>
