@@ -199,57 +199,69 @@
                                                     <div class="mb-2 border-bottom">
                                                         <h5>Información Traslado</h5>
                                                     </div>
-                                                    <div class="row">
-                                                        <div class="row mb-2">
-                                                            <label class="col-sm-4 col-form-label col-form-label-sm">Comuna
-                                                                de Destino</label>
-                                                            <div class="col-sm-8">
-                                                                <input type="text" name="comuna_destino"
-                                                                    id="comuna_destino"
-                                                                    class="form-control form-control-sm"
-                                                                    value="{{ isset($documento['Encabezado']['Transporte']['CmnaDest']) ? $documento['Encabezado']['Transporte']['CmnaDest'] : '' }}">
+                                                    <div class="col-md-6">
+                                                        <div class="row">
+                                                            <div class="row mb-2">
+                                                                <label
+                                                                    class="col-sm-4 col-form-label col-form-label-sm">Comuna
+                                                                    de Destino</label>
+                                                                <div class="col-sm-8">
+                                                                    <input type="text" name="comuna_destino"
+                                                                        id="comuna_destino"
+                                                                        class="form-control form-control-sm"
+                                                                        value="{{ isset($documento['Encabezado']['Transporte']['CmnaDest']) ? $documento['Encabezado']['Transporte']['CmnaDest'] : '' }}">
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="row mb-2">
-                                                            <label
-                                                                class="col-sm-4 col-form-label col-form-label-sm">Dirección
-                                                                de Destino</label>
-                                                            <div class="col-sm-8">
-                                                                <input type="text" name="direccion_destino"
-                                                                    id="direccion_destino"
-                                                                    class="form-control form-control-sm"
-                                                                    value="{{ isset($documento['Encabezado']['Transporte']['CiudadDest']) ? $documento['Encabezado']['Transporte']['CiudadDest'] : '' }}">
+                                                            <div class="row mb-2">
+                                                                <label
+                                                                    class="col-sm-4 col-form-label col-form-label-sm">Dirección
+                                                                    de Destino</label>
+                                                                <div class="col-sm-8">
+                                                                    <input type="text" name="direccion_destino"
+                                                                        id="direccion_destino"
+                                                                        class="form-control form-control-sm"
+                                                                        value="{{ isset($documento['Encabezado']['Transporte']['CiudadDest']) ? $documento['Encabezado']['Transporte']['CiudadDest'] : '' }}">
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="row mb-2">
-                                                            <label
-                                                                class="col-sm-4 col-form-label col-form-label-sm">Patente</label>
-                                                            <div class="col-sm-8">
-                                                                <input type="text" name="patente" id="patente"
-                                                                    class="form-control form-control-sm" maxlength="6"
-                                                                    value="{{ isset($documento['Encabezado']['Transporte']['Patente']) ? $documento['Encabezado']['Transporte']['Patente'] : '' }}">
+                                                            <div class="row mb-2">
+                                                                <label
+                                                                    class="col-sm-4 col-form-label col-form-label-sm">Patente</label>
+                                                                <div class="col-sm-8">
+                                                                    <input type="text" name="patente" id="patente"
+                                                                        class="form-control form-control-sm"
+                                                                        maxlength="6"
+                                                                        value="{{ isset($documento['Encabezado']['Transporte']['Patente']) ? $documento['Encabezado']['Transporte']['Patente'] : '' }}">
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                        <div class="row mb-2">
-                                                            <label class="col-sm-4 col-form-label col-form-label-sm">RUT
-                                                                Chofer</label>
-                                                            <div class="col-sm-8">
-                                                                <input type="text" name="rut_chofer" id="rut_chofer"
-                                                                    class="form-control form-control-sm"
-                                                                    value="{{ isset($documento['Encabezado']['Transporte']['Chofer']['RUTChofer']) ? $documento['Encabezado']['Transporte']['Chofer']['RUTChofer'] : '' }}">
-                                                            </div>
-                                                        </div>
-                                                        <div class="row mb-2">
-                                                            <label class="col-sm-4 col-form-label col-form-label-sm">Nombre
-                                                                Chofer</label>
-                                                            <div class="col-sm-8">
-                                                                <input type="text" name="nombre_chofer"
-                                                                    id="nombre_chofer"
-                                                                    class="form-control form-control-sm"
-                                                                    value="{{ isset($documento['Encabezado']['Transporte']['Chofer']['NombreChofer']) ? $documento['Encabezado']['Transporte']['Chofer']['NombreChofer'] : '' }}">
-                                                            </div>
-                                                        </div>
 
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="row">
+                                                            <div class="row mb-2">
+                                                                <label
+                                                                    class="col-sm-4 col-form-label col-form-label-sm">RUT
+                                                                    Chofer</label>
+                                                                <div class="col-sm-8">
+                                                                    <input type="text" name="rut_chofer"
+                                                                        id="rut_chofer"
+                                                                        class="form-control form-control-sm"
+                                                                        value="{{ isset($documento['Encabezado']['Transporte']['Chofer']['RUTChofer']) ? $documento['Encabezado']['Transporte']['Chofer']['RUTChofer'] : '' }}">
+                                                                </div>
+                                                            </div>
+                                                            <div class="row mb-2">
+                                                                <label
+                                                                    class="col-sm-4 col-form-label col-form-label-sm">Nombre
+                                                                    Chofer</label>
+                                                                <div class="col-sm-8">
+                                                                    <input type="text" name="nombre_chofer"
+                                                                        id="nombre_chofer"
+                                                                        class="form-control form-control-sm"
+                                                                        value="{{ isset($documento['Encabezado']['Transporte']['Chofer']['NombreChofer']) ? $documento['Encabezado']['Transporte']['Chofer']['NombreChofer'] : '' }}">
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
 
                                                 </div>
