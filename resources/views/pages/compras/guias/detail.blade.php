@@ -173,7 +173,8 @@
                                                     <div class="row mx-1">
 
                                                         <div class="row mb-2">
-                                                            <label class="col-sm-4 col-form-label col-form-label-sm">Tipo
+                                                            <label
+                                                                class="col-sm-4 col-form-label col-form-label-sm">Tipo
                                                                 documento</label>
                                                             <div class="col-sm-8">
                                                                 <input type="text" name="tipo_doc" id="tipo_doc"
@@ -182,86 +183,110 @@
                                                             </div>
                                                         </div>
                                                         <div class="row mb-2">
-                                                            <label class="col-sm-4 col-form-label col-form-label-sm">Fecha
+                                                            <label
+                                                                class="col-sm-4 col-form-label col-form-label-sm">Fecha
                                                                 emisión</label>
                                                             <div class="col-sm-8">
                                                                 <input type="date" name="fecha_emision"
                                                                     id="fecha_emision"
                                                                     class="form-control form-control-sm"
-                                                                    value="{{ $documento['Encabezado']['IdDoc']['FchEmis'] }}"
-                                                                    disabled>
+                                                                    value="{{ date('Y-m-d') }}"
+                                                                    max="{{ date('Y-m-d', strtotime('+1 days')) }}">
                                                             </div>
                                                         </div>
-
+                                                        <div class="row mb-2">
+                                                            <label
+                                                                class="col-sm-4 col-form-label col-form-label-sm">Tipo
+                                                                Despacho</label>
+                                                            <div class="col-sm-8">
+                                                                <select name="tipo_despacho" id="tipo_despacho"
+                                                                    class="form-control form-control-sm">
+                                                                    <option value="1">Comprador</option>
+                                                                    <option value="2">Emisor al Comprador</option>
+                                                                    <option value="3">Emisor a Otro</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row mb-2">
+                                                            <label
+                                                                class="col-sm-4 col-form-label col-form-label-sm">Tipo
+                                                                Traslado</label>
+                                                            <div class="col-sm-8">
+                                                                <select name="ind_traslado" id="ind_traslado"
+                                                                    class="form-control form-control-sm">
+                                                                    <option value="1">Operación Constituye Venta
+                                                                    </option>
+                                                                    <option value="2">Venta Por efectuar</option>
+                                                                    <option value="3">Consigación</option>
+                                                                    <option value="4">Donación</option>
+                                                                    <option value="5">Traslado Interno</option>
+                                                                    <option value="6">No Constituye Venta</option>
+                                                                    <option value="7">Devolución</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-12">
+                                                <div class="col-md-6">
                                                     <div class="mb-2 border-bottom">
                                                         <h5>Información Traslado</h5>
                                                     </div>
-                                                    <div class="col-md-6">
-                                                        <div class="row">
-                                                            <div class="row mb-2">
-                                                                <label
-                                                                    class="col-sm-4 col-form-label col-form-label-sm">Comuna
-                                                                    de Destino</label>
-                                                                <div class="col-sm-8">
-                                                                    <input type="text" name="comuna_destino"
-                                                                        id="comuna_destino"
-                                                                        class="form-control form-control-sm"
-                                                                        value="{{ isset($documento['Encabezado']['Transporte']['CmnaDest']) ? $documento['Encabezado']['Transporte']['CmnaDest'] : '' }}">
-                                                                </div>
-                                                            </div>
-                                                            <div class="row mb-2">
-                                                                <label
-                                                                    class="col-sm-4 col-form-label col-form-label-sm">Dirección
-                                                                    de Destino</label>
-                                                                <div class="col-sm-8">
-                                                                    <input type="text" name="direccion_destino"
-                                                                        id="direccion_destino"
-                                                                        class="form-control form-control-sm"
-                                                                        value="{{ isset($documento['Encabezado']['Transporte']['CiudadDest']) ? $documento['Encabezado']['Transporte']['CiudadDest'] : '' }}">
-                                                                </div>
-                                                            </div>
-                                                            <div class="row mb-2">
-                                                                <label
-                                                                    class="col-sm-4 col-form-label col-form-label-sm">Patente</label>
-                                                                <div class="col-sm-8">
-                                                                    <input type="text" name="patente" id="patente"
-                                                                        class="form-control form-control-sm"
-                                                                        maxlength="6"
-                                                                        value="{{ isset($documento['Encabezado']['Transporte']['Patente']) ? $documento['Encabezado']['Transporte']['Patente'] : '' }}">
-                                                                </div>
-                                                            </div>
+                                                    <div class="row mx-1">
 
-
-                                                        </div>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <div class="row">
-                                                            <div class="row mb-2">
-                                                                <label
-                                                                    class="col-sm-4 col-form-label col-form-label-sm">RUT
-                                                                    Chofer</label>
-                                                                <div class="col-sm-8">
-                                                                    <input type="text" name="rut_chofer"
-                                                                        id="rut_chofer"
-                                                                        class="form-control form-control-sm"
-                                                                        value="{{ isset($documento['Encabezado']['Transporte']['Chofer']['RUTChofer']) ? $documento['Encabezado']['Transporte']['Chofer']['RUTChofer'] : '' }}">
-                                                                </div>
-                                                            </div>
-                                                            <div class="row mb-2">
-                                                                <label
-                                                                    class="col-sm-4 col-form-label col-form-label-sm">Nombre
-                                                                    Chofer</label>
-                                                                <div class="col-sm-8">
-                                                                    <input type="text" name="nombre_chofer"
-                                                                        id="nombre_chofer"
-                                                                        class="form-control form-control-sm"
-                                                                        value="{{ isset($documento['Encabezado']['Transporte']['Chofer']['NombreChofer']) ? $documento['Encabezado']['Transporte']['Chofer']['NombreChofer'] : '' }}">
-                                                                </div>
+                                                        <div class="row mb-2">
+                                                            <label
+                                                                class="col-sm-4 col-form-label col-form-label-sm">Comuna
+                                                                de Destino</label>
+                                                            <div class="col-sm-8">
+                                                                <input type="text" name="comuna_destino"
+                                                                            id="comuna_destino"
+                                                                            class="form-control form-control-sm"
+                                                                            placeholder="Ingrese dirección o deje en blanco">
                                                             </div>
                                                         </div>
+                                                        <div class="row mb-2">
+                                                            <label
+                                                                class="col-sm-4 col-form-label col-form-label-sm">Dirección
+                                                                de Destino</label>
+                                                            <div class="col-sm-8">
+                                                                <input type="text" name="direccion_destino"
+                                                                            id="direccion_destino"
+                                                                            class="form-control form-control-sm"
+                                                                            placeholder="Ingrese dirección o deje en blanco">
+                                                            </div>
+                                                        </div>
+                                                        <div class="row mb-2">
+                                                            <label
+                                                                class="col-sm-4 col-form-label col-form-label-sm">Patente</label>
+                                                            <div class="col-sm-8">
+                                                                <input type="text" name="patente"
+                                                                            id="patente"
+                                                                            class="form-control form-control-sm"
+                                                                            maxlength="6"
+                                                                            placeholder="Ingrese Patente del vehiculo">
+                                                            </div>
+                                                        </div>
+                                                        <div class="row mb-2">
+                                                            <label
+                                                                class="col-sm-4 col-form-label col-form-label-sm">RUT Chofer</label>
+                                                            <div class="col-sm-8">
+                                                                <input type="text" name="rut_chofer"
+                                                                            id="rut_chofer"
+                                                                            class="form-control form-control-sm"
+                                                                            placeholder="Ingrese RUT del chofer">
+                                                            </div>
+                                                        </div>
+                                                        <div class="row mb-2">
+                                                            <label
+                                                                class="col-sm-4 col-form-label col-form-label-sm">Nombre Chofer</label>
+                                                            <div class="col-sm-8">
+                                                                <input type="text" name="nombre_chofer"
+                                                                            id="nombre_chofer"
+                                                                            class="form-control form-control-sm"
+                                                                            placeholder="Ingrese Nombre del chofer">
+                                                            </div>
+                                                        </div>
+
                                                     </div>
 
                                                 </div>
