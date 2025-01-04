@@ -283,7 +283,8 @@
                                                                 <input type="text" name="nombre_chofer"
                                                                             id="nombre_chofer"
                                                                             class="form-control form-control-sm"
-                                                                            placeholder="Ingrese Nombre del chofer">
+                                                                            value="{{ isset($documento['Encabezado']['Transporte']['Chofer']['NombreChofer'])?$documento['Encabezado']['Transporte']['Chofer']['NombreChofer']:'' }}"
+                                                                            disabled>
                                                             </div>
                                                         </div>
 
