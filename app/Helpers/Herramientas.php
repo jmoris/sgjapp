@@ -15,8 +15,61 @@ class Herramientas {
         61 => 'Nota credito'
     ];
 
+    private static $tipos_doc  = [
+        30 => 'Factura',
+        32 => 'Factura de venta bienes y servicios no afectos o exentos de iva ',
+        33 => 'Factura electronica',
+        34 => 'Factura no afecta o exenta electronica ',
+        35 => 'Boleta ',
+        38 => 'Boleta exenta ',
+        39 => 'Boleta electronica ',
+        40 => 'Liquidacion factura',
+        41 => 'Boleta exenta electronica',
+        43 => 'Liquidacion factura electronica ',
+        45 => 'Factura de compra ',
+        46 => 'Factura de compra electronica ',
+        47 => 'Vale electronico especial',
+        48 => 'Comprobantes pago electronico ',
+        50 => 'Guía de despacho ',
+        52 => 'Guía de despacho electronica',
+        55 => 'Nota de debito ',
+        56 => 'Nota de debito electronica',
+        60 => 'Nota de credito ',
+        61 => 'Nota de credito electronica',
+        101 => 'Factura de exportacion',
+        102 => 'Factura vta exenta a zona franca prim ',
+        103 => 'Liquidacion ',
+        104 => 'Nota de debito de exportacion ',
+        105 => 'Boleta liq res 1423 76',
+        106 => 'Nota de credito de exportacion ',
+        108 => 'Srf solicitud registro de factura ',
+        109 => 'Factura turista ',
+        110 => 'Factura de exportacion electronica ',
+        111 => 'Nota de debito de exportacion electronica ',
+        112 => 'Nota de credito de exportacion electronica ',
+        801 => 'Orden de compra ',
+        802 => 'Nota de pedido ',
+        803 => 'Contrato ',
+        804 => 'Resolucion ',
+        805 => 'Proceso chilecompra',
+        806 => 'Ficha chilecompra ',
+        807 => 'Dus ',
+        808 => 'B l conocimiento de embarque',
+        809 => 'AWB (Air Will Bill)',
+        810 => 'MIC/DTA ',
+        811 => 'Carta de porte ',
+        812 => 'Resolución del SNA donde califica Servicios de Exportación',
+        813 => 'Pasaporte ',
+        814 => ' Certificado de Depósito Bolsa Prod. Chile.',
+        815 => 'Vale de Prenda Bolsa Prod. Chile'
+    ];
+
     public static function getTipoText($tipo){
         return self::$tipo[$tipo];
+    }
+
+    public static function getTipoDocumento($tipo){
+        return self::$tipos_doc[$tipo];
     }
 
     public static function saveExecutionTime($et){

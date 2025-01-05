@@ -324,7 +324,7 @@
                                                         @endphp
                                                         @foreach ($referencias as $ref)
                                                             <tr>
-                                                                <td>{{ $ref['TpoDocRef'] }}</td>
+                                                                <td>{{ \App\Helpers\Herramientas::getTipoDocumento($ref['TpoDocRef']) }}</td>
                                                                 <td>{{ $ref['FolioRef'] }}</td>
                                                                 <td>{{ $ref['FchRef'] }}</td>
                                                             </tr>
