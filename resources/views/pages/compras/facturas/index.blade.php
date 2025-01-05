@@ -19,6 +19,10 @@
                             </div>
                             <div class="row">
                                 <div class="col-12">
+                                    <div class="col-12">
+                                        Min: <input type="text" id="min" name="min">
+                                        Max:  <input type="text" id="max" name="max">
+                                    </div>
                                     <table id="example" class="compact hover order-column row-border" style="width:100%">
                                         <thead>
                                             <tr>
@@ -63,7 +67,7 @@
     <script>
         var facturasTable = null;
         var currentUserId = {{ auth()->user()->id }};
-
+        let minDate, maxDate;
 
         function verDocumento(emisor, folio) {
             location.href = `/compras/facturas/detalle/${emisor}/${folio}`;
@@ -72,6 +76,8 @@
         function vistaPreviaDocumento(emisor, tipo, folio) {
             window.open(`/api/compras/facturas/vistaprevia/${emisor}/${tipo}/${folio}`);
         }
+
+
 
         facturasTable = new DataTable('#example', {
             responsive: true,
@@ -130,5 +136,37 @@
             processing: true,
             serverSide: true*/
         });
+
+
+ // Custom filtering function which will search data in column four between two values
+ DataTable.ext.search.push(function (settings, data, dataIndex) {
+     let min = minDate.val();
+     let max = maxDate.val();
+     let date = new Date(data[3]);
+
+     if (
+         (min === null && max === null) ||
+         (min === null && date <= max) ||
+         (min <= date && max === null) ||
+         (min <= date && date <= max)
+     ) {
+         return true;
+     }
+     return false;
+ });
+
+ // Create date inputs
+ minDate = new DateTime('#min', {
+     format: 'MMMM Do YYYY'
+ });
+ maxDate = new DateTime('#max', {
+     format: 'MMMM Do YYYY'
+ });
+
+
+ // Refilter the table
+ document.querySelectorAll('#min, #max').forEach((el) => {
+     el.addEventListener('change', () => facturasTable.draw());
+ });
     </script>
 @endpush
