@@ -117,7 +117,7 @@
 
  // Refilter the table
  document.querySelectorAll('#min, #max').forEach((el) => {
-     el.addEventListener('change', () => facturasTable.draw());
+     el.addEventListener('change', () => guiasTable.draw());
  });
     </script>
 @endpush
