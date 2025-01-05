@@ -20,8 +20,8 @@
                             <div class="row">
                                 <div class="col-12">
                                     <div class="col-12">
-                                        Min: <input type="text" id="min" name="min">
-                                        Max:  <input type="text" id="max" name="max">
+                                        Desde: <input type="text" id="min" name="min">
+                                        Hasta:  <input type="text" id="max" name="max">
                                     </div>
                                     <table id="example" class="compact hover order-column row-border" style="width:100%">
                                         <thead>
@@ -76,8 +76,6 @@
         function vistaPreviaDocumento(emisor, tipo, folio) {
             window.open(`/api/compras/facturas/vistaprevia/${emisor}/${tipo}/${folio}`);
         }
-
-
 
         facturasTable = new DataTable('#example', {
             responsive: true,
@@ -157,10 +155,10 @@
 
  // Create date inputs
  minDate = new DateTime('#min', {
-     format: 'MMMM Do YYYY'
+     format: 'DD/MM/YYYY'
  });
  maxDate = new DateTime('#max', {
-     format: 'MMMM Do YYYY'
+     format: 'DD/MM/YYYY'
  });
 
 
