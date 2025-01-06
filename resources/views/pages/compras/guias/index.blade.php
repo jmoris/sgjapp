@@ -19,9 +19,9 @@
                             </div>
                             <div class="row">
                                 <div class="col-12">
-                                    <div class="col-12 mx-2">
-                                        Desde: <input type="text" id="min" name="min">
-                                        Hasta:  <input type="text" id="max" name="max">
+                                    <div class="col-12 mx-2 my-2">
+                                        Fecha emisión: <input type="text" id="min" name="min"> - <input
+                                            type="text" id="max" name="max">
                                     </div>
                                     <table id="example" class="compact hover order-column row-border" style="width:100%">
                                         <thead>
@@ -35,15 +35,24 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach($documentos as $doc)
-                                            <tr>
-                                                <td>{{ $doc->folio }}</td>
-                                                <td>{{ $doc->razonsocial_emisor }}</td>
-                                                <td>{{ $doc->rut_emisor }}</td>
-                                                <td>{{ $doc->fecha_emision }}</td>
-                                                <td>$ {{ number_format($doc->monto_total, 0, ',', '.') }}</td>
-                                                <td><div><button type="button" title="Ver Factura de Compra" onclick="verDocumento('{{$doc->rut_emisor}}', {{$doc->folio}})" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-text-box-search-outline"></i></button><button type="button" title="Ver Factura de Compra" onclick="vistaPreviaDocumento('{{$doc->rut_emisor}}', {{$doc->tipo_doc}}, {{$doc->folio}})" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-magnify"></i></button></div></td>
-                                            </tr>
+                                            @foreach ($documentos as $doc)
+                                                <tr>
+                                                    <td>{{ $doc->folio }}</td>
+                                                    <td>{{ $doc->razonsocial_emisor }}</td>
+                                                    <td>{{ $doc->rut_emisor }}</td>
+                                                    <td>{{ $doc->fecha_emision }}</td>
+                                                    <td>$ {{ number_format($doc->monto_total, 0, ',', '.') }}</td>
+                                                    <td>
+                                                        <div><button type="button" title="Ver Factura de Compra"
+                                                                onclick="verDocumento('{{ $doc->rut_emisor }}', {{ $doc->folio }})"
+                                                                class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i
+                                                                    class="mdi mdi-18 mdi-text-box-search-outline"></i></button><button
+                                                                type="button" title="Ver Factura de Compra"
+                                                                onclick="vistaPreviaDocumento('{{ $doc->rut_emisor }}', {{ $doc->tipo_doc }}, {{ $doc->folio }})"
+                                                                class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i
+                                                                    class="mdi mdi-18 mdi-magnify"></i></button></div>
+                                                    </td>
+                                                </tr>
                                             @endforeach
                                         </tbody>
                                     </table>
@@ -89,38 +98,38 @@
             ]
         });
 
- // Custom filtering function which will search data in column four between two values
- DataTable.ext.search.push(function (settings, data, dataIndex) {
-     let min = minDate.val();
-     let max = maxDate.val();
-     let date = new Date(data[3]);
+        // Custom filtering function which will search data in column four between two values
+        DataTable.ext.search.push(function(settings, data, dataIndex) {
+            let min = minDate.val();
+            let max = maxDate.val();
+            let date = new Date(data[3]);
 
-     if (
-         (min === null && max === null) ||
-         (min === null && date <= max) ||
-         (min <= date && max === null) ||
-         (min <= date && date <= max)
-     ) {
-         return true;
-     }
-     return false;
- });
+            if (
+                (min === null && max === null) ||
+                (min === null && date <= max) ||
+                (min <= date && max === null) ||
+                (min <= date && date <= max)
+            ) {
+                return true;
+            }
+            return false;
+        });
 
- // Create date inputs
- minDate = new DateTime('#min', {
-     format: 'DD/MM/YYYY'
- });
- maxDate = new DateTime('#max', {
-     format: 'DD/MM/YYYY'
- });
+        // Create date inputs
+        minDate = new DateTime('#min', {
+            format: 'DD/MM/YYYY'
+        });
+        maxDate = new DateTime('#max', {
+            format: 'DD/MM/YYYY'
+        });
 
- $('#min').change(function(e){
-    facturasTable.draw();
-    $('#max').focus();
-    $('#max').click();
-});
-$('#max').change(function(e){
-    facturasTable.draw();
-});
+        $('#min').change(function(e) {
+            facturasTable.draw();
+            $('#max').focus();
+            $('#max').click();
+        });
+        $('#max').change(function(e) {
+            facturasTable.draw();
+        });
     </script>
 @endpush
