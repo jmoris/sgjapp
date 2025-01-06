@@ -114,10 +114,13 @@
      format: 'DD/MM/YYYY'
  });
 
-
- // Refilter the table
- document.querySelectorAll('#min, #max').forEach((el) => {
-     el.addEventListener('change', () => guiasTable.draw());
- });
+ $('#min').change(function(e){
+    facturasTable.draw();
+    $('#max').focus();
+    $('#max').click();
+});
+$('#max').change(function(e){
+    facturasTable.draw();
+});
     </script>
 @endpush

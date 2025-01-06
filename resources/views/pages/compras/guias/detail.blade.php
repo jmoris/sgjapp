@@ -305,33 +305,35 @@
                                                 <h5>Referencias del documento</h5>
                                             </div>
                                             <div class="col-md-12">
-                                                <table id="tablaReferencia" class="table table-sm mb-3">
-                                                    <thead>
-                                                        <th>Tipo Documento</th>
-                                                        <th>Folio</th>
-                                                        <th>Fecha</th>
-                                                    </thead>
-                                                    <tbody>
-                                                        @php
-                                                            $referencias = isset($documento['Referencia'])
-                                                                ? $documento['Referencia']
-                                                                : [];
-                                                            if (!is_array($referencias)) {
-                                                                if (!isset($referencias[0])) {
-                                                                    $referencias = [$referencias];
+                                                <div class="row mx-1">
+                                                    <table id="tablaReferencia" class="table table-sm mb-3">
+                                                        <thead>
+                                                            <th>Tipo Documento</th>
+                                                            <th>Folio</th>
+                                                            <th>Fecha</th>
+                                                        </thead>
+                                                        <tbody>
+                                                            @php
+                                                                $referencias = isset($documento['Referencia'])
+                                                                    ? $documento['Referencia']
+                                                                    : [];
+                                                                if (!is_array($referencias)) {
+                                                                    if (!isset($referencias[0])) {
+                                                                        $referencias = [$referencias];
+                                                                    }
                                                                 }
-                                                            }
-                                                        @endphp
-                                                        @foreach ($referencias as $ref)
-                                                            <tr>
-                                                                <td>{{ \App\Helpers\Herramientas::getTipoDocumento($ref['TpoDocRef']) }}</td>
-                                                                <td>{{ $ref['FolioRef'] }}</td>
-                                                                <td>{{ $ref['FchRef'] }}</td>
-                                                            </tr>
-                                                        @endforeach
+                                                            @endphp
+                                                            @foreach ($referencias as $ref)
+                                                                <tr>
+                                                                    <td>{{ \App\Helpers\Herramientas::getTipoDocumento($ref['TpoDocRef']) }}</td>
+                                                                    <td>{{ $ref['FolioRef'] }}</td>
+                                                                    <td>{{ $ref['FchRef'] }}</td>
+                                                                </tr>
+                                                            @endforeach
 
-                                                    </tbody>
-                                                </table>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
                                             </div>
                                         </div>
                                         <div class="col-md-12 mb-3">
@@ -376,7 +378,7 @@
                     </div>
                 </div>
                 <div class="col-md-4 grid-margin stretch-card">
-                    <div class="row align-items-start">
+                    <div class="align-items-start">
                         <div class="col-md-12">
                             <div class="card">
                                 <div class="card-body">
