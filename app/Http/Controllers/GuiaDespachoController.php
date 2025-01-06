@@ -150,7 +150,7 @@ class GuiaDespachoController extends Controller
             $guia->user_id = auth()->user()->id;
             $guia->ind_traslado = $request->ind_traslado;
             $guia->tipo_despacho = $request->tipo_despacho;
-            $guia->descuento = 1;
+            $guia->descuento = 0;
             $guia->monto_neto = $docData->totales->neto;
             $guia->monto_iva = $docData->totales->iva;
             $guia->monto_total = $docData->totales->total;
