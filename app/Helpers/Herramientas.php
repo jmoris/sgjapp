@@ -69,7 +69,11 @@ class Herramientas {
     }
 
     public static function getTipoDocumento($tipo){
-        return self::$tipos_doc[$tipo];
+        if(array_key_exists($tipo, self::$tipos_doc)){
+            return self::$tipos_doc[$tipo];
+        }else{
+            return $tipo;
+        }
     }
 
     public static function saveExecutionTime($et){
