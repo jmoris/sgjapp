@@ -124,12 +124,12 @@
         });
 
         $('#min').change(function(e) {
-            facturasTable.draw();
+            guiasTable.draw();
             $('#max').focus();
             $('#max').click();
         });
         $('#max').change(function(e) {
-            facturasTable.draw();
+            guiasTable.draw();
         });
     </script>
 @endpush
