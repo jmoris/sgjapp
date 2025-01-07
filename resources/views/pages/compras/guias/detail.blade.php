@@ -341,6 +341,7 @@
                                                 <h5 class="d-inline">Detalle del documento</h5>
                                             </div>
                                             <div class="row mx-1">
+                                                <div class="table-responsive">
                                                 <table id="tablaDetalle" class="table mb-4">
                                                     <thead>
                                                         <th>SKU</th>
@@ -375,6 +376,7 @@
                                                         @endforeach
                                                     </tbody>
                                                 </table>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
