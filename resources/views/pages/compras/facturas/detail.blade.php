@@ -208,7 +208,15 @@
                                                                 <select name="tipo_pago" id="tipo_pago"
                                                                     class="form-control form-control-sm" disabled>
                                                                     @php
-                                                                        $fma_pago = isset($documento['Encabezado']['IdDoc']['FmaPago'])?$documento['Encabezado']['IdDoc']['FmaPago']:null;;
+                                                                        $fma_pago = isset(
+                                                                            $documento['Encabezado']['IdDoc'][
+                                                                                'FmaPago'
+                                                                            ],
+                                                                        )
+                                                                            ? $documento['Encabezado']['IdDoc'][
+                                                                                'FmaPago'
+                                                                            ]
+                                                                            : null;
                                                                     @endphp
                                                                     <option
                                                                         @if ($fma_pago == 1) selected @endif
@@ -242,31 +250,34 @@
                                             </div>
                                             <div class="col-md-12">
                                                 <div class="row mx-1">
-                                                <table id="tablaReferencia" class="table table-sm mb-3">
-                                                    <thead>
-                                                        <th>Tipo Documento</th>
-                                                        <th>Folio</th>
-                                                        <th>Fecha</th>
-                                                    </thead>
-                                                    <tbody>
-                                                        @php
-                                                        $referencias = isset($documento['Referencia'])?$documento['Referencia']:[];
-                                                        if(!is_array($referencias)){
-                                                            if (!isset($referencias[0])) {
-                                                                $referencias = [$referencias];
-                                                            }
-                                                        }
-                                                    @endphp
-                                                    @foreach ($referencias as $ref)
-                                                    <tr>
-                                                        <td>{{ \App\Helpers\Herramientas::getTipoDocumento($ref['TpoDocRef']) }}</td>
-                                                        <td>{{ $ref['FolioRef'] }}</td>
-                                                        <td>{{ $ref['FchRef'] }}</td>
-                                                    </tr>
-                                                    @endforeach
+                                                    <table id="tablaReferencia" class="table table-sm mb-3">
+                                                        <thead>
+                                                            <th>Tipo Documento</th>
+                                                            <th>Folio</th>
+                                                            <th>Fecha</th>
+                                                        </thead>
+                                                        <tbody>
+                                                            @php
+                                                                $referencias = isset($documento['Referencia'])
+                                                                    ? $documento['Referencia']
+                                                                    : [];
+                                                                if (!is_array($referencias)) {
+                                                                    if (!isset($referencias[0])) {
+                                                                        $referencias = [$referencias];
+                                                                    }
+                                                                }
+                                                            @endphp
+                                                            @foreach ($referencias as $ref)
+                                                                <tr>
+                                                                    <td>{{ \App\Helpers\Herramientas::getTipoDocumento($ref['TpoDocRef']) }}
+                                                                    </td>
+                                                                    <td>{{ $ref['FolioRef'] }}</td>
+                                                                    <td>{{ $ref['FchRef'] }}</td>
+                                                                </tr>
+                                                            @endforeach
 
-                                                    </tbody>
-                                                </table>
+                                                        </tbody>
+                                                    </table>
                                                 </div>
                                             </div>
                                         </div>
@@ -276,40 +287,42 @@
                                             </div>
                                             <div class="row mx-1">
                                                 <div class="table-responsive">
-                                                <table id="tablaDetalle" class="table mb-4">
-                                                    <thead>
-                                                        <th>SKU</th>
-                                                        <th>Item</th>
-                                                        <th>Cantidad</th>
-                                                        <th>Precio</th>
-                                                        <th>Subtotal</th>
-                                                    </thead>
-                                                    <tbody>
-                                                        @php
-                                                            $detalles = $documento['Detalle'];
-                                                            if (!isset($detalles[0])) {
-                                                                $detalles = [$detalles];
-                                                            }
-                                                        @endphp
-                                                        @foreach ($detalles as $det)
-                                                            <tr>
-                                                                <td>{{ isset($det['CdgItem']['VlrCodigo'])?$det['CdgItem']['VlrCodigo']:'-' }}</td>
-                                                                <td>{{ $det['NmbItem'] }}</td>
-                                                                <td>{{ $det['QtyItem'] }}</td>
-                                                                <td>$ {{ number_format($det['PrcItem'], 0, ',', '.') }}
-                                                                </td>
-                                                                <td>$ {{ number_format($det['MontoItem'], 0, ',', '.') }}
-                                                                </td>
-                                                            </tr>
-                                                            @if(isset($det['DscItem']))
-                                                            <tr>
-                                                                <td></td>
-                                                                <td colspan="4">{!! chunk_split($det['DscItem'], 100, '<br>') !!}</td>
-                                                            </tr>
-                                                            @endif
-                                                        @endforeach
-                                                    </tbody>
-                                                </table>
+                                                    <table id="tablaDetalle" class="table mb-4">
+                                                        <thead>
+                                                            <th>SKU</th>
+                                                            <th>Item</th>
+                                                            <th>Cantidad</th>
+                                                            <th>Precio</th>
+                                                            <th>Subtotal</th>
+                                                        </thead>
+                                                        <tbody>
+                                                            @php
+                                                                $detalles = $documento['Detalle'];
+                                                                if (!isset($detalles[0])) {
+                                                                    $detalles = [$detalles];
+                                                                }
+                                                            @endphp
+                                                            @foreach ($detalles as $det)
+                                                                <tr>
+                                                                    <td>{{ isset($det['CdgItem']['VlrCodigo']) ? $det['CdgItem']['VlrCodigo'] : '-' }}
+                                                                    </td>
+                                                                    <td>{{ $det['NmbItem'] }}</td>
+                                                                    <td>{{ $det['QtyItem'] }}</td>
+                                                                    <td>$ {{ number_format($det['PrcItem'], 0, ',', '.') }}
+                                                                    </td>
+                                                                    <td>$
+                                                                        {{ number_format($det['MontoItem'], 0, ',', '.') }}
+                                                                    </td>
+                                                                </tr>
+                                                                @if (isset($det['DscItem']))
+                                                                    <tr>
+                                                                        <td></td>
+                                                                        <td colspan="4">{!! chunk_split($det['DscItem'], 100, '<br>') !!}</td>
+                                                                    </tr>
+                                                                @endif
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
                                                 </div>
                                             </div>
                                         </div>
@@ -321,118 +334,150 @@
                 </div>
                 <div class="col-md-4 grid-margin">
                     <div class="align-items-start">
-                    <div class="col-md-12 mb-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="col-md-12">
-                                    <div class="d-flex justify-content-between align-items-baseline">
-                                        <h4 class="card-title mb-0">INFORMACION DOCUMENTO Y MONTOS</h4>
+                        <div class="col-md-12 mb-2">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="col-md-12">
+                                        <div class="d-flex justify-content-between align-items-baseline">
+                                            <h4 class="card-title mb-0">CATEGORIZACIÓN DE DOCUMENTO</h4>
+                                        </div>
+                                        <div class="row mb-2">
+                                            <label class="col-sm-4 col-form-label col-form-label-sm">Categoria</label>
+                                            <div class="col-sm-8">
+                                                <select class="form-control">
+                                                    <option>Sin categorizar</option>
+                                                    <option value="1">Combustible</option>
+                                                    <option value="2">Materia Prima</option>
+                                                    <option value="3">Insumos Oficina</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="align-end">
+                                            <button type="button" class="btn btn-primary">
+                                                <i class="mdi mdi-content-save"></i>
+                                                Guardar
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div class="col-md-12 mx-2 my-2">
-                                        <div class="row">
-                                            <div class="col-md-7">
-                                                <p>Subtotal </p>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 mb-2">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="col-md-12">
+                                        <div class="d-flex justify-content-between align-items-baseline">
+                                            <h4 class="card-title mb-0">INFORMACION DOCUMENTO Y MONTOS</h4>
+                                        </div>
+                                        <div class="col-md-12 mx-2 my-2">
+                                            <div class="row">
+                                                <div class="col-md-7">
+                                                    <p>Subtotal </p>
+                                                </div>
+                                                <div class="col-md-5 text-end">
+                                                    <p id="lblSubtotalDoc">
+                                                        @php
+                                                            $neto = $documento['Encabezado']['Totales']['MntNeto'];
+                                                            $exento = isset(
+                                                                $documento['Encabezado']['Totales']['MntExe'],
+                                                            )
+                                                                ? $documento['Encabezado']['Totales']['MntExe']
+                                                                : 0;
+                                                        @endphp
+                                                        $ {{ number_format($neto + $exento, 0, ',', '.') }}</p>
+                                                </div>
                                             </div>
-                                            <div class="col-md-5 text-end">
-                                                <p id="lblSubtotalDoc">
+                                            <div class="row">
+                                                <div class="col-md-7">
+                                                    <p>Monto exento </p>
+                                                </div>
+                                                <div class="col-md-5 text-end">
+                                                    <p id="lblexento">$ {{ number_format($exento, 0, ',', '.') }}</p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-7">
+                                                    <p>Monto neto </p>
+                                                </div>
+                                                <div class="col-md-5 text-end">
+                                                    <p id="lblneto">$
+                                                        {{ number_format($documento['Encabezado']['Totales']['MntNeto'], 0, ',', '.') }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-7">
+                                                    <p>IVA </p>
+                                                </div>
+                                                <div class="col-md-5 text-end">
+                                                    <p id="lbliva">$
+                                                        {{ number_format($documento['Encabezado']['Totales']['IVA'], 0, ',', '.') }}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-7">
+                                                    <p>Impuestos adicionales </p>
+                                                </div>
+                                                <div class="col-md-5 text-end">
                                                     @php
-                                                        $neto = $documento['Encabezado']['Totales']['MntNeto'];
-                                                        $exento = isset($documento['Encabezado']['Totales']['MntExe'])
-                                                            ? $documento['Encabezado']['Totales']['MntExe']
-                                                            : 0;
-                                                    @endphp
-                                                    $ {{ number_format($neto + $exento, 0, ',', '.') }}</p>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-7">
-                                                <p>Monto exento </p>
-                                            </div>
-                                            <div class="col-md-5 text-end">
-                                                <p id="lblexento">$ {{ number_format($exento, 0, ',', '.') }}</p>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-7">
-                                                <p>Monto neto </p>
-                                            </div>
-                                            <div class="col-md-5 text-end">
-                                                <p id="lblneto">$
-                                                    {{ number_format($documento['Encabezado']['Totales']['MntNeto'], 0, ',', '.') }}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-7">
-                                                <p>IVA </p>
-                                            </div>
-                                            <div class="col-md-5 text-end">
-                                                <p id="lbliva">$
-                                                    {{ number_format($documento['Encabezado']['Totales']['IVA'], 0, ',', '.') }}
-                                                </p>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-7">
-                                                <p>Impuestos adicionales </p>
-                                            </div>
-                                            <div class="col-md-5 text-end">
-                                                @php
-                                                    $impadicional = 0;
-                                                    if (isset($documento['Encabezado']['Totales']['ImptoReten'])) {
-                                                        $impadicionales =
-                                                            $documento['Encabezado']['Totales']['ImptoReten'];
-                                                        if (!isset($impadicionales[0])) {
-                                                            $impadicionales = [$impadicionales];
-                                                        }
-                                                        foreach ($impadicionales as $impuesto) {
-                                                            if (isset($impuesto['MontoImp'])) {
-                                                                if ($impuesto != false || $impuesto != null) {
-                                                                    if ($impuesto['MontoImp'] != false) {
-                                                                        $impadicional += $impuesto['MontoImp'];
+                                                        $impadicional = 0;
+                                                        if (isset($documento['Encabezado']['Totales']['ImptoReten'])) {
+                                                            $impadicionales =
+                                                                $documento['Encabezado']['Totales']['ImptoReten'];
+                                                            if (!isset($impadicionales[0])) {
+                                                                $impadicionales = [$impadicionales];
+                                                            }
+                                                            foreach ($impadicionales as $impuesto) {
+                                                                if (isset($impuesto['MontoImp'])) {
+                                                                    if ($impuesto != false || $impuesto != null) {
+                                                                        if ($impuesto['MontoImp'] != false) {
+                                                                            $impadicional += $impuesto['MontoImp'];
+                                                                        }
                                                                     }
                                                                 }
                                                             }
                                                         }
-                                                    }
-                                                @endphp
-                                                <p id="lblimpad">$ {{ number_format($impadicional, 0, ',', '.') }}</p>
+                                                    @endphp
+                                                    <p id="lblimpad">$ {{ number_format($impadicional, 0, ',', '.') }}
+                                                    </p>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-md-7">
-                                                <p><b>Total </b></p>
-                                            </div>
-                                            <div class="col-md-5 text-end">
-                                                <p id="lbltotal">$
-                                                    {{ number_format($documento['Encabezado']['Totales']['MntTotal'], 0, ',', '.') }}
-                                                </p>
+                                            <div class="row">
+                                                <div class="col-md-7">
+                                                    <p><b>Total </b></p>
+                                                </div>
+                                                <div class="col-md-5 text-end">
+                                                    <p id="lbltotal">$
+                                                        {{ number_format($documento['Encabezado']['Totales']['MntTotal'], 0, ',', '.') }}
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-12">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="col-md-12">
-                                    <div class="d-flex justify-content-between align-items-baseline">
-                                        <h4 class="card-title mb-0">PAGOS ASOCIADOS AL DOCUMENTO</h4>
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="col-md-12">
+                                        <div class="d-flex justify-content-between align-items-baseline">
+                                            <h4 class="card-title mb-0">PAGOS ASOCIADOS AL DOCUMENTO</h4>
+                                        </div>
+                                        <table class="table">
+                                            <thead>
+                                                <th>Tipo</th>
+                                                <th>Fecha</th>
+                                                <th>Monto</th>
+                                            </thead>
+                                        </table>
                                     </div>
-                                    <table class="table">
-                                        <thead>
-                                            <th>Tipo</th>
-                                            <th>Fecha</th>
-                                            <th>Monto</th>
-                                        </thead>
-                                    </table>
-                                </div>
 
+                                </div>
                             </div>
                         </div>
-                    </div>
                     </div>
                 </div>
             </div>
