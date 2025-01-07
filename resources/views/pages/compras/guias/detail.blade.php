@@ -366,6 +366,12 @@
                                                                 <td>$ {{ number_format($det['MontoItem'], 0, ',', '.') }}
                                                                 </td>
                                                             </tr>
+                                                            @if(isset($det['DscItem']))
+                                                            <tr>
+                                                                <td></td>
+                                                                <td colspan="4">{{ $det['DscItem'] }}</td>
+                                                            </tr>
+                                                            @endif
                                                         @endforeach
                                                     </tbody>
                                                 </table>
