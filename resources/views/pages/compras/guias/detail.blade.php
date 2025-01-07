@@ -397,7 +397,7 @@
                                         <div class="row my-2">
                                             <label class="col-sm-4 col-form-label col-form-label-sm">Categoria</label>
                                             <div class="col-sm-8">
-                                                <select class="form-control">
+                                                <select class="form-control form-control-sm">
                                                     <option>Sin categorizar</option>
                                                     <option value="1">Combustible</option>
                                                     <option value="2">Materia Prima</option>
