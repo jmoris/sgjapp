@@ -296,7 +296,7 @@
                     direccion: $('#direccion').val(),
                     comuna: $('#comuna').val(),
                     correo_dte: $('#correo_dte').val(),
-                    tipo_pago: $('#modalidad_pago :checked').val(),
+                    tipo_pago: $('input:radio[name=tipo_pago]:checked').val(),
                     dias_credito: $('#dias_credito').val(),
                     telefono: $('#telefono').val(),
                     correcto_contacto: $('#correcto_contacto').val(),
