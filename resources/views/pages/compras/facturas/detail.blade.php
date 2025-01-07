@@ -293,7 +293,7 @@
                                                         @endphp
                                                         @foreach ($detalles as $det)
                                                             <tr>
-                                                                <td>-</td>
+                                                                <td>{{ isset($det['CdgItem']['VlrCodigo'])?$det['CdgItem']['VlrCodigo']:'-' }}</td>
                                                                 <td>{{ $det['NmbItem'] }}</td>
                                                                 <td>{{ $det['QtyItem'] }}</td>
                                                                 <td>$ {{ number_format($det['PrcItem'], 0, ',', '.') }}
