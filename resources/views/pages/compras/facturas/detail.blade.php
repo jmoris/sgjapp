@@ -307,8 +307,14 @@
                                                                     <td>{{ isset($det['CdgItem']['VlrCodigo']) ? $det['CdgItem']['VlrCodigo'] : '-' }}
                                                                     </td>
                                                                     <td>{{ $det['NmbItem'] }}</td>
-                                                                    <td>{{ isset($det['QtyItem'])?$det['QtyItem']:1 }}</td>
-                                                                    <td>$ {{ number_format($det['PrcItem'], 0, ',', '.') }}
+                                                                    <td>{{ isset($det['QtyItem']) ? $det['QtyItem'] : 1 }}</td>
+                                                                    @php
+                                                                        $precio = 0;
+                                                                        if (isset($det['PrcItem'])) {
+                                                                            $precio = $det['PrcItem'];
+                                                                        }
+                                                                    @endphp
+                                                                    <td>$ {{ number_format($precio, 0, ',', '.') }}
                                                                     </td>
                                                                     <td>$
                                                                         {{ number_format($det['MontoItem'], 0, ',', '.') }}
