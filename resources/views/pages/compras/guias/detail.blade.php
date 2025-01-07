@@ -370,7 +370,7 @@
                                                             @if(isset($det['DscItem']))
                                                             <tr>
                                                                 <td></td>
-                                                                <td colspan="4">{{ $det['DscItem'] }}</td>
+                                                                <td colspan="4">{{ chunk_split($det['DscItem'], 100, '<br>') }}</td>
                                                             </tr>
                                                             @endif
                                                         @endforeach
