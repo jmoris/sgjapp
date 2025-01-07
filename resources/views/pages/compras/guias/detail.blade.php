@@ -359,7 +359,7 @@
                                                         @endphp
                                                         @foreach ($detalles as $det)
                                                             <tr>
-                                                                <td>-</td>
+                                                                <td>{{ isset($det['CdgItem']['VlrCodigo'])?$det['CdgItem']['VlrCodigo']:'-' }}</td>
                                                                 <td>{{ $det['NmbItem'] }}</td>
                                                                 <td>{{ $det['QtyItem'] }}</td>
                                                                 <td>$ {{ number_format($det['PrcItem'], 0, ',', '.') }}
@@ -387,6 +387,29 @@
                 </div>
                 <div class="col-md-4 grid-margin">
                     <div class="align-items-start">
+                        <div class="col-md-12 mb-2">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="col-md-12">
+                                        <div class="d-flex justify-content-between align-items-baseline">
+                                            <h4 class="card-title mb-0">CATEGORIZACIÓN DE DOCUMENTO</h4>
+                                        </div>
+                                        <div class="row my-2">
+                                            <label class="col-sm-4 col-form-label col-form-label-sm">Categoria</label>
+                                            <div class="col-sm-8">
+                                                <select class="form-control">
+                                                    <option>Sin categorizar</option>
+                                                    <option value="1">Combustible</option>
+                                                    <option value="2">Materia Prima</option>
+                                                    <option value="3">Insumos Oficina</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
                         <div class="col-md-12 mb-2">
                             <div class="card">
                                 <div class="card-body">

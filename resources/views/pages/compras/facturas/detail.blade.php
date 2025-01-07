@@ -341,7 +341,7 @@
                                         <div class="d-flex justify-content-between align-items-baseline">
                                             <h4 class="card-title mb-0">CATEGORIZACIÓN DE DOCUMENTO</h4>
                                         </div>
-                                        <div class="row mb-2">
+                                        <div class="row my-2">
                                             <label class="col-sm-4 col-form-label col-form-label-sm">Categoria</label>
                                             <div class="col-sm-8">
                                                 <select class="form-control">
@@ -351,12 +351,6 @@
                                                     <option value="3">Insumos Oficina</option>
                                                 </select>
                                             </div>
-                                        </div>
-                                        <div class="align-end">
-                                            <button type="button" class="btn btn-primary">
-                                                <i class="mdi mdi-content-save"></i>
-                                                Guardar
-                                            </button>
                                         </div>
                                     </div>
 
