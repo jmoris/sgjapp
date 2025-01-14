@@ -4,6 +4,7 @@ namespace App\Console;
 
 use App\DocumentoPendiente;
 use App\Factura;
+use App\FacturaCompra;
 use App\GuiaDespacho;
 use App\Helpers\Ajustes;
 use App\NotaCredito;
@@ -94,6 +95,73 @@ class Kernel extends ConsoleKernel
 
                 }
             }))->everyMinute();
+
+            $schedule->call($tenant->callback(function(){
+                $periodo = date('Ym', strtotime('-1 months'));
+                $emisor = Ajustes::getEmisor();
+                // Obtener RCV de Compra, estos documentos son los recibidos en el SII
+                $data = [
+                    'contribuyente' => $emisor['rut'],
+                    'operacion' => 'COMPRA',
+                    'periodo' => $periodo,
+                    'tipo_doc' => 33
+                ];
+                $url = env('FACTURAPI_ENDPOINT').'rcv/detalle?'.http_build_query($data);
+                Log::info('URL ENDPOINT: '. $url);
+                $ch = curl_init( $url );
+                curl_setopt( $ch, CURLOPT_POST, false);
+                curl_setopt( $ch, CURLOPT_HTTPHEADER, [
+                    'Content-Type:application/json',
+                    'Authorization: Bearer '.env('FACTURAPI_TOKEN')
+                ]);
+                curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+                $result = curl_exec($ch);
+                $response = json_decode($result);
+                if($response == null){
+                    return 0;
+                }
+                if($response->data != null){
+                    foreach($response->data as $doc){
+                        Log::info($doc->detRutDoc.'-'.$doc->detDvDoc.' -> '.$doc->detNroDoc.' '.$doc->detFchDoc);
+
+                        $rut_emisor = $doc->detRutDoc.'-'.$doc->detDvDoc;
+                        if(FacturaCompra::where('rut_emisor', $rut_emisor)->where('folio', $doc->detNroDoc)->count() == 0){
+                            FacturaCompra::insertOrIgnore([
+                                'rut_emisor' => $rut_emisor,
+                                'razon_social_emisor' => $doc->detRznSoc,
+                                'folio' => $doc->detNroDoc,
+                                'fecha_emision' => $doc->detFchDoc,
+                                'monto_neto' => $doc->detMntNeto,
+                                'monto_iva' => $doc->detMntIVA,
+                                'monto_total' => $doc->detMntTotal,
+                                'tiene_xml' => false
+                            ]);
+                        }
+                    }
+                }
+                // Obtener los documentos recibidos en el correo
+                $endpoint =  env('FACTURAPI_ENDPOINT').'documentos/compras?contribuyente='.$emisor['rut'].'&tipo=33&periodo='.$periodo;
+                $ch = curl_init( $endpoint );
+                curl_setopt( $ch, CURLOPT_POST, false);
+                curl_setopt( $ch, CURLOPT_HTTPHEADER, [
+                    'Content-Type:application/json',
+                    'Authorization: Bearer '.env('FACTURAPI_TOKEN')
+                ]);
+                curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+                $result = curl_exec($ch);
+                curl_close($ch);
+                $docData = json_decode($result);
+                foreach($docData as $doc){
+                    if(FacturaCompra::where('rut_emisor', $doc->rut_emisor)->where('folio', $doc->folio)->count() == 1){
+                        FacturaCompra::where('rut_emisor', $doc->rut_emisor)
+                                        ->where('folio', $doc->folio)
+                                        ->update('tiene_xml', true);
+                    }
+                }
+                // Opcion 1: Hacer un merge de arrays e ingresar masivamente
+                // Opcion 2: Insertar todos los docs del RCV y luego hacer un update masivo
+                // con los docs recibidos en el correo (tiene_xml = si)
+            }))->everyFifteenMinutes();
         });
 
     }
