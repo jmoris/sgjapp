@@ -140,7 +140,6 @@ class Kernel extends ConsoleKernel
                 }
                 // Obtener los documentos recibidos en el correo
                 $endpoint =  env('FACTURAPI_ENDPOINT').'documentos/compras?contribuyente='.$emisor['rut'].'&tipo=33&periodo='.$periodo;
-                Log::info('URL ENDPOINT: '. $endpoint);
                 $ch = curl_init( $endpoint );
                 curl_setopt( $ch, CURLOPT_POST, false);
                 curl_setopt( $ch, CURLOPT_HTTPHEADER, [
@@ -156,9 +155,9 @@ class Kernel extends ConsoleKernel
                 $docData = json_decode($result);
 
                 foreach($docData as $data){
-                    Log::info($data->rut_emisor.' - '.$data->folio);
                     $doc = FacturaCompra::where('rut_emisor', $data->rut_emisor)->where('folio', $data->folio)->where('tiene_xml', false)->first();
                     if($doc != null){
+                        Log::info($data->rut_emisor.' - '.$data->folio);
                         $doc->tiene_xml = true;
                         $doc->save();
                     }
