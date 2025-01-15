@@ -157,7 +157,7 @@ class Kernel extends ConsoleKernel
 
                 foreach($docData as $data){
                     Log::info($data->rut_emisor.' - '.$data->folio);
-                    $doc = FacturaCompra::where('rut_emisor', $data->rut_emisor)->where('folio', $data->folio)->first();
+                    $doc = FacturaCompra::where('rut_emisor', $data->rut_emisor)->where('folio', $data->folio)->where('tiene_xml', false)->first();
                     if($doc != null){
                         $doc->tiene_xml = true;
                         $doc->save();
@@ -166,7 +166,7 @@ class Kernel extends ConsoleKernel
                 // Opcion 1: Hacer un merge de arrays e ingresar masivamente
                 // Opcion 2: Insertar todos los docs del RCV y luego hacer un update masivo
                 // con los docs recibidos en el correo (tiene_xml = si)
-            }))->everyFiveMinutes();
+            }))->everyFifteenMinutes();
         });
 
     }
