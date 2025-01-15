@@ -151,9 +151,9 @@ class Kernel extends ConsoleKernel
                 $result = curl_exec($ch);
                 curl_close($ch);
                 $docData = json_decode($result);
-                Log::info($docData);
                 foreach($docData as $doc){
                     if(FacturaCompra::where('rut_emisor', $doc->rut_emisor)->where('folio', $doc->folio)->count() == 1){
+                        Log::info('Entro al documento '.$doc->rut_emisor.' - '.$doc->folio.'...');
                         FacturaCompra::where('rut_emisor', $doc->rut_emisor)
                                         ->where('folio', $doc->folio)
                                         ->update(['tiene_xml', true]);
