@@ -122,15 +122,14 @@ class Kernel extends ConsoleKernel
                 }
                 if($response->data != null){
                     foreach($response->data as $doc){
-                        Log::info($doc->detRutDoc.'-'.$doc->detDvDoc.' -> '.$doc->detNroDoc.' '.$doc->detFchDoc);
-
+                        $fecha = str_replace('/', '-', $doc->detFchDoc);
                         $rut_emisor = $doc->detRutDoc.'-'.$doc->detDvDoc;
                         if(FacturaCompra::where('rut_emisor', $rut_emisor)->where('folio', $doc->detNroDoc)->count() == 0){
                             FacturaCompra::insertOrIgnore([
                                 'rut_emisor' => $rut_emisor,
                                 'razon_social_emisor' => $doc->detRznSoc,
                                 'folio' => $doc->detNroDoc,
-                                'fecha_emision' => $doc->detFchDoc,
+                                'fecha_emision' => date('Y-m-d', strtotime($fecha)),
                                 'monto_neto' => $doc->detMntNeto,
                                 'monto_iva' => $doc->detMntIVA,
                                 'monto_total' => $doc->detMntTotal,
@@ -151,6 +150,7 @@ class Kernel extends ConsoleKernel
                 $result = curl_exec($ch);
                 curl_close($ch);
                 $docData = json_decode($result);
+                Log::info($docData);
                 foreach($docData as $doc){
                     if(FacturaCompra::where('rut_emisor', $doc->rut_emisor)->where('folio', $doc->folio)->count() == 1){
                         FacturaCompra::where('rut_emisor', $doc->rut_emisor)
@@ -161,7 +161,7 @@ class Kernel extends ConsoleKernel
                 // Opcion 1: Hacer un merge de arrays e ingresar masivamente
                 // Opcion 2: Insertar todos los docs del RCV y luego hacer un update masivo
                 // con los docs recibidos en el correo (tiene_xml = si)
-            }))->everyFifteenMinutes();
+            }))->everyFiveMinutes();
         });
 
     }
