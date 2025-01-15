@@ -150,6 +150,10 @@ class Kernel extends ConsoleKernel
                 curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
                 $result = curl_exec($ch);
                 curl_close($ch);
+                if($result == null){
+                    return 0;
+                }
+                Log::info("Respuesta:".PHP_EOL.$result);
                 $docData = json_decode($result);
                 foreach($docData as $doc){
                     Log::info($doc);
