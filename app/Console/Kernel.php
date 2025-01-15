@@ -108,7 +108,6 @@ class Kernel extends ConsoleKernel
                     'tipo_doc' => 33
                 ];
                 $url = env('FACTURAPI_ENDPOINT').'rcv/detalle?'.http_build_query($data);
-                Log::info('URL ENDPOINT: '. $url);
                 $ch = curl_init( $url );
                 curl_setopt( $ch, CURLOPT_POST, false);
                 curl_setopt( $ch, CURLOPT_HTTPHEADER, [
@@ -141,6 +140,7 @@ class Kernel extends ConsoleKernel
                 }
                 // Obtener los documentos recibidos en el correo
                 $endpoint =  env('FACTURAPI_ENDPOINT').'documentos/compras?contribuyente='.$emisor['rut'].'&tipo=33&periodo='.$periodo;
+                Log::info('URL ENDPOINT: '. $endpoint);
                 $ch = curl_init( $endpoint );
                 curl_setopt( $ch, CURLOPT_POST, false);
                 curl_setopt( $ch, CURLOPT_HTTPHEADER, [
