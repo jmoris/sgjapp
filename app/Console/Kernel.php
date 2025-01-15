@@ -156,7 +156,7 @@ class Kernel extends ConsoleKernel
                     if(FacturaCompra::where('rut_emisor', $doc->rut_emisor)->where('folio', $doc->folio)->count() == 1){
                         FacturaCompra::where('rut_emisor', $doc->rut_emisor)
                                         ->where('folio', $doc->folio)
-                                        ->update('tiene_xml', true);
+                                        ->update(['tiene_xml', true]);
                     }
                 }
                 // Opcion 1: Hacer un merge de arrays e ingresar masivamente
