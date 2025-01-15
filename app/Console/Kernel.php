@@ -150,13 +150,12 @@ class Kernel extends ConsoleKernel
                 curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
                 $result = curl_exec($ch);
                 curl_close($ch);
-                Log::info("Respuesta:".PHP_EOL.$result);
                 if($result == null){
                     return 0;
                 }
                 $docData = json_decode($result);
+                Log::info($docData);
                 foreach($docData as $doc){
-                    Log::info($doc);
                     if(FacturaCompra::where('rut_emisor', $doc->rut_emisor)->where('folio', $doc->folio)->count() != 0){
                         Log::info('Entro al documento '.$doc->rut_emisor.' - '.$doc->folio.'...');
                         FacturaCompra::where('rut_emisor', $doc->rut_emisor)
