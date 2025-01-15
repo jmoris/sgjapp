@@ -97,7 +97,8 @@ class Kernel extends ConsoleKernel
             }))->everyMinute();
 
             $schedule->call($tenant->callback(function(){
-                $periodo = date('Ym', strtotime('-1 months'));
+                // Periodo es el mes actual
+                $periodo = date('Ym');
                 $emisor = Ajustes::getEmisor();
                 // Obtener RCV de Compra, estos documentos son los recibidos en el SII
                 $data = [
