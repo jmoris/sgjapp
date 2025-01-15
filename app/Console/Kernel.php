@@ -154,8 +154,8 @@ class Kernel extends ConsoleKernel
                     return 0;
                 }
                 $docData = json_decode($result);
-                Log::info($docData);
                 foreach($docData as $doc){
+                    Log::info($doc->rut_emisor.' - '.$doc->folio);
                     if(FacturaCompra::where('rut_emisor', $doc->rut_emisor)->where('folio', $doc->folio)->count() != 0){
                         Log::info('Entro al documento '.$doc->rut_emisor.' - '.$doc->folio.'...');
                         FacturaCompra::where('rut_emisor', $doc->rut_emisor)
