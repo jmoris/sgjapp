@@ -18,7 +18,7 @@ class Herramientas {
     private static $tipos_doc  = [
         30 => 'Factura',
         32 => 'Factura de venta bienes y servicios no afectos o exentos de iva ',
-        33 => 'Factura electronica',
+        33 => 'Factura electrónica',
         34 => 'Factura no afecta o exenta electronica ',
         35 => 'Boleta ',
         38 => 'Boleta exenta ',
@@ -29,11 +29,11 @@ class Herramientas {
         45 => 'Factura de compra ',
         46 => 'Factura de compra electronica ',
         47 => 'Vale electronico especial',
-        48 => 'Comprobantes pago electronico ',
+        48 => 'Comprobantes pago electrónico ',
         50 => 'Guía de despacho ',
-        52 => 'Guía de despacho electronica',
+        52 => 'Guía de despacho electrónica',
         55 => 'Nota de debito ',
-        56 => 'Nota de debito electronica',
+        56 => 'Nota de debito electrónica',
         60 => 'Nota de credito ',
         61 => 'Nota de credito electronica',
         101 => 'Factura de exportacion',
@@ -60,7 +60,7 @@ class Herramientas {
         811 => 'Carta de porte ',
         812 => 'Resolución del SNA donde califica Servicios de Exportación',
         813 => 'Pasaporte ',
-        814 => ' Certificado de Depósito Bolsa Prod. Chile.',
+        814 => 'Certificado de Depósito Bolsa Prod. Chile.',
         815 => 'Vale de Prenda Bolsa Prod. Chile'
     ];
 
@@ -69,6 +69,7 @@ class Herramientas {
     }
 
     public static function getTipoDocumento($tipo){
+        $tipo = intval($tipo);
         if(array_key_exists($tipo, self::$tipos_doc)){
             return self::$tipos_doc[$tipo];
         }else{
