@@ -320,15 +320,16 @@
                                                                     $referencias = [$referencias];
                                                                 }
                                                             @endphp
-                                                            @if($referencias != null)
-                                                                @foreach ($referencias as $ref)
-                                                                    <tr>
-                                                                        <td>{{ \App\Helpers\Herramientas::getTipoDocumento($ref['TpoDocRef']) }}</td>
-                                                                        <td>{{ $ref['FolioRef'] }}</td>
-                                                                        <td>{{ date('d/m/Y', strtotime($ref['FchRef'])) }}</td>
-                                                                    </tr>
-                                                                @endforeach
-                                                            @endif
+                                                            @foreach ($referencias as $ref)
+                                                                <tr>
+                                                                    @php
+                                                                    $tipoDoc = isset($ref['TpoDocRef']) ? $ref['TpoDocRef'] : '-';
+                                                                    @endphp
+                                                                    <td>{{ \App\Helpers\Herramientas::getTipoDocumento($tipoDoc) }}</td>
+                                                                    <td>{{ $ref['FolioRef'] }}</td>
+                                                                    <td>{{ date('d/m/Y', strtotime($ref['FchRef'])) }}</td>
+                                                                </tr>
+                                                            @endforeach
 
                                                         </tbody>
                                                     </table>

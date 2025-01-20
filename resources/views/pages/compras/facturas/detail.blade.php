@@ -266,7 +266,10 @@
                                                             @endphp
                                                             @foreach ($referencias as $ref)
                                                                 <tr>
-                                                                    <td>{{ \App\Helpers\Herramientas::getTipoDocumento($ref['TpoDocRef']) }}</td>
+                                                                    @php
+                                                                    $tipoDoc = isset($ref['TpoDocRef']) ? $ref['TpoDocRef'] : '-';
+                                                                    @endphp
+                                                                    <td>{{ \App\Helpers\Herramientas::getTipoDocumento($tipoDoc) }}</td>
                                                                     <td>{{ $ref['FolioRef'] }}</td>
                                                                     <td>{{ date('d/m/Y', strtotime($ref['FchRef'])) }}</td>
                                                                 </tr>
