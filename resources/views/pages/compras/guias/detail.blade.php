@@ -320,8 +320,8 @@
                                                                         $referencias = [$referencias];
                                                                     }
                                                                 }
-                                                                dd($referencias)
                                                             @endphp
+                                                            @if($referencias != null)
                                                             @foreach ($referencias as $ref)
                                                                 <tr>
                                                                     @php
@@ -332,6 +332,7 @@
                                                                     <td>{{ date('d/m/Y', strtotime($ref['FchRef'])) }}</td>
                                                                 </tr>
                                                             @endforeach
+                                                            @endif
                                                         </tbody>
                                                     </table>
                                                 </div>
