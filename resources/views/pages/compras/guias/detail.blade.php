@@ -314,20 +314,16 @@
                                                         </thead>
                                                         <tbody>
                                                             @php
-                                                                $referencias = isset($documento['Referencia'])
-                                                                    ? $documento['Referencia']
-                                                                    : [];
-                                                                if (!is_array($referencias)) {
-                                                                    if (!isset($referencias[0])) {
-                                                                        $referencias = [$referencias];
-                                                                    }
-                                                                }
+                                                                $referencias = $documento['Referencia'];
+
+                                                                if (!isset($referencias[0]))
+                                                                    $referencias = [$referencias];
                                                             @endphp
                                                             @foreach ($referencias as $ref)
                                                                 <tr>
                                                                     <td>{{ \App\Helpers\Herramientas::getTipoDocumento($ref['TpoDocRef']) }}</td>
                                                                     <td>{{ $ref['FolioRef'] }}</td>
-                                                                    <td>{{ $ref['FchRef'] }}</td>
+                                                                    <td>{{ date('d/m/Y', strtotime($ref['FchRef'])) }}</td>
                                                                 </tr>
                                                             @endforeach
 

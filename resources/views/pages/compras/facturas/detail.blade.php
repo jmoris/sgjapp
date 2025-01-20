@@ -267,7 +267,7 @@
                                                                 <tr>
                                                                     <td>{{ \App\Helpers\Herramientas::getTipoDocumento($ref['TpoDocRef']) }}</td>
                                                                     <td>{{ $ref['FolioRef'] }}</td>
-                                                                    <td>{{ $ref['FchRef'] }}</td>
+                                                                    <td>{{ date('d/m/Y', strtotime($ref['FchRef'])) }}</td>
                                                                 </tr>
                                                             @endforeach
 
