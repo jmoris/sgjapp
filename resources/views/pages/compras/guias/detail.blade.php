@@ -314,10 +314,13 @@
                                                         </thead>
                                                         <tbody>
                                                             @php
-                                                                $referencias = $documento['Referencia'];
-
-                                                                if (!isset($referencias[0]))
+                                                                $referencias = [];
+                                                                if(array_key_exists('Referencia', $documento)){
+                                                                    $referencias = $documento['Referencia'];
+                                                                }
+                                                                if (!isset($referencias[0])){
                                                                     $referencias = [$referencias];
+                                                                }
                                                             @endphp
                                                             @foreach ($referencias as $ref)
                                                                 <tr>
