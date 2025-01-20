@@ -314,21 +314,21 @@
                                                         </thead>
                                                         <tbody>
                                                             @php
-                                                                $referencias = [];
-                                                                if(array_key_exists('Referencia', $documento)){
-                                                                    $referencias = $documento['Referencia'];
-                                                                }
+                                                                $referencias = isset($documento['Referencia'])?$documento['Referencia']:null;
+
                                                                 if (!isset($referencias[0])){
                                                                     $referencias = [$referencias];
                                                                 }
                                                             @endphp
-                                                            @foreach ($referencias as $ref)
-                                                                <tr>
-                                                                    <td>{{ \App\Helpers\Herramientas::getTipoDocumento($ref['TpoDocRef']) }}</td>
-                                                                    <td>{{ $ref['FolioRef'] }}</td>
-                                                                    <td>{{ date('d/m/Y', strtotime($ref['FchRef'])) }}</td>
-                                                                </tr>
-                                                            @endforeach
+                                                            @if($referencias != null)
+                                                                @foreach ($referencias as $ref)
+                                                                    <tr>
+                                                                        <td>{{ \App\Helpers\Herramientas::getTipoDocumento($ref['TpoDocRef']) }}</td>
+                                                                        <td>{{ $ref['FolioRef'] }}</td>
+                                                                        <td>{{ date('d/m/Y', strtotime($ref['FchRef'])) }}</td>
+                                                                    </tr>
+                                                                @endforeach
+                                                            @endif
 
                                                         </tbody>
                                                     </table>

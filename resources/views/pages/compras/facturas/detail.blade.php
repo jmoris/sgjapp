@@ -258,14 +258,11 @@
                                                         </thead>
                                                         <tbody>
                                                             @php
-                                                                $referencias = [];
-                                                                if(array_key_exists('Referencia', $documento)){
-                                                                    $referencias = $documento['Referencia'];
-                                                                }
+                                                                $referencias = isset($documento['Referencia'])?$documento['Referencia']:null;
+
                                                                 if (!isset($referencias[0])){
                                                                     $referencias = [$referencias];
                                                                 }
-                                                                Log::error($referencias);
                                                             @endphp
                                                             @foreach ($referencias as $ref)
                                                                 <tr>
