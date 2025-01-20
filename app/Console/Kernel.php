@@ -125,16 +125,18 @@ class Kernel extends ConsoleKernel
                         $fecha = str_replace('/', '-', $doc->detFchDoc);
                         $rut_emisor = $doc->detRutDoc.'-'.$doc->detDvDoc;
                         if(FacturaCompra::where('rut_emisor', $rut_emisor)->where('folio', $doc->detNroDoc)->count() == 0){
-                            FacturaCompra::insertOrIgnore([
-                                'rut_emisor' => $rut_emisor,
-                                'razon_social_emisor' => $doc->detRznSoc,
-                                'folio' => $doc->detNroDoc,
-                                'fecha_emision' => date('Y-m-d', strtotime($fecha)),
-                                'monto_neto' => $doc->detMntNeto,
-                                'monto_iva' => $doc->detMntIVA,
-                                'monto_total' => $doc->detMntTotal,
-                                'tiene_xml' => false
-                            ]);
+
+                            $factura = new FacturaCompra();
+                            $factura->rut_emisor = $rut_emisor;
+                            $factura->razon_social_emisor = $doc->detRznSoc;
+                            $factura->folio = $doc->detNroDoc;
+                            $factura->fecha_emision = date('Y-m-d', strtotime($fecha));
+                            $factura->monto_neto = $doc->detMntNeto;
+                            $factura->monto_iva = $doc->detMntIVA;
+                            $factura->monto_total = $doc->detMntTotal;
+                            $factura->tiene_xml = false;
+                            $factura->save();
+
                         }
                     }
                 }
@@ -157,7 +159,6 @@ class Kernel extends ConsoleKernel
                 foreach($docData as $data){
                     $doc = FacturaCompra::where('rut_emisor', $data->rut_emisor)->where('folio', $data->folio)->where('tiene_xml', false)->first();
                     if($doc != null){
-                        Log::info($data->rut_emisor.' - '.$data->folio);
                         $doc->tiene_xml = true;
                         $doc->save();
                     }
