@@ -265,6 +265,7 @@
                                                                 if (!isset($referencias[0])){
                                                                     $referencias = [$referencias];
                                                                 }
+                                                                Log::error($referencias);
                                                             @endphp
                                                             @foreach ($referencias as $ref)
                                                                 <tr>
