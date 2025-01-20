@@ -314,13 +314,14 @@
                                                         </thead>
                                                         <tbody>
                                                             @php
-                                                                $referencias = isset($documento['Referencia'])?$documento['Referencia']:[];
-
-                                                                if (!isset($referencias[0])){
-                                                                    $referencias = [$referencias];
+                                                                $referencias = array_key_exists('Referencia', $documento) ? $documento['Referencia']:null;
+                                                                if($referencias != null){
+                                                                    if (!isset($referencias[0])){
+                                                                        $referencias = [$referencias];
+                                                                    }
                                                                 }
+                                                                dd($referencias)
                                                             @endphp
-                                                            @if(count($referencias) > 0)
                                                             @foreach ($referencias as $ref)
                                                                 <tr>
                                                                     @php
@@ -331,7 +332,6 @@
                                                                     <td>{{ date('d/m/Y', strtotime($ref['FchRef'])) }}</td>
                                                                 </tr>
                                                             @endforeach
-                                                            @endif
                                                         </tbody>
                                                     </table>
                                                 </div>
