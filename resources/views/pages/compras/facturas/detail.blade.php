@@ -258,7 +258,7 @@
                                                         </thead>
                                                         <tbody>
                                                             @php
-                                                                $referencias = isset($documento['Referencia'])?$documento['Referencia']:null;
+                                                                $referencias = isset($documento['Referencia'])?$documento['Referencia']:[];
 
                                                                 if (!isset($referencias[0])){
                                                                     $referencias = [$referencias];
@@ -271,7 +271,6 @@
                                                                     <td>{{ date('d/m/Y', strtotime($ref['FchRef'])) }}</td>
                                                                 </tr>
                                                             @endforeach
-
                                                         </tbody>
                                                     </table>
                                                 </div>
