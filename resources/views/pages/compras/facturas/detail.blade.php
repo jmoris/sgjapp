@@ -264,6 +264,7 @@
                                                                     $referencias = [$referencias];
                                                                 }
                                                             @endphp
+                                                            @if(count($referencias) > 0)
                                                             @foreach ($referencias as $ref)
                                                                 <tr>
                                                                     @php
@@ -274,6 +275,7 @@
                                                                     <td>{{ date('d/m/Y', strtotime($ref['FchRef'])) }}</td>
                                                                 </tr>
                                                             @endforeach
+                                                            @endif
                                                         </tbody>
                                                     </table>
                                                 </div>
