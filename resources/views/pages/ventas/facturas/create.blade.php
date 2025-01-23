@@ -808,7 +808,45 @@
 
         function confirmarFactura(e) {
             e.preventDefault();
+            // Verificamos que se haya seleccionado un proveedor
+            var clienteId = $('#razon_social').val();
+            if (clienteId == '') {
+                $.toast({
+                    type: 'error',
+                    title: 'Error en formulario',
+                    subtitle: 'ahora',
+                    position: 'top-right',
+                    content: 'Debe seleccionar un cliente para agregar items al documento.',
+                    delay: 15000
+                });
+                return;
+            }
 
+            var nombreProyecto = $('#nombre_proyecto option:selected').text();
+
+            if (nombreProyecto == 'Seleccione proyecto') {
+                $.toast({
+                    type: 'error',
+                    title: 'Error en formulario',
+                    subtitle: 'ahora',
+                    position: 'top-right',
+                    content: 'Debe seleccionar/añadir un proyecto para generar el documento.',
+                    delay: 15000
+                });
+                return;
+            }
+
+            if (detalles.length == 0) {
+                $.toast({
+                    type: 'error',
+                    title: 'Error en formulario',
+                    subtitle: 'ahora',
+                    position: 'top-right',
+                    content: 'Debe agregar productos al documento para poder procesarlo.',
+                    delay: 15000
+                });
+                return;
+            }
             Swal.fire({
                 title: "¿Quieres confirmar esta Factura?",
                 text: "Una vez confirmada la Factura no se podran hacer cambios sobre ella, recomendamos revisar el detalle del documento.",

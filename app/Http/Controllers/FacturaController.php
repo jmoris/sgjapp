@@ -39,9 +39,27 @@ class FacturaController extends Controller
     /*
         DESDE AQUI HACIA ABAJO ESTARAN LAS FUNCIONES DE LA API
     */
-    public function getAll(){
+    public function getAll(Request $request){
         $data = Factura::with('cliente');
-        return DataTables::eloquent($data)->toJson();
+
+        if($request->has('feMinDate') and $request->has('feMaxDate')){
+            $data->whereBetween('fecha_emision', [$request->feMinDate, $request->feMaxDate]);
+        }
+
+        if($request->has('fvMinDate') and $request->has('fvMaxDate')){
+            $data->whereBetween('fecha_vencimiento', [$request->fvMinDate, $request->fvMaxDate]);
+        }
+
+        //$data = Documento::where('documento.tipo', 52)->where('ref_contribuyente', \Auth::user()->ref_contribuyente);
+        return DataTables::of($data)
+            ->addIndexColumn()
+            ->filterColumn('folio', function($query, $keyword) {
+                $folios = explode(',', str_replace(' ', '', $keyword));
+                $query->whereIn('folio', $folios);
+            })
+            ->make(true);
+        //$data = Factura::with('cliente');
+        //return DataTables::eloquent($data)->toJson();
     }
 
     public function storeFactura(Request $request){
@@ -140,6 +158,7 @@ class FacturaController extends Controller
             $fact->folio = $docData->folio;
             Log::info($str);
             $fact->fecha_emision = date('Y-m-d H:i', strtotime($str));
+            $fact->fecha_vencimiento = date('Y-m-d', strtotime(str_replace('/', '-', $request->fecha_vencimiento)));
             $fact->cliente_id = $request->cliente;
             $fact->user_id = auth()->user()->id;
             $fact->tipo_pago = $request->tipo_pago;

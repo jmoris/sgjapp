@@ -17,6 +17,7 @@ return new class extends Migration
             $table->bigInteger('folio');
             $table->foreignIdFor(Cliente::class)->constrained();
             $table->dateTime('fecha_emision');
+            $table->date('fecha_vencimiento');
             $table->smallInteger('tipo_pago');
             $table->text('estado')->default('000');
             $table->string('track_id')->nullable();
