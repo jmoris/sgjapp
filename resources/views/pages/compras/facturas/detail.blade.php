@@ -8,9 +8,9 @@
             <h4 class="mb-3 mb-md-0">Factura Electrónica #{{ $documento['Encabezado']['IdDoc']['Folio'] }} - Compra</h4>
         </div>
         <div class="align-end">
-            <button type="button" class="btn btn-primary" onclick="location.href = '/api/compras/facturas/vistaprevia/{{ $documento['Encabezado']['Emisor']['RUTEmisor'].'/33/'.$documento['Encabezado']['IdDoc']['Folio']}}'">
+            <button type="button" class="btn btn-success" onclick="window.open('/api/compras/facturas/vistaprevia/{{ $documento['Encabezado']['Emisor']['RUTEmisor'].'/33/'.$documento['Encabezado']['IdDoc']['Folio']}}')">
                 <i class="mdi mdi-magnify"></i>
-                Visualizar
+                Visualizar PDF
             </button>
             <button type="button" class="btn btn-danger" onclick="location.href = '/compras/facturas'">
                 <i class="mdi mdi-arrow-left"></i>

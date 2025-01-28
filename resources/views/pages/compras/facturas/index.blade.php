@@ -135,13 +135,10 @@
                             html += '<button type="button" title="Ver Factura" onclick="verDocumento(\'' +
                             row.rut_emisor + '\',' + row.folio +
                             ')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-text-box-search-outline"></i></button>';
-
-                            //html += '<button type="button" title="Ver Vista Previa Factura de Compra" onclick="vistaPreviaDocumento(\'' +
-                            //row.rut_emisor + '\',33,' + row.folio +
-                            //')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-magnify"></i></button>';
+                        }else{
+                            html += '<button type="button" title="Documento XML no disponible" disabled class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-text-box-search-outline"></i></button>';
                         }
                         html += '</div>';
-                        //var html = '';
                         return html;
                     }
                 },
