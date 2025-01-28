@@ -88,7 +88,7 @@
 
         facturasTable = new DataTable('#example', {
             responsive: true,
-            /*ajax: '/api/compras/facturas',*/
+            ajax: '/api/compras/facturas',
             search: {
                 return: true
             },
@@ -98,12 +98,12 @@
             order: [
                 [3, 'desc']
             ],
-            /*columns: [{
+            columns: [{
                     data: 'folio',
                     responsivePriority: 1
                 },
                 {
-                    data: 'razonsocial_emisor',
+                    data: 'razon_social_emisor',
                     responsivePriority: 2
                 },
                 {
@@ -131,9 +131,13 @@
                     render: function(data, type, row) {
                         var html = '';
                         html = '<div>';
-                        html += '<button type="button" title="Ver Factura" onclick="vistaPreviaFactura(' +
-                            row.folio +
+                        html += '<button type="button" title="Ver Factura" onclick="verDocumento(\'' +
+                            row.rut_emisor + '\',' + row.folio +
+                            ')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-text-box-search-outline"></i></button>';
+                            html += '<button type="button" title="Ver Vista Previa Factura de Compra" onclick="vistaPreviaDocumento(\'' +
+                            row.rut_emisor + '\',33,' + row.folio +
                             ')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-magnify"></i></button>';
+
                         html += '</div>';
                         //var html = '';
                         return html;
@@ -141,7 +145,7 @@
                 },
             ],
             processing: true,
-            serverSide: true*/
+            serverSide: true
         });
 
 

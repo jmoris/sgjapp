@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\FacturaCompra;
 use App\Helpers\Ajustes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -53,7 +54,7 @@ class FacturaCompraController extends Controller
         DESDE AQUI HACIA ABAJO ESTARAN LAS FUNCIONES DE LA API
     */
     public function getAll(){
-        $emisor = Ajustes::getEmisor();
+        /*$emisor = Ajustes::getEmisor();
         $endpoint =  env('FACTURAPI_ENDPOINT').'documentos/compras?contribuyente='.$emisor['rut'].'&tipo=33';
         $ch = curl_init( $endpoint );
             curl_setopt( $ch, CURLOPT_POST, false);
@@ -67,7 +68,11 @@ class FacturaCompraController extends Controller
             $docData = json_decode($result);
             Log::info("ENDPOINT FACTURAS COMPRA: ". $endpoint);
 
-            return $result;
+            return $result;*/
+            $facturas = FacturaCompra::query();
+            return DataTables::of($facturas)
+            ->addIndexColumn()
+            ->make(true);
     }
 
     public function vistaPreviaFactura(Request $request, $rutEmisor, $tipo, $folio){
