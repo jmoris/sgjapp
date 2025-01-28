@@ -136,7 +136,7 @@
                             row.rut_emisor + '\',' + row.folio +
                             ')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-text-box-search-outline"></i></button>';
                         }else{
-                            html += '<button type="button" title="Documento XML no disponible" disabled class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-text-box-search-outline"></i></button>';
+                            html += '<button type="button" title="Documento XML no disponible" disabled class="btn btn-outline-danger btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-text-box-search-outline"></i></button>';
                         }
                         html += '</div>';
                         return html;
