@@ -43,7 +43,10 @@ class FacturaController extends Controller
         $data = Factura::with('cliente');
 
         if($request->has('feMinDate') and $request->has('feMaxDate')){
-            $data->whereBetween('fecha_emision', [$request->feMinDate, $request->feMaxDate]);
+            $data->where('fecha_emision', '>=', $request->feMinDate);
+            $data->where('fecha_emision', '<=', date('Y-m-d', strtotime($request->feMaxDate.' +1 days')));
+
+            //$data->whereBetween('fecha_emision', [$request->feMinDate, $request->feMaxDate]);
         }
 
         if($request->has('fvMinDate') and $request->has('fvMaxDate')){

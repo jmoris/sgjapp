@@ -42,8 +42,28 @@ class GuiaDespachoController extends Controller
     /*
         DESDE AQUI HACIA ABAJO ESTARAN LAS FUNCIONES DE LA API
     */
-    public function getAll(){
+    public function getAll(Request $request){
         $data = GuiaDespacho::with('cliente');
+
+        if($request->has('feMinDate') and $request->has('feMaxDate')){
+            $data->where('fecha_emision', '>=', $request->feMinDate);
+            $data->where('fecha_emision', '<=', date('Y-m-d', strtotime($request->feMaxDate.' +1 days')));
+        }
+        if($request->has('tipo_despacho')){
+            $data->where('tipo_despacho', $request->tipo_despacho);
+        }
+        if($request->has('tipo_traslado')){
+            $data->where('ind_traslado', $request->tipo_traslado);
+        }
+
+        //$data = Documento::where('documento.tipo', 52)->where('ref_contribuyente', \Auth::user()->ref_contribuyente);
+        return DataTables::of($data)
+            ->addIndexColumn()
+            ->filterColumn('folio', function($query, $keyword) {
+                $folios = explode(',', str_replace(' ', '', $keyword));
+                $query->whereIn('folio', $folios);
+            })
+            ->make(true);
         return DataTables::eloquent($data)->toJson();
     }
 

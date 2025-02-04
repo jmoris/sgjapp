@@ -159,6 +159,7 @@ class Kernel extends ConsoleKernel
                 foreach($docData as $data){
                     $doc = FacturaCompra::where('rut_emisor', $data->rut_emisor)->where('folio', $data->folio)->where('tiene_xml', false)->first();
                     if($doc != null){
+                        $doc->fecha_vencimiento = date('Y-m-d', strtotime($data->fecha_vencimiento));
                         $doc->tiene_xml = true;
                         $doc->save();
                     }
