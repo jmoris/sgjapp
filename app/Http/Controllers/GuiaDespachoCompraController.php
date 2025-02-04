@@ -21,8 +21,11 @@ class GuiaDespachoCompraController extends Controller
             curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
             $result = curl_exec($ch);
             $data = json_decode($result);
+            if($data->success==false){
+                $data = [];
+            }
             curl_close($ch);
-            Log::info("ENDPOINT FACTURAS COMPRA: ". $endpoint);
+            Log::info("ENDPOINT GUIAS COMPRA: ". $endpoint);
 
         return view('pages.compras.guias.index', ['documentos' => $data]);
     }
