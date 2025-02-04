@@ -23,7 +23,7 @@ class FacturaCompraController extends Controller
             curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
             $result = curl_exec($ch);
             $data = json_decode($result);
-            if($data->success==false){
+            if(isset($data->success)){
                 $data = [];
             }
             curl_close($ch);
