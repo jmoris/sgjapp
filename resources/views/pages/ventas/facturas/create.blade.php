@@ -506,7 +506,7 @@
                                                                         type="text" placeholder="Folio" />
                                                                 </td>
                                                                 <td style="width: 25%">
-                                                                    <input id="ref_fecha" type="date"
+                                                                    <input id="ref_fecha" type="date" value="{{date('Y-m-d')}}"
                                                                         class="form-control form-control-sm" />
                                                                 </td>
                                                                 <td style="width: 5%">

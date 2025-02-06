@@ -16,18 +16,15 @@
             <p class="mb-0 fw-bold">ACCESO RÁPIDO</p>
           </div>
           <div class="row g-0 p-1">
-            <div class="col-3 text-center">
-              <a href="#" class="dropdown-item d-flex flex-column align-items-center justify-content-center wd-100 ht-85"><i class="mdi mdi-account-multiple-plus mdi-24px"></i><p class="tx-12">Nuevo Cliente</p></a>
+            <div class="col-4 text-center">
+              <a href="/clientes/nuevo" class="dropdown-item d-flex flex-column align-items-center justify-content-center wd-100 ht-85"><i class="mdi mdi-account-multiple-plus mdi-24px"></i><p class="tx-12">Nuevo Cliente</p></a>
             </div>
-            <div class="col-3 text-center">
-              <a href="#" class="dropdown-item d-flex flex-column align-items-center justify-content-center wd-100 ht-85"><i class="mdi mdi-truck-plus-outline mdi-24px"></i><p class="tx-12">Nuevo Proveedor</p></a>
+            <div class="col-4 text-center">
+              <a href="/ventas/proyectos/nuevo" class="dropdown-item d-flex flex-column align-items-center justify-content-center wd-100 ht-85"><i class="mdi mdi-folder-multiple-plus mdi-24px"></i><p class="tx-12">Nuevo Proyecto</p></a>
             </div>
-            <div class="col-3 text-center">
-              <a href="#" class="dropdown-item d-flex flex-column align-items-center justify-content-center wd-100 ht-85"><i class="mdi mdi-package-variant-plus mdi-24px"></i><p class="tx-12">Nuevo Producto</p></a>
-            </div>
-            <div class="col-3 text-center">
-              <a href="#" class="dropdown-item d-flex flex-column align-items-center justify-content-center wd-100 ht-85"><i class="mdi mdi-folder-multiple-plus mdi-24px"></i><p class="tx-12">Nuevo Proyecto</p></a>
-            </div>
+            <div class="col-4 text-center">
+                <a href="/ventas/facturas/nuevo" class="dropdown-item d-flex flex-column align-items-center justify-content-center wd-100 ht-85"><i class="mdi mdi-truck-plus-outline mdi-24px"></i><p class="tx-12">Nueva Factura</p></a>
+              </div>
           </div>
 
         </div>

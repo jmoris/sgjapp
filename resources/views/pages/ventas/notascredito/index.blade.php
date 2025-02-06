@@ -61,8 +61,8 @@
         var notasCreditoTable = null;
         var currentUserId = {{auth()->user()->id}};
 
-        function vistaPreviaFactura(id){
-            location.href = '/api/ventas/notascredito/vistaprevia/' + id;
+        function vistaPreviaNC(id){
+            window.open('/api/ventas/notascredito/vistaprevia/' + id);
         }
 
         notasCreditoTable = new DataTable('#example', {
@@ -145,7 +145,7 @@
                         var html = '';
                         if(row.estado != -1){
                             html = '<div>';
-                            html += '<button type="button" title="Ver Factura" onclick="vistaPreviaFactura('+row.folio+')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-magnify"></i></button>';
+                            html += '<button type="button" title="Ver Nota de Credito" onclick="vistaPreviaNC('+row.folio+')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-magnify"></i></button>';
                             html += '</div>';
                         }
                         //var html = '';

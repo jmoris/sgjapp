@@ -1,7 +1,9 @@
 <?php
 
+use App\Cliente;
 use App\Comuna;
 use App\DomicilioContribuyente;
+use App\Factura;
 use App\Helpers\Herramientas;
 use App\Http\Controllers\BorradorController;
 use App\Http\Controllers\ClienteController;
@@ -38,6 +40,44 @@ use SolucionTotal\CoreDTE\Sii;
 Route::middleware(['auth:web', 'tenant'])->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
+    });
+
+
+    Route::get('importardocumentos', function(Request $request){
+        $xmlPath = '/Users/jesusmoris/Downloads/DTE_DOWN770704682025-02-058.xml';
+        $contents = file_get_contents($xmlPath);
+        $envio = new \SolucionTotal\CoreDTE\Sii\EnvioDte();
+        $envio->loadXML($contents);
+        $DTEs = $envio->getDocumentos();
+        foreach($DTEs as $dte){
+            $doc = $dte->getDatos();
+            if(Factura::where('folio', $doc['Encabezado']['IdDoc']['Folio'])->count() == 0){
+                $cliente = Cliente::where('rut', $doc['Encabezado']['Receptor']['RUTRecep'])->first();
+                if($cliente != null){
+                    $fact = new Factura();
+                    $fact->folio = $doc['Encabezado']['IdDoc']['Folio'];
+                    $fact->fecha_emision = date('Y-m-d H:i', strtotime($doc['Encabezado']['IdDoc']['FchEmis']));
+                    if(isset($doc['Encabezado']['IdDoc']['FchVenc'])){
+                        $fact->fecha_vencimiento = date('Y-m-d', strtotime(str_replace('/', '-', $doc['Encabezado']['IdDoc']['FchVenc'])));
+                    }else{
+                        $fact->fecha_vencimiento = $fact->fecha_emision;
+                    }
+                    $fact->cliente_id = $cliente->id;
+                    $fact->user_id = 1;
+                    $fact->tipo_pago = $doc['Encabezado']['IdDoc']['FmaPago'];
+                    $fact->tipo_descuento = 0;
+                    $fact->descuento = 0;
+                    $fact->estado = '000';
+                    $fact->monto_neto = $doc['Encabezado']['Totales']['MntNeto'];
+                    $fact->monto_iva = $doc['Encabezado']['Totales']['IVA'];
+                    $fact->monto_total = $doc['Encabezado']['Totales']['MntTotal'];
+                    $fact->proyecto_id = 3;
+                    $fact->save();
+                }else{
+                    Log::error("Cliente ".$doc['Encabezado']['Receptor']['RUTRecep'].' no existe.');
+                }
+            }
+        }
     });
 
     Route::get('checkcomunasregiones', function(){
