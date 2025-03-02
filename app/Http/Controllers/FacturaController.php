@@ -168,6 +168,7 @@ class FacturaController extends Controller
             $fact->tipo_descuento = 0;
             $fact->descuento = 0;
             $fact->estado = '000';
+            $fact->track_id = $docData->trackid;
             $fact->monto_neto = $docData->totales->neto;
             $fact->monto_iva = $docData->totales->iva;
             $fact->monto_total = $docData->totales->total;
