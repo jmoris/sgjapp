@@ -115,7 +115,7 @@ class FacturaController extends Controller
                     'codigo' => false
                 ]);
             }
-            $vencimiento = date('Y-m-d', strtotime($request->fecha_vencimiento));
+            $vencimiento = date('Y-m-d', strtotime(str_replace('/', '-', $request->fecha_vencimiento)));
             $data = [
                 'contribuyente' => $emisor['rut'],
                 'acteco' => $emisor['acteco'],
@@ -161,7 +161,7 @@ class FacturaController extends Controller
             $fact->folio = $docData->folio;
             Log::info($str);
             $fact->fecha_emision = date('Y-m-d H:i', strtotime($str));
-            $fact->fecha_vencimiento = date('Y-m-d', strtotime(str_replace('/', '-', $request->fecha_vencimiento)));
+            $fact->fecha_vencimiento = $vencimiento;
             $fact->cliente_id = $request->cliente;
             $fact->user_id = auth()->user()->id;
             $fact->tipo_pago = $request->tipo_pago;
