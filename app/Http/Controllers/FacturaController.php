@@ -115,13 +115,13 @@ class FacturaController extends Controller
                     'codigo' => false
                 ]);
             }
-
+            $vencimiento = date('Y-m-d', strtotime($request->fecha_vencimiento));
             $data = [
                 'contribuyente' => $emisor['rut'],
                 'acteco' => $emisor['acteco'],
                 'tipo' => 33,
                 'fecha' => $str,
-                'fecha_vencimiento' => $request->fecha_vencimiento,
+                'fecha_vencimiento' => $vencimiento,
                 'receptor' => [
                     'rut'=> $cliente->rut,
                     'razon_social'=> $cliente->razon_social,
