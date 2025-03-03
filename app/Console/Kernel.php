@@ -111,7 +111,7 @@ class Kernel extends ConsoleKernel
 
                     $docData = json_decode($result);
 
-                    $factEstado = substr_replace($doc->estado, '1', 1, 1);
+                    $factEstado = substr_replace($doc->estado, $docData->estado, 1, 1);
                     Factura::where('id', $doc->id)->update(['estado' => $factEstado]);
 
                 }
