@@ -98,7 +98,8 @@ class Kernel extends ConsoleKernel
 
             $schedule->call($tenant->callback(function() {
                 $emisor = Ajustes::getEmisor();
-                $pendientes = Factura::where('estado', 'regexp', '[0|1]0[0|1]')->get();
+                $pendientes = Factura::where('estado', 'regexp', '[0-3]0[0|1]')->get();
+                Log::info($pendientes);
                 foreach ($pendientes as $doc) {
                     $ch = curl_init(env('FACTURAPI_ENDPOINT').'documentos/'.$doc->tipo_doc.'/'.$doc->folio);
                     curl_setopt($ch, CURLOPT_HTTPHEADER, [
