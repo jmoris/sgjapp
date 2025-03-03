@@ -96,6 +96,27 @@ class Kernel extends ConsoleKernel
                 }
             }))->everyMinute();
 
+            $schedule->call($tenant->callback(function() {
+                $emisor = Ajustes::getEmisor();
+                $pendientes = Factura::where('estado', 'regexp', '[0|1]0[0|1]')->get();
+                foreach ($pendientes as $doc) {
+                    $ch = curl_init(env('FACTURAPI_ENDPOINT').'documentos/'.$doc->tipo_doc.'/'.$doc->folio);
+                    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                        'Content-Type:application/json',
+                        'Authorization: Bearer '.env('FACTURAPI_TOKEN')
+                    ]);
+                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                    $result = curl_exec($ch);
+                    curl_close($ch);
+
+                    $docData = json_decode($result);
+
+                    $factEstado = substr_replace($docData->estado, '1', 1, 1);
+                    Factura::where('id', $doc->id)->update(['estado' => $factEstado]);
+
+                }
+            }))->everyMinute();
+
             $schedule->call($tenant->callback(function(){
                 // Periodo es el mes actual
                 $periodo = date('Ym');
