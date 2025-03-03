@@ -101,7 +101,7 @@ class Kernel extends ConsoleKernel
                 $pendientes = Factura::where('estado', 'regexp', '[0-3]0[0|1]')->get();
                 Log::info($pendientes);
                 foreach ($pendientes as $doc) {
-                    $endpoint = env('FACTURAPI_ENDPOINT').'documentos/'.$doc->tipo_doc.'/'.$doc->folio.'?contribuyente='. $emisor['rut'];
+                    $endpoint = env('FACTURAPI_ENDPOINT').'documentos/33/'.$doc->folio.'?contribuyente='. $emisor['rut'];
                     Log::info($endpoint);
                     $ch = curl_init($endpoint);
 
