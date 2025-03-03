@@ -14,6 +14,7 @@ use App\Proyecto;
 use App\Unidad;
 use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -250,6 +251,31 @@ class FacturaController extends Controller
                 'status' => 500,
                 'msg' => 'No se pudo generar la vista previa del documento'
             ], 500);
+        }
+    }
+
+    public function descargarXML(Request $request, $folio){
+        try{
+            $emisor = Ajustes::getEmisor();
+            $ch = curl_init( env('FACTURAPI_ENDPOINT').'documentos/generar/xml/33/'.$folio.'?contribuyente='.$emisor['rut']);
+            curl_setopt( $ch, CURLOPT_POST, false);
+            curl_setopt( $ch, CURLOPT_HTTPHEADER, [
+                'Content-Type:application/json',
+                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
+            ]);
+            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+            $result = curl_exec($ch);
+            curl_close($ch);
+
+            $headers = [
+                'Content-Type'        => 'application/octet-stream',
+                'Content-Disposition' => 'attachment; filename="DTET33F'. $folio .'.xml"',
+                'Content-Transfer-Encoding' => 'binary'
+            ];
+
+            return response()->make($result, 200, $headers);
+        }catch(Exception $ex){
+            return $ex;
         }
     }
 }

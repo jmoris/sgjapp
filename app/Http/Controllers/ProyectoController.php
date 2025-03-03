@@ -34,7 +34,7 @@ class ProyectoController extends Controller
         $guias = GuiaDespacho::where('proyecto_id', $proyecto->id)->with('cliente')->get();
         $nc = NotaCredito::where('proyecto_id', $proyecto->id)->with('cliente')->get();
         $ocs = OrdenCompra::where('proyecto_id', $proyecto->id)->where('rev_activa', true)->where('estado', '!=', -1)->with('proveedor')->get();
-        $total = OrdenCompra::where('proyecto_id', $proyecto->id)->sum('monto_total');
+        $total = Factura::where('proyecto_id', $proyecto->id)->sum('monto_total');
         return view('pages.proyectos.detail', ['proyecto' => $proyecto, 'facturas' => $facturas, 'guias' => $guias, 'notascredito' => $nc, 'ocs' => $ocs, 'total' => $total]);
     }
 
@@ -59,6 +59,7 @@ class ProyectoController extends Controller
         try{
             $validator = Validator::make($request->all(), [
                 'nombre' => 'required',
+                'monto_proyecto' => 'required|min:0'
             ]);
 
             if($validator->fails()){
@@ -70,6 +71,7 @@ class ProyectoController extends Controller
 
             $proyecto = new Proyecto();
             $proyecto->nombre = $request->nombre;
+            $proyecto->monto_proyecto = $request->monto_proyecto;
             $proyecto->save();
 
             return response()->json([
@@ -86,6 +88,7 @@ class ProyectoController extends Controller
         try{
             $validator = Validator::make($request->all(), [
                 'nombre' => 'required',
+                'monto_proyecto' => 'required|min:0'
             ]);
 
             if($validator->fails()){
@@ -97,6 +100,7 @@ class ProyectoController extends Controller
 
             $proyecto = Proyecto::findOrFail($id);
             $proyecto->nombre = $request->nombre;
+            $proyecto->monto_proyecto = $request->monto_proyecto;
             $proyecto->save();
 
             return response()->json([

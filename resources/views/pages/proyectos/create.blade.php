@@ -29,6 +29,11 @@
                                                     <input type="text" name="nombre" id="nombre" class="form-control"
                                                         placeholder="Ingrese el nombre del proyecto">
                                                 </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Monto Proyecto</label>
+                                                    <input type="text" name="monto_proyecto" id="monto_proyecto" class="form-control"
+                                                        placeholder="Ingrese el monto del proyecto">
+                                                </div>
                                             </div><!-- Col -->
                                         </div>
                                         <div class="row">

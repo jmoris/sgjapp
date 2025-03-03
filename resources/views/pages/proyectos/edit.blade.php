@@ -29,6 +29,11 @@
                                                     <input type="text" name="nombre" id="nombre" class="form-control"
                                                         placeholder="Ingrese el nombre del proyecto" value="{{ $proyecto->nombre }}">
                                                 </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Monto Proyecto</label>
+                                                    <input type="text" name="monto_proyecto" id="monto_proyecto" class="form-control"
+                                                        placeholder="Ingrese el monto del proyecto" value="{{ $proyecto->monto_proyecto }}">
+                                                </div>
                                             </div><!-- Col -->
                                         </div>
                                         <div class="row">
@@ -65,6 +70,9 @@
                 nombre: {
                     required: true,
                 },
+                monto_proyecto: {
+                    required: true
+                }
             },
             messages: {
                 nombre: "El campo nombre(s) es obligatorio",

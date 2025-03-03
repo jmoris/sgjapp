@@ -178,6 +178,7 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
         Route::get('facturas', [FacturaController::class, 'getAll']);
         Route::post('facturas', [FacturaController::class, 'storeFactura']);
         Route::get('facturas/vistaprevia/{folio}', [FacturaController::class, 'vistaPreviaFactura']);
+        Route::get('facturas/descargar/{folio}', [FacturaController::class, 'descargarXML']);
 
         Route::get('guiasdespacho', [GuiaDespachoController::class, 'getAll']);
         Route::post('guiasdespacho', [GuiaDespachoController::class, 'storeGuiaDespacho']);
@@ -188,7 +189,7 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
         Route::post('notascredito', [NotaCreditoController::class, 'storeNotaCredito']);
         Route::post('notascredito/anulacion', [NotaCreditoController::class, 'storeAnulacion']);
         Route::get('notascredito/vistaprevia/{folio}', [NotaCreditoController::class, 'vistaPreviaNotaCredito']);
-
+        Route::get('notascredito/descargar/{folio}', [NotaCreditoController::class, 'descargarXML']);
 
         Route::get('proyectos', [ProyectoController::class, 'getAll']);
         Route::post('proyectos', [ProyectoController::class, 'store']);

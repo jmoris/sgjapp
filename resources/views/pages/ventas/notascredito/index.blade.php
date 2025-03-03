@@ -65,6 +65,10 @@
             window.open('/api/ventas/notascredito/vistaprevia/' + id);
         }
 
+        function descargarXML(id){
+            window.open('/api/ventas/notascredito/descargar/' + id);
+        }
+
         notasCreditoTable = new DataTable('#example', {
             responsive: true,
             ajax: '/api/ventas/notascredito',
@@ -146,6 +150,7 @@
                         if(row.estado != -1){
                             html = '<div>';
                             html += '<button type="button" title="Ver Nota de Credito" onclick="vistaPreviaNC('+row.folio+')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-magnify"></i></button>';
+                            html += '<button type="button" title="Descargar XML" onclick="descargarXML('+row.folio+')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-download"></i></button>'
                             html += '</div>';
                         }
                         //var html = '';

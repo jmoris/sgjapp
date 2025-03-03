@@ -212,6 +212,10 @@
             window.open('/api/ventas/facturas/vistaprevia/' + id);
         }
 
+        function descargarXML(id){
+            window.open('/api/ventas/facturas/descargar/' + id)
+        }
+
         function cargarDocumentos(feMin = '', feMax = '', fvMin = '', fvMax = '') {
             facturasTable = new DataTable('#tabla', {
                 layout: {
@@ -320,6 +324,7 @@
                                 '<button type="button" title="Ver Factura" onclick="vistaPreviaFactura(' +
                                 row.folio +
                                 ')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-magnify"></i></button>';
+                            html += '<button type="button" title="Descargar XML" onclick="descargarXML('+row.folio+')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-download"></i></button>'
                             html += '</div>';
                             //var html = '';
                             return html;

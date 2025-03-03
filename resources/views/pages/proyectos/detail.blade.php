@@ -24,15 +24,26 @@
                                             <small><a href="#" id="editText" onclick="editProyecto()">Editar</a></small>
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label">Nombre</label>
+                                            <label class="form-label">Nombre:</label>
                                             <input type="text" name="nombre" id="nombre" class="form-control"
                                                 placeholder="Ingrese el nombre del proyecto" value="{{ $proyecto->nombre }}"
                                                 disabled>
                                         </div>
                                         <div class="mb-3">
-                                            <label class="form-label">Total Acumulado OC:</label>
+                                            <label class="form-label">Monto del Proyecto:</label>
+                                            <input type="text" name="monto_proyecto" id="monto_proyecto" class="form-control"
+                                                placeholder="Ingrese el monto del proyecto" value="{{ number_format($proyecto->monto_proyecto, 0, ',', '.') }}"
+                                                disabled>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Total Facturas:</label>
                                             <input type="text" name="total" id="total" class="form-control"
                                                 value="$ {{ number_format($total, 0, ',', '.') }}" disabled>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label">Saldo Proyecto:</label>
+                                            <input type="text" name="total" id="total" class="form-control"
+                                                value="$ {{ number_format($proyecto->monto_proyecto-$total, 0, ',', '.') }}" disabled>
                                         </div>
                                     </div>
                                     <div class="col-md-9 border-start">
@@ -194,10 +205,24 @@
 @endsection
 
 @push('plugin-scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"
+integrity="sha512-efAcjYoYT0sXxQRtxGY37CKYmqsFVOIwMApaEbrxJr4RwqVVGw8o+Lfh/+59TU07+suZn1BWq4fDl5fdgyCNkw=="
+crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 @endpush
 
 @push('custom-scripts')
     <script>
+
+        $(document).ready(function(){
+            $('#monto_proyecto').inputmask('numeric', {
+                min: 0,
+                prefix: '$ ',
+                radixPoint: ',',
+                groupSeparator: '.',
+                rightAlign: false
+            });
+        });
+
 
         function editProyecto(){
             console.log($('#editText').text());
@@ -206,7 +231,10 @@
                 $.ajax({
                     type: "POST",
                     url: '/api/ventas/proyectos/editar/{{$proyecto->id}}',
-                    data: {nombre:$('#nombre').val()}, // serializes the form's elements.
+                    data: {
+                        nombre:$('#nombre').val(),
+                        monto_proyecto:$('#monto_proyecto').inputmask('unmaskedvalue')
+                    }, // serializes the form's elements.
                     success: function(data){
                         if(!data.success){
                             console.log(data.msg);
@@ -214,11 +242,13 @@
                         }else{
                             $('#editText').text('Editar');
                             $('#nombre').attr('disabled', true);
+                            $('#monto_proyecto').attr('disabled', true);
                         }
                     }
                 });
             }else{
                 $('#nombre').removeAttr('disabled');
+                $('#monto_proyecto').removeAttr('disabled');
                 $('#editText').text('Guardar');
             }
         }

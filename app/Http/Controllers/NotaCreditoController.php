@@ -226,4 +226,29 @@ class NotaCreditoController extends Controller
             ], 500);
         }
     }
+
+    public function descargarXML(Request $request, $folio){
+        try{
+            $emisor = Ajustes::getEmisor();
+            $ch = curl_init( env('FACTURAPI_ENDPOINT').'documentos/generar/xml/61/'.$folio.'?contribuyente='.$emisor['rut']);
+            curl_setopt( $ch, CURLOPT_POST, false);
+            curl_setopt( $ch, CURLOPT_HTTPHEADER, [
+                'Content-Type:application/json',
+                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
+            ]);
+            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+            $result = curl_exec($ch);
+            curl_close($ch);
+
+            $headers = [
+                'Content-Type'        => 'application/octet-stream',
+                'Content-Disposition' => 'attachment; filename="DTET61F'. $folio .'.xml"',
+                'Content-Transfer-Encoding' => 'binary'
+            ];
+
+            return response()->make($result, 200, $headers);
+        }catch(Exception $ex){
+            return $ex;
+        }
+    }
 }
