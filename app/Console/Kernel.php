@@ -110,8 +110,10 @@ class Kernel extends ConsoleKernel
                     curl_close($ch);
 
                     $docData = json_decode($result);
-
+                    Log::info($docData);
                     $factEstado = substr_replace($doc->estado, $docData['email_recibido'], 1, 1);
+                    Log::info("Estado inicial:". $doc->estado);
+                    Log::info("Estado final: ". $factEstado);
                     Factura::where('id', $doc->id)->update(['estado' => $factEstado]);
 
                 }
