@@ -8,6 +8,7 @@ use App\FacturaCompra;
 use App\GuiaDespacho;
 use App\Helpers\Ajustes;
 use App\NotaCredito;
+use Exception;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\Log;
@@ -97,29 +98,31 @@ class Kernel extends ConsoleKernel
             }))->everyMinute();
 
             $schedule->call($tenant->callback(function() {
-                $emisor = Ajustes::getEmisor();
-                $pendientes = Factura::where('estado', 'regexp', '[0-3]0[0|1]')->get();
-                Log::info($pendientes);
-                foreach ($pendientes as $doc) {
-                    $endpoint = env('FACTURAPI_ENDPOINT').'documentos/33/'.$doc->folio.'?contribuyente='. $emisor['rut'];
-                    Log::info($endpoint);
-                    $ch = curl_init($endpoint);
+                try{
+                    $emisor = Ajustes::getEmisor();
+                    $pendientes = Factura::where('estado', 'regexp', '[0-3]0[0|1]')->get();
+                    Log::info($pendientes);
+                    foreach ($pendientes as $doc) {
+                        $endpoint = env('FACTURAPI_ENDPOINT').'documentos/33/'.$doc->folio.'?contribuyente='. $emisor['rut'];
+                        $ch = curl_init($endpoint);
+                        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                            'Content-Type:application/json',
+                            'Authorization: Bearer '.env('FACTURAPI_TOKEN')
+                        ]);
+                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                        $result = curl_exec($ch);
+                        curl_close($ch);
 
-                    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                        'Content-Type:application/json',
-                        'Authorization: Bearer '.env('FACTURAPI_TOKEN')
-                    ]);
-                    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                    $result = curl_exec($ch);
-                    curl_close($ch);
+                        $docData = json_decode($result);
+                        Log::info($docData);
+                        $factEstado = substr_replace($doc->estado, $docData['email_recibido'], 1, 1);
+                        Log::info("Estado inicial:". $doc->estado);
+                        Log::info("Estado final: ". $factEstado);
+                        Factura::where('id', $doc->id)->update(['estado' => $factEstado]);
 
-                    $docData = json_decode($result);
-                    Log::info($docData);
-                    $factEstado = substr_replace($doc->estado, $docData[0]['email_recibido'], 1, 1);
-                    Log::info("Estado inicial:". $doc->estado);
-                    Log::info("Estado final: ". $factEstado);
-                    Factura::where('id', $doc->id)->update(['estado' => $factEstado]);
-
+                    }
+                }catch(Exception $ex){
+                    Log::error($ex);
                 }
             }))->everyMinute();
 
