@@ -112,7 +112,7 @@ class Kernel extends ConsoleKernel
                         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                         $result = curl_exec($ch);
                         curl_close($ch);
-
+                        Log::info('Resultado:'.$result);
                         $docData = json_decode($result);
                         Log::info($docData);
                         $factEstado = substr_replace($doc->estado, $docData['email_recibido'], 1, 1);
