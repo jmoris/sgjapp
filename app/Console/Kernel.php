@@ -101,7 +101,7 @@ class Kernel extends ConsoleKernel
                 $pendientes = Factura::where('estado', 'regexp', '[0-3]0[0|1]')->get();
                 Log::info($pendientes);
                 foreach ($pendientes as $doc) {
-                    $ch = curl_init(env('FACTURAPI_ENDPOINT').'documentos/'.$doc->tipo_doc.'/'.$doc->folio);
+                    $ch = curl_init(env('FACTURAPI_ENDPOINT').'documentos/'.$doc->tipo_doc.'/'.$doc->folio.'?contribuyente='. $emisor['rut']);
                     curl_setopt($ch, CURLOPT_HTTPHEADER, [
                         'Content-Type:application/json',
                         'Authorization: Bearer '.env('FACTURAPI_TOKEN')
@@ -112,7 +112,7 @@ class Kernel extends ConsoleKernel
 
                     $docData = json_decode($result);
                     Log::info($docData);
-                    $factEstado = substr_replace($doc->estado, $docData['email_recibido'], 1, 1);
+                    $factEstado = substr_replace($doc->estado, $docData[0]['email_recibido'], 1, 1);
                     Log::info("Estado inicial:". $doc->estado);
                     Log::info("Estado final: ". $factEstado);
                     Factura::where('id', $doc->id)->update(['estado' => $factEstado]);
