@@ -100,8 +100,8 @@ class Kernel extends ConsoleKernel
             $schedule->call($tenant->callback(function() {
                 try{
                     $emisor = Ajustes::getEmisor();
+                    // Facturas
                     $pendientes = Factura::where('estado', 'regexp', '[0-3]0[0|1]')->get();
-                    Log::info($pendientes);
                     foreach ($pendientes as $doc) {
                         $endpoint = env('FACTURAPI_ENDPOINT').'documentos/33/'.$doc->folio.'?contribuyente='. $emisor['rut'];
                         $ch = curl_init($endpoint);
@@ -112,13 +112,25 @@ class Kernel extends ConsoleKernel
                         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
                         $result = curl_exec($ch);
                         curl_close($ch);
-                        Log::info('Resultado:'.$result);
                         $docData = json_decode($result, true);
                         $factEstado = substr_replace($doc->estado, $docData['email_recibido'], 1, 1);
-                        Log::info("Estado inicial:". $doc->estado);
-                        Log::info("Estado final: ". $factEstado);
                         Factura::where('id', $doc->id)->update(['estado' => $factEstado]);
-
+                    }
+                    // Notas de credito
+                    $pendientes = NotaCredito::where('estado', 'regexp', '[0-3]0')->get();
+                    foreach ($pendientes as $doc) {
+                        $endpoint = env('FACTURAPI_ENDPOINT').'documentos/61/'.$doc->folio.'?contribuyente='. $emisor['rut'];
+                        $ch = curl_init($endpoint);
+                        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                            'Content-Type:application/json',
+                            'Authorization: Bearer '.env('FACTURAPI_TOKEN')
+                        ]);
+                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                        $result = curl_exec($ch);
+                        curl_close($ch);
+                        $docData = json_decode($result, true);
+                        $factEstado = substr_replace($doc->estado, $docData['email_recibido'], 1, 1);
+                        NotaCredito::where('id', $doc->id)->update(['estado' => $factEstado]);
                     }
                 }catch(Exception $ex){
                     Log::error($ex);
