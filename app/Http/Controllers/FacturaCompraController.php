@@ -78,7 +78,7 @@ class FacturaCompraController extends Controller
 
             if($request->has('feMinDate') and $request->has('feMaxDate')){
                 $data->where('fecha_emision', '>=', $request->feMinDate);
-                $data->where('fecha_emision', '<=', date('Y-m-d', strtotime($request->feMaxDate.' +1 days')));
+                $data->where('fecha_emision', '<=', date('Y-m-d', strtotime($request->feMaxDate)));
                 //$data->whereBetween('fecha_emision', [$request->feMinDate, $request->feMaxDate]);
             }
             return DataTables::of($data)
