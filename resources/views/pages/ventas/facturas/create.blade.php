@@ -896,7 +896,7 @@
                 $('#nombre_proyecto').val(resp.proyecto_id);
                 $('#modalBorrador').modal('toggle');
                 detalles = $.map(resp.lineas, function(obj) {
-                            obj.precio = obj.precio || obj.precio_unitario; // replace name with the property used for the text
+                            obj.precio = obj.precio_unitario; // replace name with the property used for the text
                             return obj;
                 });
                 resp.datos.forEach(function(item){
@@ -931,9 +931,9 @@
                 console.log("Falta información para guardar el borrador");
                 return;
             }
-
+            fixedDetalle = [];
             fixedDetalle = $.map(detalles, function(obj) {
-                obj.precio_unitario = obj.precio_unitario || obj.precio; // replace name with the property used for the text
+                obj.precio_unitario = obj.precio; // replace name with the property used for the text
                 return obj;
             });
 
@@ -953,7 +953,9 @@
                 glosa: $('#glosaTxt').val(),
                 _token: $('meta[name="_token"]').attr('content')
             };
-
+            console.log("detalle");
+            console.log(fixedDetalle);
+            console.log(".......................");
             $.post("/api/borradores", doc).done(function(resp) {
                 console.log(resp);
                 $.toast({
