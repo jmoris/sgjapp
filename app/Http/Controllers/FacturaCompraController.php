@@ -101,13 +101,16 @@ class FacturaCompraController extends Controller
             //$pdf->setLeyendaImpresion('Sistema de facturacion por SoluciónTotal');
             $pdf->setResolucion(date('Y', strtotime($caratula['FchResol'])), $caratula['NroResol']);
             $pdf->construir();
-            $pdf->generar(1);
-    }
+            if($request->descargar==1){
+                $pdf->generar(0);
+            }else{
+                $pdf->generar(1);
+            }
+        }
 
     public function descargarPDF(Request $request, $emisor, $folio){
         try{
             $emisor = Ajustes::getEmisor();
-            echo $emisor.' '.$folio;
             $ch = curl_init( env('FACTURAPI_ENDPOINT').'documentos/compras/generar/pdf/'.$emisor.'/33/'.$folio.'?visor=2&contribuyente='.$emisor['rut']);
             curl_setopt( $ch, CURLOPT_POST, false);
             curl_setopt( $ch, CURLOPT_HTTPHEADER, [
