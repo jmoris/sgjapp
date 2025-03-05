@@ -24,6 +24,7 @@ use App\Http\Controllers\UserController;
 use App\Region;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use SolucionTotal\CoreDTE\Sii;
 
 /*
@@ -42,6 +43,34 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
         return $request->user();
     });
 
+
+    Route::get('descargardocs', function(Request $request){
+        $path = '/Users/jesusmoris/Downloads/compras-jjr/documentos';
+        $files = scandir($path);
+        foreach($files as $file){
+            if(str_contains($file, '.xml')){
+                $contents = file_get_contents($path.'/'.$file);
+                $envio = new \SolucionTotal\CoreDTE\Sii\EnvioDte();
+                $envio->loadXML($contents);
+                $dte = $envio->getDocumentos()[0];
+                $caratula = $envio->getCaratula();
+                $data = $dte->getDatos();
+
+                $pdf = new \SolucionTotal\CorePDF\PDF($data, 1, url('/vacio.png'), 2, $dte->getTED());
+                //$pdf->setLeyendaImpresion('Sistema de facturacion por SoluciónTotal');
+                $pdf->setResolucion(date('Y', strtotime($caratula['FchResol'])), $caratula['NroResol']);
+                $pdf->construir();
+                $newFile = str_replace('.xml', '.pdf', $path.'/'.$file);
+                $fileData = $pdf->generar(3);
+                file_put_contents($newFile, $fileData);
+                echo $newFile.' generado.<br>';
+            }
+        }
+    });
+
+    Route::get('descargardoc', function(Request $request){
+
+    });
 
     Route::get('importardocumentos', function(Request $request){
         $xmlPath = '/Users/jesusmoris/Downloads/DTE_DOWN770704682025-02-058.xml';
@@ -157,6 +186,7 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
     Route::prefix('compras')->group(function(){
         Route::get('facturas', [FacturaCompraController::class, 'getAll']);
         Route::get('facturas/vistaprevia/{rutEmisor}/{tipo}/{folio}', [FacturaCompraController::class, 'vistaPreviaFactura']);
+        Route::get('facturas/descargar/{emisor}/{folio}', [FacturaCompraController::class, 'descargarPDF']);
 
         Route::get('guiasdespacho', [GuiaDespachoCompraController::class, 'getAll']);
         Route::get('guiasdespacho/vistaprevia/{rutEmisor}/{tipo}/{folio}', [GuiaDespachoCompraController::class, 'vistaPreviaFactura']);

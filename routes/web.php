@@ -46,6 +46,7 @@ Route::get('/', function(){
     return Redirect::to('/dashboard');
 });
 
+
 Route::get('prueba', function(){
     $XML = '<?xml version="1.0" encoding="ISO-8859-1"?>
 <DTE version="1.0">

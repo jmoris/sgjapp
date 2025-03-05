@@ -406,4 +406,6 @@ class FacturaController extends Controller
             return $ex;
         }
     }
+
+
 }
