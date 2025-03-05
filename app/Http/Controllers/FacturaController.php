@@ -66,6 +66,134 @@ class FacturaController extends Controller
         //return DataTables::eloquent($data)->toJson();
     }
 
+    public function vistaPreviaEnvioFactura(Request $request){
+        try{
+            $validator = Validator::make($request->all(), [
+                'fecha_emision' => 'required',
+                'cliente' => 'required',
+                'tipo_pago' => 'required',
+                'fecha_vencimiento' => 'required',
+                'items' => 'required|array',
+                'referencias' => 'nullable|array',
+                'glosa' => 'nullable',
+                'proyecto' => 'required'
+            ]);
+
+            if($validator->fails()){
+                return response()->json([
+                    'success' => 'false',
+                    'msg' => 'La información ingresada no es suficiente para completar el registro',
+                    'error' => $validator->errors()
+                ]);
+            }
+
+            $emisor = Ajustes::getEmisor();
+            $cliente = Cliente::where('id', $request->cliente)->with('comuna')->first();
+
+            $str = date('Y-m-d', strtotime($request->fecha_emision)).' '.date('H:i');
+            $detalle = [];
+            $neto = 0;
+            foreach($request->items as $item){
+                array_push($detalle, [
+                    'NmbItem' => $item['nombre'],
+                    'DscItem' => ((!array_key_exists('descripcion', $item))?false:$item['descripcion']),
+                    'UnmdItem' => Unidad::find($item['unidad'])->abreviacion,
+                    'PrcItem' => $item['precio'],
+                    'QtyItem' => $item['cantidad'],
+                    'MontoItem' => $item['precio'] * $item['cantidad'],
+                ]);
+                $neto += $item['precio'] * $item['cantidad'];
+            }
+            $detalle = array_filter($detalle);
+
+            $refArray = ($request->referencias==null)?[]:$request->referencias;
+
+
+            $referencias = [];
+            foreach($refArray as $ref){
+                array_push($referencias, [
+                    'tipo' => $ref['tipo'],
+                    'folio' => $ref['folio'],
+                    'fecha' => $ref['fecha'],
+                    'razon' => ' ',
+                    'codigo' => false
+                ]);
+            }
+            $vencimiento = date('Y-m-d', strtotime(str_replace('/', '-', $request->fecha_vencimiento)));
+            $data = [
+                'contribuyente' => $emisor['rut'],
+                'acteco' => $emisor['acteco'],
+                'tipo' => 33,
+                'fecha' => $str,
+                'fecha_vencimiento' => $vencimiento,
+                'receptor' => [
+                    'rut'=> $cliente->rut,
+                    'razon_social'=> $cliente->razon_social,
+                    'giro'=> $cliente->giro,
+                    'direccion'=> $cliente->direccion,
+                    'comuna'=> $cliente->comuna->nombre,
+                ],
+                'tipo_pago' => $request->tipo_pago,
+                'detalles' => $detalle,
+                'referencias' => $referencias
+            ];
+            $dte = [
+                'Encabezado' => [
+                    'IdDoc' => [
+                        'TipoDTE' => 33,
+                        'Folio' => 'SIN FOLIO',
+                        'FchEmis' => $str,
+                        'FchVenc' => $vencimiento,
+                        'FmaPago' => $request->tipo_pago,
+                    ],
+                    'Emisor' => [
+                        'RUTEmisor' => $emisor['rut'],
+                        'RznSoc' => $emisor['razon_social'],
+                        'GiroEmis' => $emisor['giro'],
+                        'Acteco' => 251100,
+                        'DirOrigen' => $emisor['direccion'],
+                        'CmnaOrigen' => 'TENO',
+                    ],
+                    'Receptor' => [
+                        'RUTRecep' => $cliente->rut,
+                        'RznSocRecep' => $cliente->razon_social,
+                        'GiroRecep' =>  $cliente->giro,
+                        'DirRecep' =>  $cliente->direccion,
+                        'CmnaRecep' =>  $cliente->comuna->nombre,
+                        'CdgIntRecep' => 'CASA MATRIZ'
+                    ],
+                    'Totales' => [
+                        'MntNeto' => $neto,
+                        'IVA' => $neto * 0.19,
+                        'MntTotal' => $neto + ($neto * 0.19),
+                    ]
+                ],
+                'Detalle' => $detalle
+            ];
+            $pdf = new \SolucionTotal\CorePDF\PDF($dte, 1, 'https://i.imgur.com/oWL7WBw.jpeg', 2);
+            $pdf->setCedible(false);
+            //$pdf->setLeyendaImpresion('Sistema de facturacion por SoluciónTotal');
+            $pdf->setTelefono($emisor['telefono']);
+            $pdf->setWeb($emisor['web']);
+            $pdf->setMail($emisor['email']);
+            $pdf->setMarcaAgua('https://i.imgur.com/oWL7WBw.jpeg');
+            $glosa = str_replace('//', '<br>', $request->glosa);
+            $pdf->setGlosa($glosa);
+            $proyecto = Proyecto::find($request->proyecto);
+            $pdf->setObra($proyecto->nombre);
+            $pdf->setCedible(false);
+            //$pdf->setFirmaIzquierda($oc->usuario->cargo, "<img style='height: 80px;' src='https://i.postimg.cc/j29cg3BZ/Jesus-Moris.png'>");
+            $pdf->construir();
+            $generado = base64_encode($pdf->generar(3)."?".time());
+            return response()->json([
+                'PDF' => $generado
+            ]);;
+        }catch(Exception $ex){
+            Log::error($ex);
+            return $ex;
+        }
+    }
+
     public function storeFactura(Request $request){
         try{
             $validator = Validator::make($request->all(), [

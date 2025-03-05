@@ -177,8 +177,10 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
     Route::prefix('ventas')->group(function(){
         Route::get('facturas', [FacturaController::class, 'getAll']);
         Route::post('facturas', [FacturaController::class, 'storeFactura']);
+        Route::post('facturas/vistaprevia', [FacturaController::class, 'vistaPreviaEnvioFactura']);
         Route::get('facturas/vistaprevia/{folio}', [FacturaController::class, 'vistaPreviaFactura']);
         Route::get('facturas/descargar/{folio}', [FacturaController::class, 'descargarXML']);
+
 
         Route::get('guiasdespacho', [GuiaDespachoController::class, 'getAll']);
         Route::post('guiasdespacho', [GuiaDespachoController::class, 'storeGuiaDespacho']);

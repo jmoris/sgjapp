@@ -57,7 +57,7 @@
                             <div class="row mx-3">
                                 <div style="width:100%; margin-top:24px;"></div>
                                 <div class="col-md-12">
-                                    <form class="form" id="storeForm" method="post" onsubmit="confirmarFactura(event)">
+                                    <form class="form" id="storeForm" method="post" onsubmit="vistaPreviaFactura(event)">
                                         @csrf
                                         <div class="row">
                                             <div class="col-md-12 mb-3">
@@ -602,10 +602,10 @@
 
                             <div class="float-end">
                                 <button type="submit" class="btn btn-primary submit"><i
-                                        class="mdi mdi-content-save"></i> Guardar</button>
+                                        class="mdi mdi-file-find"></i> Vista Previa</button>
                             </div>
                             <button type="button" class="btn btn-danger"
-                                onclick="location.href = '/compras/ordenescompra'">
+                                onclick="location.href = '/ventas/facturas'">
                                 <i class="mdi mdi-cancel"></i>
                                 Cancelar
                             </button>
@@ -681,6 +681,27 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal Vista Previa -->
+    <div class="modal fade" id="modal-vistaprevia" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabel">Vista previa de documento</h5>
+                </div>
+                <div class="modal-body">
+                    <div id="pdfviewer">
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" onclick="procesarFactura(event)">Emitir documento</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('style')
@@ -717,6 +738,8 @@
 
 @push('custom-scripts')
     <script>
+        var editIndex = null;
+        var editHtml = null;
         var index = 0;
         var ref_index = 0;
         var detalles = [];
@@ -943,10 +966,78 @@
                 });
                 borrador_id = resp.data.id;
             });
+        }
+
+        function vistaPreviaFactura(e){
+            e.preventDefault();
+            // Verificamos que se haya seleccionado un proveedor
+            var clienteId = $('#razon_social').val();
+            if (clienteId == '') {
+                $.toast({
+                    type: 'error',
+                    title: 'Error en formulario',
+                    subtitle: 'ahora',
+                    position: 'top-right',
+                    content: 'Debe seleccionar un cliente para agregar items al documento.',
+                    delay: 15000
+                });
+                return;
             }
 
-        function procesarFactura(e) {
+            var nombreProyecto = $('#nombre_proyecto option:selected').text();
 
+            if (nombreProyecto == 'Seleccione proyecto') {
+                $.toast({
+                    type: 'error',
+                    title: 'Error en formulario',
+                    subtitle: 'ahora',
+                    position: 'top-right',
+                    content: 'Debe seleccionar/añadir un proyecto para generar el documento.',
+                    delay: 15000
+                });
+                return;
+            }
+
+            if (detalles.length == 0) {
+                $.toast({
+                    type: 'error',
+                    title: 'Error en formulario',
+                    subtitle: 'ahora',
+                    position: 'top-right',
+                    content: 'Debe agregar productos al documento para poder procesarlo.',
+                    delay: 15000
+                });
+                return;
+            }
+            $('#loadingModal').modal('toggle');
+
+            var doc = {
+                cliente: $('#razon_social').val(),
+                fecha_emision: $('#fecha_emision').val(),
+                fecha_vencimiento: $('#fecha_vencimiento').val(),
+                tipo_pago: $('#tipo_pago').val(),
+                items: detalles,
+                referencias: referencias,
+                proyecto: $('#nombre_proyecto option:selected').val(),
+                glosa: $('#glosaTxt').val(),
+                _token: $('meta[name="_token"]').attr('content')
+            };
+            $('#statusTxt').text('Enviando información del documento...');
+            $('#objpdf').attr('data',  '');
+            $.post("/api/ventas/facturas/vistaprevia", doc)
+                .done(function(data) {
+                    $('#statusTxt').text('Recibiendo información de respuesta...');
+                    if(data.error){
+                        console.log(data.error);
+                    }
+                    $('#pdfviewer').html('<object id="objpdf" type="application/pdf" data="data:application/pdf;base64,'+data.PDF+'" width="100%" style="height: 70vh;">El explorador no soporta este tipo de objetos.</object>');
+                    $('#loadingModal').modal('hide');
+                    $('#modal-vistaprevia').modal('show');
+            });
+        }
+
+        function procesarFactura(e) {
+            $('#modal-vistaprevia').modal('hide');
             $('#loadingModal').modal('show');
             $('#statusTxt').text('Validando información del formulario...');
             // Verificamos que se haya seleccionado un proveedor
@@ -989,7 +1080,6 @@
             $.post("/api/ventas/facturas", doc)
                 .done(function(data) {
                     $('#statusTxt').text('Recibiendo información de respuesta...');
-                    console.log(data);
                     if(data.error){
                         console.log(data.error);
                     }
@@ -1028,9 +1118,13 @@
                     <td>${producto.cantidad} ${unidad['abreviacion']}</td>
                     <td>${'$ ' + producto.precio.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}</td>
                     <td>${'$ ' + subtotal.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}</td>
-                    <td>
-                        <button type="button" onclick="eliminarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em;">
-                        <span class="mdi mdi-delete"></span></button>
+                    <td style="min-width:80px; padding: .75em;">
+                        <button type="button" onclick="eliminarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em; float:right; margin-right: 0.25em;">
+                            <span class="mdi mdi-delete"></span>
+                        </button>
+                        <button type="button" onclick="editarProducto(${index}, 0)" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em; float:right; margin-right: 0.25em;">
+                            <span class="mdi mdi-pencil"></span>
+                        </button>
                     </td>
                 </tr>`;
                 // Se inserta antes del rowDetalle que es nuestro formulario estatico
@@ -1233,9 +1327,13 @@
                     <td>${producto.cantidad} ${unidad.abreviacion}</td>
                     <td>${'$ ' + producto.precio.replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}</td>
                     <td>${'$ ' + subtotal.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}</td>
-                    <td>
-                        <button type="button" onclick="eliminarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em;float:right;">
-                        <span class="mdi mdi-delete"></span></button>
+                    <td style="min-width:80px; padding: .75em;">
+                        <button type="button" onclick="eliminarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em; float:right; margin-right: 0.25em;">
+                            <span class="mdi mdi-delete"></span>
+                        </button>
+                        <button type="button" onclick="editarProducto(${index}, 0)" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em; float:right; margin-right: 0.25em;">
+                            <span class="mdi mdi-pencil"></span>
+                        </button>
                     </td>
                 </tr>`;
                 /*
@@ -1365,6 +1463,85 @@
             var subtotal = cantidad * precio;
 
             $('#lblSubtotal').text('$ ' + subtotal.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.'));
+        }
+
+        function editarProducto(index, action){
+            if(editIndex != null && !action){
+                alert("Ya esta modificando un producto");
+                return;
+            }
+            if(editIndex != null && action){
+                var row = $('#tablaDetalle tr[detindex="' + index + '"]');
+                var item = detalles[index];
+                var nombre = $('#nombreEditTxt').val();
+                var cantidad = $('#cantidadEditTxt').val();
+                var unidad = $('#unidadEditTxt').find(":selected").text();
+                console.log('Unidad: ' + $('#unidadEditTxt').val());
+                var precio = $('#precioEditTxt').inputmask('unmaskedvalue');
+                var subtotal = precio * cantidad;
+
+                detalles[index].nombre = nombre;
+                detalles[index].cantidad = cantidad;
+                detalles[index].unidad = $('#unidadEditTxt').val();
+                detalles[index].precio = precio;
+
+                calcularTotales();
+                row.find('td:eq(1)').html(`${nombre}`);
+                row.find('td:eq(2)').html(`${cantidad} ${unidad}`);
+                row.find('td:eq(3)').html(`$ ${precio.replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}`);
+                row.find('td:eq(4)').html(`$ ${subtotal.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}`);
+                row.find('td:eq(5)').html(`
+                        <button type="button" onclick="eliminarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em; float:right; margin-right: 0.25em;">
+                            <span class="mdi mdi-delete"></span>
+                        </button>
+                        <button type="button" onclick="editarProducto(${index}, 1)" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em; float:right; margin-right: 0.25em;">
+                            <span class="mdi mdi-pencil"></span>
+                        </button>
+
+                `);
+                editIndex = null;
+                console.log(detalles[index]);
+                return;
+            }
+            editIndex = index;
+            var row = $('#tablaDetalle tr[detindex="' + index + '"]');
+            var item = detalles[index];
+            row.find('td:eq(1)').html(`<div class="input-group"><input
+                                            id="nombreEditTxt" type="text"
+                                            value="${item.nombre}"
+                                            class="form-control form-control-sm"
+                                            placeholder="NOMBRE ITEM" />
+                                        </div>`);
+            row.find('td:eq(3)').html(`<div class="input-group"><input
+                                            onchange="calcSubtotalFila()" id="precioEditTxt"
+                                            value="${item.precio}" type="text"
+                                            class="form-control" placeholder="PRECIO" />
+                                            </div>`);
+            row.find('td:eq(2)').html(`<div class="input-group">
+                                            <input id="cantidadEditTxt"
+                                                onchange="calcSubtotalFila()" type="number"
+                                                min="1" value="${item.cantidad}"
+                                                class="form-control form-control-sm"
+                                                placeholder="CANT" />
+                                            <select id="unidadEditTxt" class="form-control-sm"
+                                                style="max-width: 100px;">
+                                                @foreach ($unidades as $unidad)
+                                                <option value="{{ $unidad->id }}">{{ $unidad->abreviacion }}</option>
+                                                @endforeach
+                                            </select> &nbsp;
+                                        </div>`);
+            row.find('td:eq(5)').html(` <button type="button" onclick="eliminarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em; float:right; margin-right: 0.25em;">
+                                            <span class="mdi mdi-delete"></span>
+                                        </button>
+                                        <button type="button" onclick="editarProducto(${index}, 1)" class="btn btn-sm btn-outline-primary" style="padding:.25em .5em; float:right; margin-right: 0.25em;">
+                                            <span class="mdi mdi-content-save-plus"></span>
+                                        </button>`);
+            $('#precioEditTxt').inputmask('numeric', {
+                prefix: '$ ',
+                radixPoint: ',',
+                groupSeparator: '.',
+                rightAlign: false
+            });
         }
 
         $(document).on('select2:open', () => {

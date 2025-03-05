@@ -94,6 +94,7 @@
             </div>
         </div>
     </div>
+
 @endsection
 
 @push('plugin-scripts')
