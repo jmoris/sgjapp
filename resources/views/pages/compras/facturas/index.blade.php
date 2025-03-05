@@ -217,8 +217,8 @@
             location.href = `/compras/facturas/detalle/${emisor}/${folio}`;
         }
 
-        function vistaPreviaDocumento(emisor, tipo, folio) {
-            window.open(`/api/compras/facturas/vistaprevia/${emisor}/${tipo}/${folio}/?descargar=1`);
+        function vistaPreviaDocumento(emisor, folio) {
+            window.open(`/api/compras/facturas/vistaprevia/${emisor}/33/${folio}/?descargar=1`);
         }
 
         function cargarDocumentos(feMin = '', feMax = '', fvMin = '', fvMax = '') {
@@ -288,7 +288,9 @@
                                 html += '<button type="button" title="Ver Factura" onclick="verDocumento(\'' +
                                 row.rut_emisor + '\',' + row.folio +
                                 ')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-text-box-search-outline"></i></button>';
-                                html += `<button type="button" title="Descargar PDF" onclick="vistaPreviaDocumento("${row.rut_emisor}", 33, ${row.folio})" class="btn btn-outline-secondary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-text-box-search-outline"></i></button>`;
+                                html += '<button type="button" title="Ver Factura" onclick="vistaPreviaDocumento(\'' +
+                                row.rut_emisor + '\',' + row.folio +
+                                ')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-download"></i></button>';
                             }else{
                                 html += '<button type="button" title="Documento XML no disponible" class="btn btn-outline-secondary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-text-box-search-outline"></i></button>';
                             }
