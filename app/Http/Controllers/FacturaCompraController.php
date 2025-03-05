@@ -12,8 +12,9 @@ use Yajra\DataTables\Facades\DataTables;
 
 class FacturaCompraController extends Controller
 {
-    public function index(){
+    public function index(Request $request){
         $emisor = Ajustes::getEmisor();
+
         $endpoint =  env('FACTURAPI_ENDPOINT').'documentos/compras?contribuyente='.$emisor['rut'].'&tipo=33';
         $ch = curl_init( $endpoint );
             curl_setopt( $ch, CURLOPT_POST, false);
@@ -57,7 +58,7 @@ class FacturaCompraController extends Controller
     /*
         DESDE AQUI HACIA ABAJO ESTARAN LAS FUNCIONES DE LA API
     */
-    public function getAll(){
+    public function getAll(Request $request){
         /*$emisor = Ajustes::getEmisor();
         $endpoint =  env('FACTURAPI_ENDPOINT').'documentos/compras?contribuyente='.$emisor['rut'].'&tipo=33';
         $ch = curl_init( $endpoint );
@@ -73,8 +74,14 @@ class FacturaCompraController extends Controller
             Log::info("ENDPOINT FACTURAS COMPRA: ". $endpoint);
 
             return $result;*/
-            $facturas = FacturaCompra::query();
-            return DataTables::of($facturas)
+            $data = FacturaCompra::whereRaw('1=1');
+
+            if($request->has('feMinDate') and $request->has('feMaxDate')){
+                $data->where('fecha_emision', '>=', $request->feMinDate);
+                $data->where('fecha_emision', '<=', date('Y-m-d', strtotime($request->feMaxDate.' +1 days')));
+                //$data->whereBetween('fecha_emision', [$request->feMinDate, $request->feMaxDate]);
+            }
+            return DataTables::of($data)
             ->addIndexColumn()
             ->make(true);
     }
