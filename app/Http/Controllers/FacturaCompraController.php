@@ -107,6 +107,7 @@ class FacturaCompraController extends Controller
     public function descargarPDF(Request $request, $emisor, $folio){
         try{
             $emisor = Ajustes::getEmisor();
+            echo $emisor.' '.$folio;
             $ch = curl_init( env('FACTURAPI_ENDPOINT').'documentos/compras/generar/pdf/'.$emisor.'/33/'.$folio.'?visor=2&contribuyente='.$emisor['rut']);
             curl_setopt( $ch, CURLOPT_POST, false);
             curl_setopt( $ch, CURLOPT_HTTPHEADER, [
