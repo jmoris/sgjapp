@@ -194,6 +194,26 @@ class FacturaController extends Controller
         }
     }
 
+    public function categorizarFactura(Request $request, $folio){
+        $validator = Validator::make($request->all(), [
+            'fecha_emision' => 'required',
+            'cliente' => 'required',
+            'tipo_pago' => 'required',
+            'fecha_vencimiento' => 'required',
+            'items' => 'required|array',
+            'referencias' => 'nullable|array',
+            'glosa' => 'nullable'
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'success' => 'false',
+                'msg' => 'La información ingresada no es suficiente para completar el registro',
+                'error' => $validator->errors()
+            ]);
+        }
+    }
+
     public function storeFactura(Request $request){
         try{
             $validator = Validator::make($request->all(), [

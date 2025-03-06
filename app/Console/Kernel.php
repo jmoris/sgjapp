@@ -37,6 +37,9 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')
         //          ->hourly();
         Tenant::all()->eachCurrent(function(Tenant $tenant) use ($schedule) {
+            /**
+             * Tarea que revisa el estado de los documentos pendientes
+             */
             $schedule->call($tenant->callback(function() {
                 $emisor = Ajustes::getEmisor();
                 $pendientes = DocumentoPendiente::all();
@@ -96,7 +99,9 @@ class Kernel extends ConsoleKernel
 
                 }
             }))->everyMinute();
-
+            /**
+             * Tarea que revisa el estado del correo de los documentos generados
+             */
             $schedule->call($tenant->callback(function() {
                 try{
                     $emisor = Ajustes::getEmisor();

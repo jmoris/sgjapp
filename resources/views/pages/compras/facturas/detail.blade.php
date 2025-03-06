@@ -355,10 +355,10 @@
                                         <div class="row my-2">
                                             <label class="col-sm-4 col-form-label col-form-label-sm">Categoria</label>
                                             <div class="col-sm-8">
-                                                <select class="form-control form-control-sm">
+                                                <select onchange="categorizarDocumento()" id="categoriaDoc" class="form-control form-control-sm">
                                                     <option>Sin categorizar</option>
                                                     @foreach($categorias as $cat)
-                                                    <option value="{{$cat->id}}">{{$cat->nomre}}</option>
+                                                    <option value="{{$cat->id}}">{{$cat->nombre}}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -499,5 +499,27 @@
 @push('custom-scripts')
     <script>
         var currentUserId = {{ auth()->user()->id }};
+
+        function categorizarDocumento(){
+            var data = {
+                categoria: $('#categoriaDoc option:selected').val();
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "/api/ventas/facturas/categorizar/{{intval($documento['Encabezado']['IdDoc']['Folio'])}}",
+                data: data, // serializes the form's elements.
+                success: function(data){
+                    $.toast({
+                        type: 'success',
+                        title: 'Categorización de documento',
+                        subtitle: 'ahora',
+                        position: 'top-right',
+                        content: 'Documento categorizado correctamente.',
+                        delay: 3000
+                });
+                }
+            });
+        }
     </script>
 @endpush
