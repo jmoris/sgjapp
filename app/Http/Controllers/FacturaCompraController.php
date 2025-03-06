@@ -99,14 +99,15 @@ class FacturaCompraController extends Controller
             curl_close($ch);
             $EnvioDTE = new EnvioDte();
             $EnvioDTE->loadXML($result);
-            $dte = $EnvioDTE->getDocumentos()[0];
-            $caratula = $EnvioDTE->getCaratula();
-            if($caratula==''||$caratula==null){
+            if(str_contains($result, '<EnvioDTE')){
+                $caratula = $EnvioDTE->getCaratula();
+            }else{
                 $caratula = [
                     'FchResol' => date('Y'),
                     'NroResol' => 0
                 ];
             }
+            $dte = $EnvioDTE->getDocumentos()[0];
             $data = $dte->getDatos();
 
             $pdf = new \SolucionTotal\CorePDF\PDF($data, 1, url('/vacio.png'), 2, $dte->getTED());
