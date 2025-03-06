@@ -8,6 +8,7 @@ use App\Helpers\Ajustes;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 use SolucionTotal\CoreDTE\Sii\EnvioDte;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -84,6 +85,29 @@ class FacturaCompraController extends Controller
             return DataTables::of($data)
             ->addIndexColumn()
             ->make(true);
+    }
+
+    public function categorizarFactura(Request $request, $emisor, $folio){
+        $validator = Validator::make($request->all(), [
+            'categoria' => 'required',
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'success' => 'false',
+                'msg' => 'La información ingresada no es suficiente para completar el registro',
+                'error' => $validator->errors()
+            ]);
+        }
+
+        $documento = FacturaCompra::where('rut_emisor', $emisor)->where('folio', $folio)->first();
+        $documento->categoria_documento_id = $request->categoria;
+        $documento->save();
+
+        return response()->json([
+            'success' => true,
+            'msg' => 'Documento categorizado exitosamente',
+        ]);
     }
 
     public function vistaPreviaFactura(Request $request, $rutEmisor, $tipo, $folio){
