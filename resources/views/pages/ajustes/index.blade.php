@@ -1,6 +1,6 @@
 @extends('layout.master')
 
-@section('title', 'Ajustes gENERALES')
+@section('title', 'Ajustes Generales')
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
@@ -26,6 +26,9 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" data-bs-toggle="tab" href="#categorias">Categorias de Productos</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#categoriasdoc">Categorias de Documentos</a>
                             </li>
                         </ul>
                         <div class="tab-content">
@@ -216,7 +219,8 @@
                                                                     <td>{{ $categoria->id }}</td>
                                                                     <td>{{ $categoria->nombre }}</td>
                                                                     <td><button
-                                                                            class="btn btn-outline-danger btn-sm px-1 py-0"><i
+                                                                            class="btn btn-outline-danger btn-sm px-1 py-0"
+                                                                            onclick="deleteCategoria({{ $categoria->id }})"><i
                                                                                 class="mdi mdi-delete"></i></button></td>
                                                                 </tr>
                                                             @endforeach
@@ -238,6 +242,61 @@
                                                                     id="descripcionCategoria" class="form-control"
                                                                     placeholder="Ingrese la descripcion de la categoria">
                                                             </div>
+                                                            <div class="col-md-12 mx-1">
+                                                                <button class="btn btn-warning btn-sm"
+                                                                    id="btnCategoriaLimpiar"
+                                                                    type="button">Limpiar</button>
+                                                                <button class="btn btn-primary btn-sm float-end"
+                                                                    id="btnCategoriaGuardar"
+                                                                    type="submit">Guardar</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane container mx-0  fade" id="categoriasdoc">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="container">
+                                            <div class="d-flex justify-content-between align-items-baseline">
+                                                <h6 class="card-title mb-3">Categorias Documentos</h6>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-8">
+                                                    <table id="tablaCategoriasDoc" class="table">
+                                                        <thead>
+                                                            <th>#</th>
+                                                            <th>Nombre</th>
+                                                            <th></th>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach ($categoriasdoc as $catdoc)
+                                                                <tr>
+                                                                    <td>{{ $catdoc->id }}</td>
+                                                                    <td>{{ $catdoc->nombre }}</td>
+                                                                    <td><button
+                                                                            class="btn btn-outline-danger btn-sm px-1 py-0"
+                                                                            onclick="deleteCategoriaDocumento({{ $categoria->id }})"><i
+                                                                                class="mdi mdi-delete"></i></button></td>
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <div class="border-start col-md-4">
+                                                    <div class="row">
+                                                        <form id="formCategoriasDoc" name="formCategoriasDoc" method="post">
+                                                            <div class="mb-3">
+                                                                <label class="form-label">Nombre</label>
+                                                                <input type="text" name="nombreCategoriaDoc"
+                                                                    id="nombreCategoriaDoc" class="form-control"
+                                                                    placeholder="Ingrese el nombre de la unidad">
+                                                            </div>
+
                                                             <div class="col-md-12 mx-1">
                                                                 <button class="btn btn-warning btn-sm"
                                                                     id="btnCategoriaLimpiar"
@@ -311,7 +370,7 @@
                 if (result.isConfirmed) {
                     $.ajax({
                         type: "DELETE",
-                        url: '/api/unidades/' + id,
+                        url: '/api/categorias/' + id,
                         success: function(data) {
                             Swal.fire({
                                 title: "Categoria eliminada exitosamente",
@@ -319,6 +378,35 @@
                                 icon: "success"
                             });
                             location.href = "/ajustes#categorias";
+                            location.reload();
+                        }
+                    });
+                }
+            });
+        }
+
+        function deleteCategoriaDocumento(id) {
+            Swal.fire({
+                title: "Confirmar eliminación de categoria",
+                text: "La acción que desea realizar es irreversible, ¿desea continuar con la operación?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#6571FF",
+                cancelButtonColor: "#FF3366",
+                confirmButtonText: "Confirmar",
+                cancelButtonText: "Cancelar"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "DELETE",
+                        url: '/api/categoriasdoc/' + id,
+                        success: function(data) {
+                            Swal.fire({
+                                title: "Categoria eliminada exitosamente",
+                                text: "La categoria seleccionada fue eliminada satisfactoriamente",
+                                icon: "success"
+                            });
+                            location.href = "/ajustes#categoriasdoc";
                             location.reload();
                         }
                     });
@@ -424,6 +512,72 @@
                                     icon: "success"
                                 }).then((result) => {
                                     location.href = "/ajustes#unidades";
+                                    location.reload();
+                                });
+                            } else {
+                                Swal.fire({
+                                    title: "Error al guardar la categoria",
+                                    text: "La información ingresada no es correcta o ya existe en la base de datos.",
+                                    icon: "warning"
+                                });
+                            }
+
+                        }
+                    });
+                    return false;
+                },
+                errorPlacement: function(error, element) {
+                    error.addClass("invalid-feedback");
+
+                    if (element.parent('.input-group').length) {
+                        error.insertAfter(element.parent());
+                    } else if (element.prop('type') === 'radio' && element.parent('.radio-inline')
+                        .length) {
+                        error.insertAfter(element.parent().parent());
+                    } else if (element.prop('type') === 'checkbox' || element.prop('type') ===
+                        'radio') {
+                        error.appendTo(element.parent().parent());
+                    } else {
+                        error.insertAfter(element);
+                    }
+                },
+                highlight: function(element, errorClass) {
+                    if ($(element).prop('type') != 'checkbox' && $(element).prop('type') != 'radio') {
+                        $(element).addClass("is-invalid").removeClass("is-valid");
+                    }
+                },
+                unhighlight: function(element, errorClass) {
+                    if ($(element).prop('type') != 'checkbox' && $(element).prop('type') != 'radio') {
+                        $(element).addClass("is-valid").removeClass("is-invalid");
+                    }
+                }
+            });
+
+            $("#formCategoriasDoc").validate({
+                rules: {
+                    nombreCategoriaDoc: {
+                        required: true,
+                    },
+                },
+                messages: {
+                    nombreCategoriaDoc: "El campo nombre es obligatorio",
+                },
+                submitHandler: function(form) {
+                    var dataCategorias = {
+                        nombre: $('#nombreCategoriaDoc').val(),
+                    };
+                    $.ajax({
+                        type: "POST",
+                        url: '/api/categoriasdoc',
+                        data: dataCategorias, // serializes the form's elements.
+                        success: function(data) {
+                            if (data.success == true) {
+                                Swal.fire({
+                                    title: "Categoria guardada exitosamente",
+                                    text: "La información ingresada es correcta y fue procesada exitosamente.",
+                                    icon: "success"
+                                }).then((result) => {
+                                    location.href = "/ajustes#categoriasdoc";
                                     location.reload();
                                 });
                             } else {

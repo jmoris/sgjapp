@@ -357,9 +357,9 @@
                                             <div class="col-sm-8">
                                                 <select class="form-control form-control-sm">
                                                     <option>Sin categorizar</option>
-                                                    <option value="1">Combustible</option>
-                                                    <option value="2">Materia Prima</option>
-                                                    <option value="3">Insumos Oficina</option>
+                                                    @foreach($categorias as $cat)
+                                                    <option value="{{$cat->id}}">{{$cat->nomre}}</option>
+                                                    @endforeach
                                                 </select>
                                             </div>
                                         </div>

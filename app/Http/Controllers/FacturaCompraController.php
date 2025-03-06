@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\CategoriaDocumento;
 use App\FacturaCompra;
 use App\Helpers\Ajustes;
 use Exception;
@@ -50,8 +51,8 @@ class FacturaCompraController extends Controller
             $EnvioDTE->loadXML($result);
             $dte = $EnvioDTE->getDocumentos()[0];
             $data = $dte->getDatos();
-
-            return view('pages.compras.facturas.detail', ['documento' => $data]);
+        $categorias = CategoriaDocumento::all();
+            return view('pages.compras.facturas.detail', ['documento' => $data, 'categorias' => $categorias]);
     }
 
     /*

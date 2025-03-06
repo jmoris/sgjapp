@@ -241,14 +241,17 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
 
     Route::get('/categorias', [MaestroController::class, 'getCategorias']);
     Route::post('/categorias', [MaestroController::class, 'storeCategoria']);
+    Route::delete('/categorias/{id}', [MaestroController::class, 'deleteCategoria']);
+
+    Route::post('/categoriasdoc', [MaestroController::class, 'storeCategoriaDocumento']);
+    Route::delete('/categoriasdoc/{id}', [MaestroController::class, 'deleteCategoriaDocumento']);
+
 
     Route::post('/config/certificado', [MaestroController::class, 'storeCertificado']);
 
 
     Route::get('/listaprecios', [MaestroController::class, 'getListasPrecios']);
     Route::get('/listaprecios/{id}', [MaestroController::class, 'getListaPrecio']);
-    Route::post('/unidades', [MaestroController::class, 'storeUnidad']);
-    Route::post('/categorias', [MaestroController::class, 'storeCategoria']);
     Route::post('/listaprecios', [MaestroController::class, 'storeListaPrecio']);
 
 

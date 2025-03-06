@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Categoria;
+use App\CategoriaDocumento;
 use App\Comuna;
 use App\Config;
 use App\DomicilioContribuyente;
@@ -90,6 +91,34 @@ class MaestroController extends Controller
         }
     }
 
+    public function deleteCategoria($id){
+        try{
+            $categoria = Categoria::find($id);
+            $categoria->delete();
+            return response()->json([
+                'success' => true,
+                'msg' => 'Información eliminada exitosamente',
+                'data' => $categoria
+            ]);
+        }catch(Exception $ex){
+            return $ex;
+        }
+    }
+
+    public function deleteCategoriaDocumento($id){
+        try{
+            $categoria = CategoriaDocumento::find($id);
+            $categoria->delete();
+            return response()->json([
+                'success' => true,
+                'msg' => 'Información eliminada exitosamente',
+                'data' => $categoria
+            ]);
+        }catch(Exception $ex){
+            return $ex;
+        }
+    }
+
     public function storeCategoria(Request $request){
         try{
             $validator = Validator::make($request->all(), [
@@ -109,6 +138,35 @@ class MaestroController extends Controller
             $categoria = new Categoria();
             $categoria->nombre = $request->nombre;
             $categoria->descripcion = $request->descripcion;
+            $categoria->save();
+
+            return response()->json([
+                'success' => true,
+                'msg' => 'Información guardada exitosamente',
+                'data' => $categoria
+            ]);
+        }catch(Exception $ex){
+            return $ex;
+        }
+    }
+
+    public function storeCategoriaDocumento(Request $request){
+        try{
+            $validator = Validator::make($request->all(), [
+                'nombre' => 'required|unique:tenant.categoria_documentos',
+            ]);
+
+            if($validator->fails()){
+                return response()->json([
+                    'success' => 'false',
+                    'msg' => 'La información ingresada no es suficiente para completar el registro',
+                    'error' => $validator->errors()
+                ]);
+            }
+
+            $categoria = new CategoriaDocumento();
+            $categoria->nombre = $request->nombre;
+            $categoria->slug = str_replace(' ','-',strtolower($request->nombre));
             $categoria->save();
 
             return response()->json([
