@@ -507,7 +507,7 @@
 
             $.ajax({
                 type: "POST",
-                url: "/api/ventas/facturas/categorizar/{{intval($documento['Encabezado']['IdDoc']['Folio'])}}",
+                url: "/api/ventas/categorizar/factura/{{intval($documento['Encabezado']['IdDoc']['Folio'])}}",
                 data: data, // serializes the form's elements.
                 success: function(data){
                     $.toast({
