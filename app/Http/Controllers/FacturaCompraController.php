@@ -53,7 +53,8 @@ class FacturaCompraController extends Controller
             $dte = $EnvioDTE->getDocumentos()[0];
             $data = $dte->getDatos();
         $categorias = CategoriaDocumento::all();
-            return view('pages.compras.facturas.detail', ['documento' => $data, 'categorias' => $categorias]);
+        $fact = FacturaCompra::where('rut_emisor', $rutEmisor)->where('folio', $folio)->first();
+            return view('pages.compras.facturas.detail', ['documento' => $data, 'factura' => $fact, 'categorias' => $categorias]);
     }
 
     /*

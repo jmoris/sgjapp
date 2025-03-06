@@ -358,7 +358,7 @@
                                                 <select onchange="categorizarDocumento()" id="categoriaDoc" class="form-control form-control-sm">
                                                     <option>Sin categorizar</option>
                                                     @foreach($categorias as $cat)
-                                                    <option value="{{$cat->id}}">{{$cat->nombre}}</option>
+                                                    <option value="{{$cat->id}}" @if($factura->categoria_documento_id == $cat->id) selected @endif>{{$cat->nombre}}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
