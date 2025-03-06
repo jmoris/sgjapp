@@ -196,13 +196,7 @@ class FacturaController extends Controller
 
     public function categorizarFactura(Request $request, $folio){
         $validator = Validator::make($request->all(), [
-            'fecha_emision' => 'required',
-            'cliente' => 'required',
-            'tipo_pago' => 'required',
-            'fecha_vencimiento' => 'required',
-            'items' => 'required|array',
-            'referencias' => 'nullable|array',
-            'glosa' => 'nullable'
+            'categoria' => 'required',
         ]);
 
         if($validator->fails()){
@@ -212,6 +206,15 @@ class FacturaController extends Controller
                 'error' => $validator->errors()
             ]);
         }
+
+        $documento = Factura::where('folio', $folio)->first();
+        $documento->categoria_documento_id = $request->categoria;
+        $documento->save();
+
+        return response()->json([
+            'success' => true,
+            'msg' => 'Documento categorizado exitosamente',
+        ]);
     }
 
     public function storeFactura(Request $request){
