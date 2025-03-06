@@ -502,7 +502,7 @@
 
         function categorizarDocumento(){
             var data = {
-                categoria: $('#categoriaDoc option:selected').val();
+                categoria: $('#categoriaDoc option:selected').val()
             };
 
             $.ajax({
