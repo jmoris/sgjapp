@@ -49,7 +49,6 @@ class FacturaCompraController extends Controller
             $EnvioDTE = new EnvioDte();
             $EnvioDTE->loadXML($result);
             $dte = $EnvioDTE->getDocumentos()[0];
-            $caratula = $EnvioDTE->getCaratula();
             $data = $dte->getDatos();
 
             return view('pages.compras.facturas.detail', ['documento' => $data]);
