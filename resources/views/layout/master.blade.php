@@ -124,11 +124,11 @@
                     dif = Math.round((dif / 1000) / 60);
                     let difstr = 'min';
                     if(dif >= 60){
-                        dif = parseInt(dif/60);
+                        dif = Math.round(dif/60);
                         difstr = (dif==1)?'hora':'horas';
                     }
                     if(dif >= 24){
-                        dif = parseInt(dif/60);
+                        dif = Math.round(dif/60);
                         difstr = (dif==1)?'dia':'dias';
                     }
 
