@@ -94,6 +94,80 @@
 
     @stack('custom-scripts')
 
+    <script>
+        $(document).ready(function(){
+            leerNotificaciones();
+        });
+
+        function leerNotificaciones(){
+            $.ajax({
+                type: "GET",
+                url: "/api/notificaciones",
+                success: function(data){
+                    console.log(data);
+                    $('#indicator').html(data.count);
+                    renderNotificaciones(data.data);
+
+                }
+            });
+        }
+
+        function renderNotificaciones(notificaciones){
+            $('#listaNotificaciones').html('');
+            if(notificaciones.length > 0){
+                var max = (notificaciones.length > 4) ? 4: notificaciones.length;
+                for($i = 0; $i < max; $i++){
+                    var noti = notificaciones[$i];
+                    let notifTime = new Date(noti.created_at);
+                    let now = new Date();
+                    let dif = (now - notifTime);
+                    dif = Math.round((dif / 1000) / 60);
+                    var tipo_doc = noti.data['tipo_doc'];
+                    var str_url = '';
+                    if(tipo_doc == 33){
+                        str_url = 'facturas';
+                    }else if(tipo_doc == 61){
+                        str_url = 'notascredito';
+                    }else if(tipo_doc == 56){
+                        str_url = 'notasdebito';
+                    }
+                    var url = `/compras/${str_url}/detalle/${noti.data['rut_emisor']}/${noti.data['folio']}`;
+
+                    var html = `<a href="${url}" class="dropdown-item d-flex align-items-center py-2">
+                        <div class="wd-30 ht-30 d-flex align-items-center justify-content-center bg-primary rounded-circle me-3">
+                        <i class="mdi mdi-file-document-arrow-right text-white mdi-18px"></i>
+                        </div>
+                        <div class="flex-grow-1 me-2">
+                        <p>Se ha recibido un nuevo documento del<br>contribuyente ${noti.data['rut_emisor']} con folio ${noti.data['folio']}</p>
+                        <p class="tx-12 text-muted">hace ${dif} min</p>
+                        </div>
+                    </a>`;
+
+                    $('#listaNotificaciones').append(html);
+                }
+            }else{
+                var html = `<div class="dropdown-item d-flex align-items-center py-2">
+                        <div class="wd-30 ht-30 d-flex align-items-center justify-content-center bg-primary rounded-circle me-3">
+                        </div>
+                        <div class="flex-grow-1 me-2">
+                        <p>No hay notificaciones que mostrar</p>
+                        </div>
+                    </div>`;
+
+                    $('#listaNotificaciones').append(html);
+            }
+        }
+
+        function marcarNotificacionesLeidas(){
+            $.ajax({
+                type: "POST",
+                url: "/api/notificaciones/marcar",
+                success: function(data){
+                    leerNotificaciones();
+                }
+            });
+        }
+    </script>
 </body>
 
 </html>

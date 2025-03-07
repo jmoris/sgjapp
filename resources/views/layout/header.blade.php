@@ -32,52 +32,16 @@
       <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <i data-feather="bell"></i>
-          <div class="indicator">
-            <div class="circle"></div>
+          <div id="indicator" class="indicator">
+            ...
           </div>
         </a>
         <div class="dropdown-menu p-0" aria-labelledby="notificationDropdown">
           <div class="px-3 py-2 d-flex align-items-center justify-content-between border-bottom">
             <p>Notificaciones</p>
-            <a href="javascript:;" class="text-muted">Limpiar</a>
+            <a href="javascript:;" onclick="marcarNotificacionesLeidas()" class="text-muted">Limpiar</a>
           </div>
-          <div class="p-1">
-            <a href="javascript:;" class="dropdown-item d-flex align-items-center py-2">
-              <div class="wd-30 ht-30 d-flex align-items-center justify-content-center bg-primary rounded-circle me-3">
-                <i class="mdi mdi-file-document-arrow-right text-white mdi-18px"></i>
-              </div>
-              <div class="flex-grow-1 me-2">
-                <p>Nuevo documento recibido</p>
-                <p class="tx-12 text-muted">hace 30 min</p>
-              </div>
-            </a>
-            <a href="javascript:;" class="dropdown-item d-flex align-items-center py-2">
-              <div class="wd-30 ht-30 d-flex align-items-center justify-content-center bg-primary rounded-circle me-3">
-                <i class="mdi mdi-cloud-sync text-white mdi-18px"></i>
-              </div>
-              <div class="flex-grow-1 me-2">
-                <p>Sincronización con SII</p>
-                <p class="tx-12 text-muted">hace 1 hora</p>
-              </div>
-            </a>
-            <a href="javascript:;" class="dropdown-item d-flex align-items-center py-2">
-                <div class="wd-30 ht-30 d-flex align-items-center justify-content-center bg-primary rounded-circle me-3">
-                  <i class="mdi mdi-file-document-arrow-right text-white mdi-18px"></i>
-                </div>
-                <div class="flex-grow-1 me-2">
-                  <p>Nuevo documento recibido</p>
-                  <p class="tx-12 text-muted">hace 2 horas</p>
-                </div>
-              </a>
-              <a href="javascript:;" class="dropdown-item d-flex align-items-center py-2">
-                <div class="wd-30 ht-30 d-flex align-items-center justify-content-center bg-primary rounded-circle me-3">
-                  <i class="mdi mdi-cloud-sync text-white mdi-18px"></i>
-                </div>
-                <div class="flex-grow-1 me-2">
-                  <p>Sincronización con SII</p>
-                  <p class="tx-12 text-muted">hace 2 horas</p>
-                </div>
-              </a>
+          <div class="p-1" id="listaNotificaciones">
 
           </div>
           <div class="px-3 py-2 d-flex align-items-center justify-content-center border-top">

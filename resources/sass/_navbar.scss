@@ -46,7 +46,7 @@
       color: $text-muted;
     }
     @media(max-width: 991px) {
-      display: flex;    
+      display: flex;
     }
   }
 
@@ -114,8 +114,9 @@
           }
           .indicator {
             position: absolute;
-            top: 0px;
-            right: 2px;
+            top: -8px; //0
+            right: 0px; //2
+            font-size: 0.75em;
             .circle {
                 background: $primary;
                 width: 7px;

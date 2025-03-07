@@ -13,6 +13,7 @@ use App\Http\Controllers\GuiaDespachoCompraController;
 use App\Http\Controllers\GuiaDespachoController;
 use App\Http\Controllers\MaestroController;
 use App\Http\Controllers\NotaCreditoController;
+use App\Http\Controllers\NotificacionController;
 use App\Http\Controllers\OrdenCompraController;
 use App\Http\Controllers\PedidoMaterialController;
 use App\Http\Controllers\PermissionController;
@@ -43,6 +44,8 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
         return $request->user();
     });
 
+    Route::get('notificaciones', [NotificacionController::class, 'getAll']);
+    Route::post('notificaciones/marcar', [NotificacionController::class, 'marcarNotificaciones']);
 
     Route::get('descargardocs', function(Request $request){
         $path = '/Users/jesusmoris/Downloads/compras-jjr/documentos';

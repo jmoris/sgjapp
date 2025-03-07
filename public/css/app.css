@@ -20929,8 +20929,9 @@ body {
 }
 .navbar .navbar-content .navbar-nav .nav-item .nav-link .indicator {
   position: absolute;
-  top: 0px;
-  right: 2px;
+  top: -8px;
+  right: 0px;
+  font-size: 0.75em;
 }
 .navbar .navbar-content .navbar-nav .nav-item .nav-link .indicator .circle {
   background: #6571ff;
@@ -21439,7 +21440,7 @@ body {
   padding: 0;
   position: fixed;
   top: 75px;
-  right: 0px;
+  right: 10px;
 }
 @media (max-width: 991px) {
   .page-wrapper .toast-container {

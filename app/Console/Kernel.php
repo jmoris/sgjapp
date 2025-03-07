@@ -8,10 +8,14 @@ use App\FacturaCompra;
 use App\GuiaDespacho;
 use App\Helpers\Ajustes;
 use App\NotaCredito;
+use App\Notifications\DocumentoRecibido;
+use App\Permiso;
+use App\User;
 use Exception;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use Spatie\Multitenancy\Models\Tenant;
 
 class Kernel extends ConsoleKernel
@@ -205,6 +209,9 @@ class Kernel extends ConsoleKernel
                 foreach($docData as $data){
                     $doc = FacturaCompra::where('rut_emisor', $data->rut_emisor)->where('folio', $data->folio)->where('tiene_xml', false)->first();
                     if($doc != null){
+                        $users = User::all();
+                        Notification::send($users, new DocumentoRecibido($data->rut_emisor, 33, $data->folio));
+
                         $doc->fecha_vencimiento = date('Y-m-d', strtotime($data->fecha_vencimiento));
                         $doc->tiene_xml = true;
                         $doc->save();
