@@ -122,6 +122,16 @@
                     let now = new Date();
                     let dif = (now - notifTime);
                     dif = Math.round((dif / 1000) / 60);
+                    let difstr = 'min';
+                    if(dif >= 60){
+                        dif = parseInt(dif/60);
+                        difstr = (dif==1)?'hora':'horas';
+                    }
+                    if(dif >= 24){
+                        dif = parseInt(dif/60);
+                        difstr = (dif==1)?'dia':'dias';
+                    }
+
                     var tipo_doc = noti.data['tipo_doc'];
                     var str_url = '';
                     if(tipo_doc == 33){
@@ -139,7 +149,7 @@
                         </div>
                         <div class="flex-grow-1 me-2">
                         <p>Se ha recibido un nuevo documento del<br>contribuyente ${noti.data['rut_emisor']} con folio ${noti.data['folio']}</p>
-                        <p class="tx-12 text-muted">hace ${dif} min</p>
+                        <p class="tx-12 text-muted">hace ${dif} ${difstr}</p>
                         </div>
                     </a>`;
 
