@@ -174,7 +174,7 @@ class Kernel extends ConsoleKernel
                     foreach($response->data as $doc){
                         $fecha = str_replace('/', '-', $doc->detFchDoc);
                         $rut_emisor = $doc->detRutDoc.'-'.$doc->detDvDoc;
-                        if(FacturaCompra::where('rut_emisor', $rut_emisor)->where('folio', $doc->detNroDoc)->count() == 0){
+                        if(FacturaCompra::where('rut_emisor', $rut_emisor)->where('folio', intval($doc->detNroDoc))->count() == 0){
 
                             $factura = new FacturaCompra();
                             $factura->rut_emisor = $rut_emisor;
@@ -214,8 +214,11 @@ class Kernel extends ConsoleKernel
                         $doc->fecha_vencimiento = date('Y-m-d', strtotime($data->fecha_vencimiento));
                         $doc->tiene_xml = true;
                         $doc->save();
-
-                        Notification::send($users, new DocumentoRecibido($data->rut_emisor, 33, $data->folio));
+                        try{
+                            Notification::send($users, new DocumentoRecibido($data->rut_emisor, 33, $data->folio));
+                        }catch(Exception $ex){
+                            Log::error('Hubo un error al intentar enviar la notificacion del contriuyente '.$data->rut_emisor. ' folio '.$data->folio);
+                        }
                     }
                 }
                 // Opcion 1: Hacer un merge de arrays e ingresar masivamente
