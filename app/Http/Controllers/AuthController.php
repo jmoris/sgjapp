@@ -82,10 +82,10 @@ class AuthController extends Controller
 				// validation successful
                 $user = Auth::user();
 
-                Log::info("---------------------------------------------------");
-                Log::info("Cookie Tenant: ".decrypt(Cookie::get('tenant')));
-                Log::info("Estado Auth:". (Auth::check()?'Conectado':'Desconectado') );
-                Log::info("Usuario conectado: ".json_encode($user));
+                //Log::info("---------------------------------------------------");
+                //Log::info("Cookie Tenant: ".decrypt(Cookie::get('tenant')));
+                //Log::info("Estado Auth:". (Auth::check()?'Conectado':'Desconectado') );
+                //Log::info("Usuario conectado: ".json_encode($user));
 
                 User::where('id', $user->id)->update(['last_login' => Carbon::now()]);
                 return Redirect::to('/dashboard');
