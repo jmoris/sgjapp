@@ -210,11 +210,12 @@ class Kernel extends ConsoleKernel
                     $doc = FacturaCompra::where('rut_emisor', $data->rut_emisor)->where('folio', $data->folio)->where('tiene_xml', false)->first();
                     if($doc != null){
                         $users = User::all();
-                        Notification::send($users, new DocumentoRecibido($data->rut_emisor, 33, $data->folio));
 
                         $doc->fecha_vencimiento = date('Y-m-d', strtotime($data->fecha_vencimiento));
                         $doc->tiene_xml = true;
                         $doc->save();
+
+                        Notification::send($users, new DocumentoRecibido($data->rut_emisor, 33, $data->folio));
                     }
                 }
                 // Opcion 1: Hacer un merge de arrays e ingresar masivamente
