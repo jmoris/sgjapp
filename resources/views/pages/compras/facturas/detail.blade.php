@@ -563,8 +563,8 @@
     <script>
         var currentUserId = {{ auth()->user()->id }};
 
-        $(document).ready(function(){
-            $("#monto_ago").inputmask('numeric', {
+        $(document).ready(function() {
+            $("#monto_pago").inputmask('numeric', {
                 prefix: '$ ',
                 radixPoint: ',',
                 groupSeparator: '.',
