@@ -395,7 +395,9 @@
                 </div>
                 <div class="col-md-4 grid-margin">
                     <div class="align-items-start">
-                        <div class="col-md-12 mb-2">
+                        <!--
+                            SE PRUEBA A SOLO CATEGORIZAR FACTURAS QUE TIENEN PESO TRIBUTARIO
+                            <div class="col-md-12 mb-2">
                             <div class="card">
                                 <div class="card-body">
                                     <div class="col-md-12">
@@ -417,7 +419,7 @@
 
                                 </div>
                             </div>
-                        </div>
+                        </div>-->
                         <div class="col-md-12 mb-2">
                             <div class="card">
                                 <div class="card-body">
@@ -457,7 +459,10 @@
                                                 </div>
                                                 <div class="col-md-5 text-end">
                                                     <p id="lblneto">$
-                                                        {{ number_format($documento['Encabezado']['Totales']['MntNeto'], 0, ',', '.') }}
+                                                        @php
+                                                            $neto = (isset($documento['Encabezado']['Totales']['MntNeto'])?$documento['Encabezado']['Totales']['MntNeto']:0);
+                                                        @endphp
+                                                        {{ number_format($neto, 0, ',', '.') }}
                                                     </p>
                                                 </div>
                                             </div>
@@ -467,7 +472,10 @@
                                                 </div>
                                                 <div class="col-md-5 text-end">
                                                     <p id="lbliva">$
-                                                        {{ number_format($documento['Encabezado']['Totales']['IVA'], 0, ',', '.') }}
+                                                        @php
+                                                            $iva = (isset($documento['Encabezado']['Totales']['IVA'])?$documento['Encabezado']['Totales']['IVA']:0);
+                                                        @endphp
+                                                        {{ number_format($iva, 0, ',', '.') }}
                                                     </p>
                                                 </div>
                                             </div>
@@ -505,7 +513,10 @@
                                                 </div>
                                                 <div class="col-md-5 text-end">
                                                     <p id="lbltotal">$
-                                                        {{ number_format($documento['Encabezado']['Totales']['MntTotal'], 0, ',', '.') }}
+                                                        @php
+                                                            $total = (isset($documento['Encabezado']['Totales']['MntTotal'])?$documento['Encabezado']['Totales']['MntTotal']:0);
+                                                        @endphp
+                                                        {{ number_format($total, 0, ',', '.') }}
                                                     </p>
                                                 </div>
                                             </div>
