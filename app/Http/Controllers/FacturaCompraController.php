@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\CategoriaDocumento;
 use App\FacturaCompra;
 use App\Helpers\Ajustes;
+use App\PagoFacturaCompra;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -32,7 +33,6 @@ class FacturaCompraController extends Controller
             }
             curl_close($ch);
             Log::info("ENDPOINT FACTURAS COMPRA: ". $endpoint);
-
         return view('pages.compras.facturas.index', ['documentos' => $data]);
     }
 
@@ -54,7 +54,8 @@ class FacturaCompraController extends Controller
             $data = $dte->getDatos();
         $categorias = CategoriaDocumento::all();
         $fact = FacturaCompra::where('rut_emisor', $rutEmisor)->where('folio', $folio)->first();
-            return view('pages.compras.facturas.detail', ['documento' => $data, 'factura' => $fact, 'categorias' => $categorias]);
+        $pagos = PagoFacturaCompra::where('factura_compra_id', $folio)->get();
+        return view('pages.compras.facturas.detail', ['documento' => $data, 'factura' => $fact, 'categorias' => $categorias, 'pagos' => $pagos]);
     }
 
     /*

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->date('fecha_pago');
             $table->bigInteger('monto_pago');
             $table->longText('glosa');
+            $table->foreignIdFor(\App\FacturaCompra::class)->constrained();
             $table->timestamps();
         });
     }
