@@ -525,6 +525,7 @@
                                 </div>
                             </div>
                         </div>
+                        <!-- SE QUITAN PAGOS DE GUIAS DE DESPACHO PORQUE NO TIENEN VALOR TRIBUTARIO
                         <div class="col-md-12">
                             <div class="card">
                                 <div class="card-body">
@@ -544,6 +545,7 @@
                                 </div>
                             </div>
                         </div>
+                    -->
                     </div>
                 </div>
             </div>

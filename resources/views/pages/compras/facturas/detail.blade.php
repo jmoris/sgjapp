@@ -479,6 +479,9 @@
                                     <div class="col-md-12">
                                         <div class="d-flex justify-content-between align-items-baseline">
                                             <h4 class="card-title mb-0">PAGOS ASOCIADOS AL DOCUMENTO</h4>
+                                            <button onclick="abrirModalPago()" class="btn btn-primary btn-small float-end" title="Agregar pago">
+                                                <i class="mdi mdi-plus"></i>
+                                            </button>
                                         </div>
                                         <table class="table">
                                             <thead>
@@ -486,6 +489,13 @@
                                                 <th>Fecha</th>
                                                 <th>Monto</th>
                                             </thead>
+                                            <tbody>
+                                                @if(count($pagos) == 0)
+                                                <tr>
+                                                    <td colspan="3">No existen pagos asociados</td>
+                                                </tr>
+                                                @endif
+                                            </tbody>
                                         </table>
                                     </div>
 
@@ -497,17 +507,73 @@
             </div>
         </div>
     </div>
+    <div id="modalPagos" class="modal" tabindex="-1">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">ASOCIAR PAGO A FACTURA</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mx-2">
+                    <div class="mb-2">
+                        <label class="form-label">Tipo de pago</label>
+                        <select class="form-control" id="tipo_pago">
+                            <option>Seleccione un tipo de pago</option>
+                        </select>
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Fecha de pago</label>
+                        <input type="date" name="fecha_pago"
+                            id="fecha_pago"
+                            class="form-control"
+                            value="{{ date('Y-m-d') }}"
+                            max="{{ date('Y-m-d') }}">
+                    </div>
+                    <div class="mb-2">
+                        <label class="form-label">Monto de Pago</label>
+                        <input type="text" id="monto_pago" value="0" class="form-control">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+              <button type="button" class="btn btn-primary">Agregar</button>
+            </div>
+          </div>
+        </div>
+      </div>
 @endsection
 
 @push('plugin-scripts')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.30.1/moment-with-locales.min.js"
         integrity="sha512-4F1cxYdMiAW98oomSLaygEwmCnIP38pb4Kx70yQYqRwLVCs3DbRumfBq82T08g/4LJ/smbFGFpmeFlQgoDccgg=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"
+        integrity="sha512-efAcjYoYT0sXxQRtxGY37CKYmqsFVOIwMApaEbrxJr4RwqVVGw8o+Lfh/+59TU07+suZn1BWq4fDl5fdgyCNkw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 @endpush
 
 @push('custom-scripts')
     <script>
         var currentUserId = {{ auth()->user()->id }};
+
+        $(document).ready(function(){
+            $("#montoPago").inputmask('numeric', {
+                prefix: '$ ',
+                radixPoint: ',',
+                groupSeparator: '.',
+                rightAlign: false
+            });
+        });
+
+        function abrirModalPago(){
+            $('#modalPagos').modal('show');
+        }
+
+        function procesarPago(){
+
+        }
 
         function categorizarDocumento(){
             var data = {
