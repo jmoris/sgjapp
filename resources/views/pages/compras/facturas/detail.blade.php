@@ -534,6 +534,11 @@
                         <label class="form-label">Monto de Pago</label>
                         <input type="text" id="monto_pago" value="0" class="form-control">
                     </div>
+                    <div class="mb-2">
+                        <label class="form-label">Glosa</label>
+                        <textarea id="glosa_pago" rows="3" class="form-control form-control-sm"
+                                    placeholder="GLOSA CORRESPONDIENTE AL PAGO"></textarea>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -559,7 +564,7 @@
         var currentUserId = {{ auth()->user()->id }};
 
         $(document).ready(function(){
-            $("#montoPago").inputmask('numeric', {
+            $("#monto_ago").inputmask('numeric', {
                 prefix: '$ ',
                 radixPoint: ',',
                 groupSeparator: '.',
