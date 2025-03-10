@@ -544,8 +544,8 @@
                     </div>
                 </div>
             </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-danger float-start" data-bs-dismiss="modal">Cerrar</button>
+            <div class="modal-footer justify-content-between">
+              <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
               <button type="button" class="btn btn-primary">Agregar</button>
             </div>
           </div>
