@@ -520,6 +520,9 @@
                         <label class="form-label">Tipo de pago</label>
                         <select class="form-control" id="tipo_pago">
                             <option>Seleccione un tipo de pago</option>
+                            <option value="1">Transferencia Electrónica</option>
+                            <option value="2">Cheque</option>
+                            <option value="3">Otro</option>
                         </select>
                     </div>
                     <div class="mb-2">
@@ -542,7 +545,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+              <button type="button" class="btn btn-danger float-start" data-bs-dismiss="modal">Cerrar</button>
               <button type="button" class="btn btn-primary">Agregar</button>
             </div>
           </div>
