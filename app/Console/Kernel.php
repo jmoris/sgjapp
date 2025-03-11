@@ -215,7 +215,7 @@ class Kernel extends ConsoleKernel
                         $doc->tiene_xml = true;
                         $doc->save();
                         try{
-                            Notification::send($users, (new DocumentoRecibido($data->rut_emisor, 33, $data->folio))->onQueue('notificaciones'));
+                            Notification::sendNow($users, new DocumentoRecibido($data->rut_emisor, 33, $data->folio));
                         }catch(Exception $ex){
                             Log::error('Hubo un error al intentar enviar la notificacion del contriuyente '.$data->rut_emisor. ' folio '.$data->folio);
                         }

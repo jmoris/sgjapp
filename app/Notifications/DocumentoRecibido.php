@@ -36,6 +36,18 @@ class DocumentoRecibido extends Notification implements ShouldQueue
     }
 
     /**
+     * Determine which queues should be used for each notification channel.
+     *
+     * @return array<string, string>
+     */
+    public function viaQueues(): array
+    {
+        return [
+            'database' => 'notificaciones',
+        ];
+    }
+
+    /**
      * Get the mail representation of the notification.
      */
     public function toMail(object $notifiable): MailMessage
