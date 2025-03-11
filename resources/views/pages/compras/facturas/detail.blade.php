@@ -528,9 +528,10 @@
                         <label class="form-label">Tipo de pago</label>
                         <select class="form-control" id="tipo_pago">
                             <option>Seleccione un tipo de pago</option>
-                            <option value="1">Transferencia Electrónica</option>
-                            <option value="2">Cheque</option>
-                            <option value="3">Otro</option>
+                            <option value="1">Efectivo</option>
+                            <option value="2">Transferencia Electrónica</option>
+                            <option value="3">Cheque</option>
+                            <option value="4">Otro</option>
                         </select>
                     </div>
                     <div class="mb-2">
