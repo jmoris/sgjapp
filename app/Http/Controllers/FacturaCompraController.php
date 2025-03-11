@@ -184,7 +184,7 @@ class FacturaCompraController extends Controller
 
             if($validator->fails()){
                 return response()->json([
-                    'success' => 'false',
+                    'success' => false,
                     'msg' => 'La información ingresada no es suficiente para completar el registro',
                     'error' => $validator->errors()
                 ]);
@@ -194,6 +194,7 @@ class FacturaCompraController extends Controller
             $pago->tipo_pago = $request->tipo_pago;
             $pago->fecha_pago = date('Y-m-d', strtotime($request->fecha_pago));
             $pago->monto_pago = $request->monto_pago;
+            $pago->factura_compra_id = $id;
             $glosa = $request->glosa;
             if($glosa==null)
                 $glosa='';
