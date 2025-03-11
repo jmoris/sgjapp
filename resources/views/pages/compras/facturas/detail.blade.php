@@ -610,7 +610,11 @@
                     glosa: $('#glosa_pago').val()
                 }, // serializes the form's elements.
                 success: function(data){
-                    location.reload();
+                    if(data.success){
+                        location.reload();
+                    }else{
+                        console.log(data);
+                    }
                 }
             });
         }
