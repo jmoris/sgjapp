@@ -179,7 +179,7 @@ class FacturaCompraController extends Controller
                 'tipo_pago' => 'required',
                 'fecha_pago' => 'required|date',
                 'monto_pago' => 'required',
-                'glosa' => 'required',
+                'glosa' => '',
             ]);
 
             if($validator->fails()){
@@ -194,6 +194,9 @@ class FacturaCompraController extends Controller
             $pago->tipo_pago = $request->tipo_pago;
             $pago->fecha_pago = date('Y-m-d', strtotime($request->fecha_pago));
             $pago->monto_pago = $request->monto_pago;
+            $glosa = $request->glosa;
+            if($glosa==null)
+                $glosa='';
             $pago->glosa = $request->glosa;
             $pago->save();
 
