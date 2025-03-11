@@ -54,7 +54,7 @@ class FacturaCompraController extends Controller
             $data = $dte->getDatos();
         $categorias = CategoriaDocumento::all();
         $fact = FacturaCompra::where('rut_emisor', $rutEmisor)->where('folio', $folio)->first();
-        $pagos = PagoFacturaCompra::where('factura_compra_id', $folio)->get();
+        $pagos = PagoFacturaCompra::where('factura_compra_id', $fact->id)->get();
         return view('pages.compras.facturas.detail', ['documento' => $data, 'factura' => $fact, 'categorias' => $categorias, 'pagos' => $pagos]);
     }
 
@@ -198,15 +198,16 @@ class FacturaCompraController extends Controller
             $glosa = $request->glosa;
             if($glosa==null)
                 $glosa='';
-            $pago->glosa = $request->glosa;
+            $pago->glosa = $glosa;
             $pago->save();
-
+            Log::info("Pago creado hasta aqqui");
             return response()->json([
                 'success' => true,
                 'msg' => 'Pago agregado exitosamente a la factura de compra'
             ]);
 
         }catch(Exception $ex){
+            Log::error($ex);
             return response()->json([
                 'success' => false,
                 'msg' => 'Hubo un problema al agregar el pago',
