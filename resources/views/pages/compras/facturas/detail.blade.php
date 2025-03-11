@@ -495,6 +495,14 @@
                                                     <td colspan="3">No existen pagos asociados</td>
                                                 </tr>
                                                 @endif
+                                                @foreach($pagos as $pago)
+                                                <tr>
+                                                    <td>{{$pago->tipo_pago}}</td>
+                                                    <td>{{$pago->fecha_pago}}</td>
+                                                    <td>{{$pago->monto_pago}}</td>
+                                                    <td><button class="btn btn-sm" onclick="eliminarPago({{ $pago->id }})"><i class="mdi mdi-delete"></i></button></td>
+                                                </tr>
+                                                @endforeach
                                             </tbody>
                                         </table>
                                     </div>
@@ -546,7 +554,7 @@
             </div>
             <div class="modal-footer justify-content-between">
               <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
-              <button type="button" class="btn btn-primary">Agregar</button>
+              <button type="button" class="btn btn-primary" onclick="procesarPago()">Agregar</button>
             </div>
           </div>
         </div>
