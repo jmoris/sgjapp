@@ -579,8 +579,31 @@
             $('#modalPagos').modal('show');
         }
 
-        function procesarPago(){
+        function eliminarPago(id){
+            $.ajax({
+                type: "POST",
+                url: "/api/compras/facturas/pagos/eliminar/" + id,
+                data: {}, // serializes the form's elements.
+                success: function(data){
+                    location.reload();
+                }
+            });
+        }
 
+        function procesarPago(){
+            $.ajax({
+                type: "POST",
+                url: "/api/compras/facturas/pagos/{{$factura->id}}",
+                data: {
+                    tipo_pago: $('#tipo_pago').val(),
+                    fecha_pago: $('#fecha_pago').val(),
+                    monto_pago: $('#monto_pago').val(),
+                    glosa: $('#glosa_pago').val()
+                }, // serializes the form's elements.
+                success: function(data){
+                    location.reload();
+                }
+            });
         }
 
         function categorizarDocumento(){

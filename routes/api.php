@@ -191,6 +191,8 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
         Route::get('facturas/vistaprevia/{rutEmisor}/{tipo}/{folio}', [FacturaCompraController::class, 'vistaPreviaFactura']);
         Route::get('facturas/descargar/{emisor}/{folio}', [FacturaCompraController::class, 'descargarPDF']);
         Route::post('categorizar/factura/{emisor}/{folio}', [FacturaCompraController::class, 'categorizarFactura']);
+        Route::post('facturas/pagos/{id}', [FacturaCompraController::class, 'agregarPago']);
+        Route::post('facturas/pagos/eliminar/{id}', [FacturaCompraController::class, 'eliminarPago']);
 
         Route::get('guiasdespacho', [GuiaDespachoCompraController::class, 'getAll']);
         Route::get('guiasdespacho/vistaprevia/{rutEmisor}/{tipo}/{folio}', [GuiaDespachoCompraController::class, 'vistaPreviaFactura']);
