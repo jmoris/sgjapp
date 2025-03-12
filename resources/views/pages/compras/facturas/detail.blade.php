@@ -499,7 +499,7 @@
                                                 <tr>
                                                     @php
                                                         $tipo_pago = '';
-                                                        if($pago->tipo == 1){
+                                                        if($pago->tipo_pago == 1){
                                                             $tipo_pago = 'Efectivo';
                                                         }else if($pago->tipo_pago == 2){
                                                             $tipo_pago = 'Transferencia';
@@ -510,7 +510,7 @@
                                                         }
 
                                                     @endphp
-                                                    <td>{!!$tipo_pago!!}</td>
+                                                    <td>{{$tipo_pago}}</td>
                                                     <td>{{$pago->fecha_pago}}</td>
                                                     <td>$ {{ number_format($pago->monto_pago, 0, ',', '.') }}</td>
                                                     <td><button class="btn btn-sm btn-outline-danger" style="padding:.25em .5em; float:left;" onclick="eliminarPago({{ $pago->id }})"><i class="mdi mdi-delete"></i></button></td>
