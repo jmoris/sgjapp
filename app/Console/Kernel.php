@@ -216,6 +216,7 @@ class Kernel extends ConsoleKernel
                         $doc->save();
                         try{
                             Notification::sendNow($users, new DocumentoRecibido($data->rut_emisor, 33, $data->folio));
+                            Log::info("Se envia notificacion a usuarios por doc ". $data->rut_emisor." - ".$data->folio);
                         }catch(Exception $ex){
                             Log::error('Hubo un error al intentar enviar la notificacion del contriuyente '.$data->rut_emisor. ' folio '.$data->folio);
                         }

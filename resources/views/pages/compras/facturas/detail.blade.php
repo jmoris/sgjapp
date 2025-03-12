@@ -554,7 +554,7 @@
                 </div>
             </div>
             <div class="modal-footer justify-content-between">
-              <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+              <button type="button" class="btn btn-danger" onclick="cerrarModalPago()">Cerrar</button>
               <button type="button" class="btn btn-primary" onclick="procesarPago()">Agregar</button>
             </div>
           </div>
@@ -588,13 +588,38 @@
             $('#modalPagos').modal('show');
         }
 
+        function limpiarModal(){
+            $('#tipo_pago').val();
+            $('#fecha_pago').val();
+            $('#monto_pago').val(0);
+            $('#glosa_pago').val();
+        }
+
+        function cerrarModalPago(){
+            limpiarModal();
+            $('#modalPagos').modal('hide');
+        }
+
         function eliminarPago(id){
-            $.ajax({
-                type: "POST",
-                url: "/api/compras/facturas/pagos/eliminar/" + id,
-                data: {}, // serializes the form's elements.
-                success: function(data){
-                    location.reload();
+            Swal.fire({
+                title: "Confirmar eliminación del pago",
+                text: "La acción que desea realizar es irreversible, ¿desea continuar con la operación?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#6571FF",
+                cancelButtonColor: "#FF3366",
+                confirmButtonText: "Confirmar",
+                cancelButtonText: "Cancelar"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: "POST",
+                        url: "/api/compras/facturas/pagos/eliminar/" + id,
+                        data: {}, // serializes the form's elements.
+                        success: function(data){
+                            location.reload();
+                        }
+                    });
                 }
             });
         }
