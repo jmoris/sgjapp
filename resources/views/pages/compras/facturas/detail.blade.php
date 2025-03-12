@@ -544,7 +544,7 @@
                     </div>
                     <div class="mb-2">
                         <label class="form-label">Monto de Pago</label>
-                        <input type="text" id="monto_pago" value="0" class="form-control">
+                        <input type="text" id="monto_pago" value="0" min="0" class="form-control">
                     </div>
                     <div class="mb-2">
                         <label class="form-label">Glosa</label>
@@ -578,6 +578,7 @@
         $(document).ready(function() {
             $("#monto_pago").inputmask('numeric', {
                 prefix: '$ ',
+                min: 0,
                 radixPoint: ',',
                 groupSeparator: '.',
                 rightAlign: false
@@ -589,7 +590,7 @@
         }
 
         function limpiarModal(){
-            $('#tipo_pago').val(1);
+            $('#tipo_pago').val(0);
             $('#fecha_pago').val('{{date("Y-m-d")}}');
             $('#monto_pago').val(0);
             $('#glosa_pago').val('');
