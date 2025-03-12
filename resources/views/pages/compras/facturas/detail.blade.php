@@ -589,10 +589,10 @@
         }
 
         function limpiarModal(){
-            $('#tipo_pago').val();
-            $('#fecha_pago').val();
+            $('#tipo_pago').val(1);
+            $('#fecha_pago').val('{{date("Y-m-d")}}');
             $('#monto_pago').val(0);
-            $('#glosa_pago').val();
+            $('#glosa_pago').val('');
         }
 
         function cerrarModalPago(){
