@@ -8,6 +8,7 @@ use App\Comuna;
 use App\DocumentoPendiente;
 use App\Factura;
 use App\Helpers\Ajustes;
+use App\Helpers\Herramientas;
 use App\LineaFactura;
 use App\ListaPrecio;
 use App\Proyecto;
@@ -95,8 +96,8 @@ class FacturaController extends Controller
             $neto = 0;
             foreach($request->items as $item){
                 array_push($detalle, [
-                    'NmbItem' => $item['nombre'],
-                    'DscItem' => ((!array_key_exists('descripcion', $item))?false:$item['descripcion']),
+                    'NmbItem' => Herramientas::sanitizarString($item['nombre']),
+                    'DscItem' => ((!array_key_exists('descripcion', $item))?false:Herramientas::sanitizarString($item['descripcion'])),
                     'UnmdItem' => Unidad::find($item['unidad'])->abreviacion,
                     'PrcItem' => $item['precio'],
                     'QtyItem' => $item['cantidad'],
@@ -120,23 +121,7 @@ class FacturaController extends Controller
                 ]);
             }
             $vencimiento = date('Y-m-d', strtotime(str_replace('/', '-', $request->fecha_vencimiento)));
-            $data = [
-                'contribuyente' => $emisor['rut'],
-                'acteco' => $emisor['acteco'],
-                'tipo' => 33,
-                'fecha' => $str,
-                'fecha_vencimiento' => $vencimiento,
-                'receptor' => [
-                    'rut'=> $cliente->rut,
-                    'razon_social'=> $cliente->razon_social,
-                    'giro'=> $cliente->giro,
-                    'direccion'=> $cliente->direccion,
-                    'comuna'=> $cliente->comuna->nombre,
-                ],
-                'tipo_pago' => $request->tipo_pago,
-                'detalles' => $detalle,
-                'referencias' => $referencias
-            ];
+
             $dte = [
                 'Encabezado' => [
                     'IdDoc' => [
@@ -156,8 +141,8 @@ class FacturaController extends Controller
                     ],
                     'Receptor' => [
                         'RUTRecep' => $cliente->rut,
-                        'RznSocRecep' => $cliente->razon_social,
-                        'GiroRecep' =>  $cliente->giro,
+                        'RznSocRecep' => Herramientas::sanitizarString($cliente->razon_social),
+                        'GiroRecep' =>  Herramientas::sanitizarString($cliente->giro),
                         'DirRecep' =>  $cliente->direccion,
                         'CmnaRecep' =>  $cliente->comuna->nombre,
                         'CdgIntRecep' => 'CASA MATRIZ'
