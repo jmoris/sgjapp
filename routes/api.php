@@ -12,6 +12,7 @@ use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\GuiaDespachoCompraController;
 use App\Http\Controllers\GuiaDespachoController;
 use App\Http\Controllers\MaestroController;
+use App\Http\Controllers\NotaCreditoCompraController;
 use App\Http\Controllers\NotaCreditoController;
 use App\Http\Controllers\NotificacionController;
 use App\Http\Controllers\OrdenCompraController;
@@ -196,6 +197,10 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
 
         Route::get('guiasdespacho', [GuiaDespachoCompraController::class, 'getAll']);
         Route::get('guiasdespacho/vistaprevia/{rutEmisor}/{tipo}/{folio}', [GuiaDespachoCompraController::class, 'vistaPreviaFactura']);
+
+        Route::get('notascredito', [NotaCreditoCompraController::class, 'getAll']);
+        Route::get('notascredito/vistaprevia/{rutEmisor}/{tipo}/{folio}', [NotaCreditoCompraController::class, 'vistaPreviaNC']);
+        Route::get('notascredito/descargar/{emisor}/{folio}', [NotaCreditoCompraController::class, 'descargarPDF']);
 
         Route::get('ordenescompra', [OrdenCompraController::class, 'getAll']);
         Route::get('ordenescompra/vistaprevia/{folio}/{rev?}', [OrdenCompraController::class, 'vistaPreviaOC']);

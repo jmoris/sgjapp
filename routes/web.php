@@ -21,6 +21,7 @@ use App\Http\Controllers\FacturaCompraController;
 use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\GuiaDespachoCompraController;
 use App\Http\Controllers\GuiaDespachoController;
+use App\Http\Controllers\NotaCreditoCompraController;
 use App\Http\Controllers\NotaCreditoController;
 use App\Http\Controllers\OrdenCompraController;
 use App\Http\Controllers\PedidoMaterialController;
@@ -173,6 +174,10 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
         Route::prefix('guiasdespacho')->middleware('tag:ver-guia-despacho')->group(function(){
             Route::get('/', [GuiaDespachoCompraController::class, 'index']);
             Route::get('/detalle/{rutEmisor}/{folio}', [GuiaDespachoCompraController::class, 'show']);
+        });
+        Route::prefix('notascredito')->middleware('tag:ver-nota-credito')->group(function(){
+            Route::get('/', [NotaCreditoCompraController::class, 'index']);
+            Route::get('/detalle/{rutEmisor}/{folio}', [NotaCreditoCompraController::class, 'show']);
         });
         Route::prefix('ordenescompra')->middleware('tag:ver-orden-compra')->group(function(){
             Route::get('/', [OrdenCompraController::class, 'index']);

@@ -24,6 +24,9 @@ class GuiaDespachoCompraController extends Controller
             if(isset($data->success)){
                 $data = [];
             }
+            if($data == null){
+                $data = [];
+            }
             curl_close($ch);
             Log::info("ENDPOINT GUIAS COMPRA: ". $endpoint);
 

@@ -8,6 +8,7 @@ use App\FacturaCompra;
 use App\GuiaDespacho;
 use App\Helpers\Ajustes;
 use App\NotaCredito;
+use App\NotaCreditoCompra;
 use App\Notifications\DocumentoRecibido;
 use App\Permiso;
 use App\User;
@@ -145,7 +146,9 @@ class Kernel extends ConsoleKernel
                     Log::error($ex);
                 }
             }))->everyMinute();
-
+            /**
+             * Tarea que revisa cada 15 min las facturas de compra recibidas
+             */
             $schedule->call($tenant->callback(function(){
                 // Periodo es el mes actual
                 $periodo = date('Ym');
@@ -216,6 +219,89 @@ class Kernel extends ConsoleKernel
                         $doc->save();
                         try{
                             Notification::sendNow($users, new DocumentoRecibido($data->rut_emisor, 33, $data->folio));
+                            Log::info("Se envia notificacion a usuarios por doc ". $data->rut_emisor." - ".$data->folio);
+                        }catch(Exception $ex){
+                            Log::error('Hubo un error al intentar enviar la notificacion del contriuyente '.$data->rut_emisor. ' folio '.$data->folio);
+                        }
+                    }
+                }
+                // Opcion 1: Hacer un merge de arrays e ingresar masivamente
+                // Opcion 2: Insertar todos los docs del RCV y luego hacer un update masivo
+                // con los docs recibidos en el correo (tiene_xml = si)
+            }))->everyFifteenMinutes();
+            /**
+             * Tarea que revisa cada 15 min las notas de credito de compra recibidas
+             */
+            $schedule->call($tenant->callback(function(){
+                // Periodo es el mes actual
+                $periodo = date('Ym');
+                $emisor = Ajustes::getEmisor();
+                // Obtener RCV de Compra, estos documentos son los recibidos en el SII
+                $data = [
+                    'contribuyente' => $emisor['rut'],
+                    'operacion' => 'COMPRA',
+                    'periodo' => $periodo,
+                    'tipo_doc' => 61
+                ];
+                $url = env('FACTURAPI_ENDPOINT').'rcv/detalle?'.http_build_query($data);
+                $ch = curl_init( $url );
+                curl_setopt( $ch, CURLOPT_POST, false);
+                curl_setopt( $ch, CURLOPT_HTTPHEADER, [
+                    'Content-Type:application/json',
+                    'Authorization: Bearer '.env('FACTURAPI_TOKEN')
+                ]);
+                curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+                $result = curl_exec($ch);
+                $response = json_decode($result);
+                if($response == null){
+                    return 0;
+                }
+                if($response->data != null){
+                    foreach($response->data as $doc){
+                        $fecha = str_replace('/', '-', $doc->detFchDoc);
+                        $rut_emisor = $doc->detRutDoc.'-'.$doc->detDvDoc;
+                        if(NotaCreditoCompra::where('rut_emisor', $rut_emisor)->where('folio', intval($doc->detNroDoc))->count() == 0){
+
+                            $factura = new NotaCreditoCompra();
+                            $factura->rut_emisor = $rut_emisor;
+                            $factura->razon_social_emisor = $doc->detRznSoc;
+                            $factura->folio = $doc->detNroDoc;
+                            $factura->fecha_emision = date('Y-m-d', strtotime($fecha));
+                            $factura->monto_neto = $doc->detMntNeto;
+                            $factura->monto_iva = $doc->detMntIVA;
+                            $factura->monto_total = $doc->detMntTotal;
+                            $factura->tiene_xml = false;
+                            $factura->save();
+
+                        }
+                    }
+                }
+                // Obtener los documentos recibidos en el correo
+                $endpoint =  env('FACTURAPI_ENDPOINT').'documentos/compras?contribuyente='.$emisor['rut'].'&tipo=61&periodo='.$periodo;
+                $ch = curl_init( $endpoint );
+                curl_setopt( $ch, CURLOPT_POST, false);
+                curl_setopt( $ch, CURLOPT_HTTPHEADER, [
+                    'Content-Type:application/json',
+                    'Authorization: Bearer '.env('FACTURAPI_TOKEN')
+                ]);
+                curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+                $result = curl_exec($ch);
+                curl_close($ch);
+                if($result == null){
+                    return 0;
+                }
+                $docData = json_decode($result);
+
+                foreach($docData as $data){
+                    $doc = NotaCreditoCompra::where('rut_emisor', $data->rut_emisor)->where('folio', $data->folio)->where('tiene_xml', false)->first();
+                    if($doc != null){
+                        $users = User::all();
+
+                        $doc->fecha_vencimiento = date('Y-m-d', strtotime($data->fecha_vencimiento));
+                        $doc->tiene_xml = true;
+                        $doc->save();
+                        try{
+                            Notification::sendNow($users, new DocumentoRecibido($data->rut_emisor, 61, $data->folio));
                             Log::info("Se envia notificacion a usuarios por doc ". $data->rut_emisor." - ".$data->folio);
                         }catch(Exception $ex){
                             Log::error('Hubo un error al intentar enviar la notificacion del contriuyente '.$data->rut_emisor. ' folio '.$data->folio);
