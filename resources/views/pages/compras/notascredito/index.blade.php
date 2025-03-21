@@ -92,7 +92,7 @@
 
 @push('custom-scripts')
     <script>
-        var facturasTable = null;
+        var ncTable = null;
         var currentUserId = {{ auth()->user()->id }};
         var fecha_em_inicial, fecha_em_final;
         var filtro = {
@@ -204,7 +204,7 @@
         }
 
         function cargarDocumentos(feMin = '', feMax = '', fvMin = '', fvMax = '') {
-            facturasTable = new DataTable('#tabla', {
+            ncTable = new DataTable('#tabla', {
                 layout: {
                     topEnd: null
                 },
@@ -286,7 +286,7 @@
             });
         }
 
-        facturasTable = new DataTable('#example', {
+        ncTable = new DataTable('#example', {
             responsive: true,
             ajax: '/api/compras/facturas',
             search: {
@@ -374,12 +374,12 @@
         });
 
         $('#min').change(function(e) {
-            facturasTable.draw();
+            ncTable.draw();
             $('#max').focus();
             $('#max').click();
         });
         $('#max').change(function(e) {
-            facturasTable.draw();
+            ncTable.draw();
         });
     </script>
 @endpush

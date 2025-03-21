@@ -1,18 +1,18 @@
 @extends('layout.master')
 
-@section('title', 'Visor de Facturas Electrónicas - Compra')
+@section('title', 'Visor de Notas de Credito Electrónicas - Compra')
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
         <div>
-            <h4 class="mb-3 mb-md-0">Factura Electrónica #{{ $documento['Encabezado']['IdDoc']['Folio'] }} - Compra</h4>
+            <h4 class="mb-3 mb-md-0">Nota de Credito Electrónica #{{ $documento['Encabezado']['IdDoc']['Folio'] }} - Compra</h4>
         </div>
         <div class="align-end">
-            <button type="button" class="btn btn-success" onclick="window.open('/api/compras/facturas/vistaprevia/{{ $documento['Encabezado']['Emisor']['RUTEmisor'].'/33/'.intval($documento['Encabezado']['IdDoc']['Folio'])}}', '_blank')">
+            <button type="button" class="btn btn-success" onclick="window.open('/api/compras/notascredito/vistaprevia/{{ $documento['Encabezado']['Emisor']['RUTEmisor'].'/61/'.intval($documento['Encabezado']['IdDoc']['Folio'])}}', '_blank')">
                 <i class="mdi mdi-magnify"></i>
                 Visualizar PDF
             </button>
-            <button type="button" class="btn btn-danger" onclick="location.href = '/compras/facturas'">
+            <button type="button" class="btn btn-danger" onclick="location.href = '/compras/notascredito'">
                 <i class="mdi mdi-arrow-left"></i>
                 Volver
             </button>
