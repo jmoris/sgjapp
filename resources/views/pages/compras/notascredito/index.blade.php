@@ -196,11 +196,11 @@
         });
 
         function verDocumento(emisor, folio) {
-            location.href = `/compras/facturas/detalle/${emisor}/${folio}`;
+            location.href = `/compras/notascredito/detalle/${emisor}/${folio}`;
         }
 
         function vistaPreviaDocumento(emisor, folio) {
-            window.open(`/api/compras/facturas/vistaprevia/${emisor}/61/${folio}/?descargar=1`);
+            window.open(`/api/compras/notascredito/vistaprevia/${emisor}/61/${folio}/?descargar=1`);
         }
 
         function cargarDocumentos(feMin = '', feMax = '', fvMin = '', fvMax = '') {

@@ -38,7 +38,7 @@ class NotaCreditoCompraController extends Controller
 
     public function show($rutEmisor, $folio){
         $emisor = Ajustes::getEmisor();
-        $endpoint =  env('FACTURAPI_ENDPOINT').'documentos/compras/generar/xml/'.$rutEmisor.'/33/'.$folio.'?contribuyente='.$emisor['rut'];
+        $endpoint =  env('FACTURAPI_ENDPOINT').'documentos/compras/generar/xml/'.$rutEmisor.'/61/'.$folio.'?contribuyente='.$emisor['rut'];
         $ch = curl_init( $endpoint );
             curl_setopt( $ch, CURLOPT_POST, false);
             curl_setopt( $ch, CURLOPT_HTTPHEADER, [
