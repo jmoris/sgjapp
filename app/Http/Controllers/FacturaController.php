@@ -12,6 +12,7 @@ use App\Helpers\Ajustes;
 use App\Helpers\Herramientas;
 use App\LineaFactura;
 use App\ListaPrecio;
+use App\PagoFactura;
 use App\PagoFacturaCompra;
 use App\Proyecto;
 use App\Unidad;
@@ -49,8 +50,8 @@ class FacturaController extends Controller
             $data = $dte->getDatos();
         $categorias = CategoriaDocumento::all();
         $fact = Factura::where('folio', $folio)->first();
-        //$pagos = PagoFacturaCompra::where('factura_compra_id', $fact->id)->get();
-        return view('pages.ventas.facturas.detail', ['documento' => $data, 'factura' => $fact, 'categorias' => $categorias, 'pagos' =>[]]);
+        $pagos = PagoFactura::where('factura_id', $fact->id)->get();
+        return view('pages.ventas.facturas.detail', ['documento' => $data, 'factura' => $fact, 'categorias' => $categorias, 'pagos' => $pagos]);
     }
 
     public function newFactura(){
@@ -439,6 +440,65 @@ class FacturaController extends Controller
             return $ex;
         }
     }
+    public function agregarPago(Request $request, $id){
+        try{
+            $validator = Validator::make($request->all(), [
+                'tipo_pago' => 'required',
+                'fecha_pago' => 'required|date',
+                'monto_pago' => 'required',
+                'glosa' => '',
+            ]);
 
+            if($validator->fails()){
+                return response()->json([
+                    'success' => false,
+                    'msg' => 'La información ingresada no es suficiente para completar el registro',
+                    'error' => $validator->errors()
+                ]);
+            }
+
+            $pago = new PagoFactura();
+            $pago->tipo_pago = $request->tipo_pago;
+            $pago->fecha_pago = date('Y-m-d', strtotime($request->fecha_pago));
+            $pago->monto_pago = $request->monto_pago;
+            $pago->factura_id = $id;
+            $glosa = $request->glosa;
+            if($glosa==null)
+                $glosa='';
+            $pago->glosa = $glosa;
+            $pago->save();
+            Log::info("Pago creado hasta aqqui");
+            return response()->json([
+                'success' => true,
+                'msg' => 'Pago agregado exitosamente a la factura de compra'
+            ]);
+
+        }catch(Exception $ex){
+            Log::error($ex);
+            return response()->json([
+                'success' => false,
+                'msg' => 'Hubo un problema al agregar el pago',
+                'error' => $ex->getMessage()
+            ]);
+        }
+    }
+
+    public function eliminarPago(Request $request, $id){
+        try{
+            $pago = PagoFactura::find($id);
+            $pago->delete();
+
+            return response()->json([
+                'success' => true,
+                'msg' => 'Pago eliminado correctamente'
+            ]);
+        }catch(Exception $ex){
+            return response()->json([
+                'success' => false,
+                'msg' => 'Hubo un problema al eliminar el pago',
+                'error' => $ex->getMessage()
+            ]);
+        }
+    }
 
 }

@@ -605,7 +605,7 @@
                 if (result.isConfirmed) {
                     $.ajax({
                         type: "POST",
-                        url: "/api/compras/facturas/pagos/eliminar/" + id,
+                        url: "/api/ventas/facturas/pagos/eliminar/" + id,
                         data: {}, // serializes the form's elements.
                         success: function(data){
                             location.reload();
@@ -618,7 +618,7 @@
         function procesarPago(){
             $.ajax({
                 type: "POST",
-                url: "/api/compras/facturas/pagos/{{$factura->id}}",
+                url: "/api/ventas/facturas/pagos/{{$factura->id}}",
                 data: {
                     tipo_pago: $('#tipo_pago').val(),
                     fecha_pago: $('#fecha_pago').val(),
