@@ -473,106 +473,11 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-12">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="col-md-12">
-                                        <div class="d-flex justify-content-between align-items-baseline">
-                                            <h4 class="card-title mb-0">PAGOS ASOCIADOS AL DOCUMENTO</h4>
-                                            <button onclick="abrirModalPago()" class="btn btn-primary btn-small float-end" title="Agregar pago">
-                                                <i class="mdi mdi-plus"></i>
-                                            </button>
-                                        </div>
-                                        <table class="table">
-                                            <thead>
-                                                <th>Tipo</th>
-                                                <th>Fecha</th>
-                                                <th>Monto</th>
-                                            </thead>
-                                            <tbody>
-                                                @if(count($pagos) == 0)
-                                                <tr>
-                                                    <td colspan="3">No existen pagos asociados</td>
-                                                </tr>
-                                                @endif
-                                                @foreach($pagos as $pago)
-                                                <tr>
-                                                    @php
-                                                        $tipo_pago = '';
-                                                        if($pago->tipo_pago == 1){
-                                                            $tipo_pago = 'Efectivo';
-                                                        }else if($pago->tipo_pago == 2){
-                                                            $tipo_pago = 'Transferencia';
-                                                        }else if($pago->tipo_pago == 3){
-                                                            $tipo_pago = 'Cheque';
-                                                        }else if($pago->tipo_pago == 4){
-                                                            $tipo_pago = 'Otro';
-                                                        }
-
-                                                    @endphp
-                                                    <td>{{$tipo_pago}}</td>
-                                                    <td>{{$pago->fecha_pago}}</td>
-                                                    <td>$ {{ number_format($pago->monto_pago, 0, ',', '.') }}</td>
-                                                    <td><button class="btn btn-sm btn-outline-danger" style="padding:.25em .5em; float:left;" onclick="eliminarPago({{ $pago->id }})"><i class="mdi mdi-delete"></i></button></td>
-                                                </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div id="modalPagos" class="modal" tabindex="-1">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">ASOCIAR PAGO A FACTURA</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mx-2">
-                    <div class="mb-2">
-                        <label class="form-label">Tipo de pago</label>
-                        <select class="form-control" id="tipo_pago">
-                            <option>Seleccione un tipo de pago</option>
-                            <option value="1">Efectivo</option>
-                            <option value="2">Transferencia Electrónica</option>
-                            <option value="3">Cheque</option>
-                            <option value="4">Otro</option>
-                        </select>
-                    </div>
-                    <div class="mb-2">
-                        <label class="form-label">Fecha de pago</label>
-                        <input type="date" name="fecha_pago"
-                            id="fecha_pago"
-                            class="form-control"
-                            value="{{ date('Y-m-d') }}"
-                            max="{{ date('Y-m-d') }}">
-                    </div>
-                    <div class="mb-2">
-                        <label class="form-label">Monto de Pago</label>
-                        <input type="text" id="monto_pago" value="0" min="0" class="form-control">
-                    </div>
-                    <div class="mb-2">
-                        <label class="form-label">Glosa</label>
-                        <textarea id="glosa_pago" rows="3" class="form-control form-control-sm"
-                                    placeholder="GLOSA CORRESPONDIENTE AL PAGO"></textarea>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer justify-content-between">
-              <button type="button" class="btn btn-danger" onclick="cerrarModalPago()">Cerrar</button>
-              <button type="button" class="btn btn-primary" onclick="procesarPago()">Agregar</button>
-            </div>
-          </div>
-        </div>
-      </div>
 @endsection
 
 @push('plugin-scripts')
