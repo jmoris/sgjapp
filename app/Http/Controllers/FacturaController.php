@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Borrador;
+use App\CategoriaDocumento;
 use App\Cliente;
 use App\Comuna;
 use App\DocumentoPendiente;
@@ -11,6 +12,7 @@ use App\Helpers\Ajustes;
 use App\Helpers\Herramientas;
 use App\LineaFactura;
 use App\ListaPrecio;
+use App\PagoFacturaCompra;
 use App\Proyecto;
 use App\Unidad;
 use Exception;
@@ -26,6 +28,29 @@ class FacturaController extends Controller
 {
     public function index(){
         return view('pages.ventas.facturas.index');
+    }
+
+    public function show($folio){
+        $emisor = Ajustes::getEmisor();
+        $endpoint =  env('FACTURAPI_ENDPOINT').'documentos/generar/xml/33/'.$folio.'?contribuyente='.$emisor['rut'];
+        Log::info($endpoint);
+        $ch = curl_init( $endpoint );
+            curl_setopt( $ch, CURLOPT_POST, false);
+            curl_setopt( $ch, CURLOPT_HTTPHEADER, [
+                'Content-Type:application/json',
+                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
+            ]);
+            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+            $result = curl_exec($ch);
+            curl_close($ch);
+            $EnvioDTE = new EnvioDte();
+            $EnvioDTE->loadXML($result);
+            $dte = $EnvioDTE->getDocumentos()[0];
+            $data = $dte->getDatos();
+        $categorias = CategoriaDocumento::all();
+        $fact = Factura::where('folio', $folio)->first();
+        //$pagos = PagoFacturaCompra::where('factura_compra_id', $fact->id)->get();
+        return view('pages.ventas.facturas.detail', ['documento' => $data, 'factura' => $fact, 'categorias' => $categorias, 'pagos' =>[]]);
     }
 
     public function newFactura(){

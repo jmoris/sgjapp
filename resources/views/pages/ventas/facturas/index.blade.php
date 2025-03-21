@@ -212,6 +212,10 @@
             window.open('/api/ventas/facturas/vistaprevia/' + id);
         }
 
+        function verDocumento(folio) {
+            location.href = `/ventas/facturas/detalle/${folio}`;
+        }
+
         function descargarXML(id){
             window.open('/api/ventas/facturas/descargar/' + id)
         }
@@ -320,12 +324,12 @@
                         render: function(data, type, row) {
                             var html = '';
                             html = '<div>';
-                            html +=
-                                '<button type="button" title="Ver Factura" onclick="vistaPreviaFactura(' +
-                                row.folio +
-                                ')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-magnify"></i></button>';
-                            html += '<button type="button" title="Descargar XML" onclick="descargarXML('+row.folio+')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-download"></i></button>'
-                            html += '</div>';
+                                html += '<button type="button" title="Ver Factura" onclick="verDocumento(\'' + row.folio +
+                                '\')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-text-box-search-outline"></i></button>';
+                                html += '<button type="button" title="Descargar PDF Factura" onclick="vistaPreviaDocumento(\'' +
+                                row.rut_emisor + '\',' + row.folio +
+                                ')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-download"></i></button>';
+                                html += '</div>';
                             //var html = '';
                             return html;
                         }

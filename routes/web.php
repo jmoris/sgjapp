@@ -195,6 +195,7 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
         Route::prefix('facturas')->middleware('tag:ver-factura')->group(function(){
             Route::get('/', [FacturaController::class, 'index']);
             Route::get('/nuevo', [FacturaController::class, 'newFactura']);
+            Route::get('/detalle/{folio}', [FacturaController::class, 'show']);
         });
         Route::prefix('guiasdespacho')->middleware('tag:ver-guia-despacho')->group(function(){
             Route::get('/', [GuiaDespachoController::class, 'index']);
