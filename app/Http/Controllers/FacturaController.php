@@ -387,6 +387,9 @@ class FacturaController extends Controller
             curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
             $result = curl_exec($ch);
             curl_close($ch);
+            if($result == null){
+                return response()->back();
+            }
 
             $EnvioDTE = new EnvioDte();
             $EnvioDTE->loadXML($result);
