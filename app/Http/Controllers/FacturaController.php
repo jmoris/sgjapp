@@ -272,14 +272,17 @@ class FacturaController extends Controller
 
 
             $referencias = [];
+            $linea = 1;
             foreach($refArray as $ref){
                 array_push($referencias, [
-                    'tipo' => $ref['tipo'],
-                    'folio' => $ref['folio'],
-                    'fecha' => $ref['fecha'],
-                    'razon' => ' ',
-                    'codigo' => false
+                    'NroLinRef' => $linea,
+                    'TpoDocRef' => $ref['tipo'],
+                    'FolioRef' => $ref['folio'],
+                    'FchRef' => $ref['fecha'],
+                    'RazonRef' => ' ',
+                    'CodRef' => false
                 ]);
+                $linea++;
             }
             $vencimiento = date('Y-m-d', strtotime(str_replace('/', '-', $request->fecha_vencimiento)));
             $data = [
