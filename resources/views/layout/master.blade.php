@@ -123,12 +123,16 @@
                     let dif = (now - notifTime);
                     dif = Math.round((dif / 1000) / 60);
                     let difstr = 'min';
+
+                    console.log(dif);
+                    calc = null;
                     if(dif >= 60){
-                        dif = Math.round(dif/60);
-                        difstr = (dif==1)?'hora':'horas';
+                        calc = Math.round(dif/60);
+                        difstr = (calc==1)?'hora':'horas';
                     }
-                    if(dif >= 24){
-                        dif = Math.round(dif/60);
+
+                    if(dif >= 1440){
+                        calc = Math.round((dif/1440));
                         difstr = (dif==1)?'dia':'dias';
                     }
 
@@ -149,7 +153,7 @@
                         </div>
                         <div class="flex-grow-1 me-2">
                         <p>Se ha recibido un nuevo documento del<br>contribuyente ${noti.data['rut_emisor']} con folio ${noti.data['folio']}</p>
-                        <p class="tx-12 text-muted">hace ${dif} ${difstr}</p>
+                        <p class="tx-12 text-muted">hace ${calc} ${difstr}</p>
                         </div>
                     </a>`;
 
