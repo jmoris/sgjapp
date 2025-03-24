@@ -140,14 +140,17 @@ class FacturaController extends Controller
 
 
             $referencias = [];
+            $linea = 1;
             foreach($refArray as $ref){
                 array_push($referencias, [
-                    'tipo' => $ref['tipo'],
-                    'folio' => $ref['folio'],
-                    'fecha' => $ref['fecha'],
-                    'razon' => ' ',
-                    'codigo' => false
+                    'NroLinRef' => $linea,
+                    'TpoDocRef' => $ref['tipo'],
+                    'FolioRef' => $ref['folio'],
+                    'FchRef' => $ref['fecha'],
+                    'RazonRef' => ' ',
+                    'CodRef' => false
                 ]);
+                $linea++;
             }
             $vencimiento = date('Y-m-d', strtotime(str_replace('/', '-', $request->fecha_vencimiento)));
 
@@ -182,7 +185,8 @@ class FacturaController extends Controller
                         'MntTotal' => $neto + ($neto * 0.19),
                     ]
                 ],
-                'Detalle' => $detalle
+                'Detalle' => $detalle,
+                'Referencia' => $referencias
             ];
             $pdf = new \SolucionTotal\CorePDF\PDF($dte, 1, 'https://i.imgur.com/oWL7WBw.jpeg', 2);
             $pdf->setCedible(false);
@@ -272,17 +276,14 @@ class FacturaController extends Controller
 
 
             $referencias = [];
-            $linea = 1;
             foreach($refArray as $ref){
                 array_push($referencias, [
-                    'NroLinRef' => $linea,
-                    'TpoDocRef' => $ref['tipo'],
-                    'FolioRef' => $ref['folio'],
-                    'FchRef' => $ref['fecha'],
-                    'RazonRef' => ' ',
-                    'CodRef' => false
+                    'tipo' => $ref['tipo'],
+                    'folio' => $ref['folio'],
+                    'fecha' => $ref['fecha'],
+                    'razon' => ' ',
+                    'codigo' => false
                 ]);
-                $linea++;
             }
             $vencimiento = date('Y-m-d', strtotime(str_replace('/', '-', $request->fecha_vencimiento)));
             $data = [
