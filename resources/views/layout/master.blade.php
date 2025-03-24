@@ -133,7 +133,7 @@
 
                     if(dif >= 1440){
                         calc = Math.round((dif/1440));
-                        difstr = (dif==1)?'dia':'dias';
+                        difstr = (calc==1)?'dia':'dias';
                     }
 
                     var tipo_doc = noti.data['tipo_doc'];
