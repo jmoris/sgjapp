@@ -734,6 +734,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"
         integrity="sha512-efAcjYoYT0sXxQRtxGY37CKYmqsFVOIwMApaEbrxJr4RwqVVGw8o+Lfh/+59TU07+suZn1BWq4fDl5fdgyCNkw=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script type="text/javascript" src="https://acrobatservices.adobe.com/view-sdk/viewer.js"></script>
 @endpush
 
 @push('custom-scripts')
@@ -776,6 +777,22 @@
             $('#lista_precio').val(1);
             seleccionarLista();
         });
+
+        const viewerConfig = {
+    /* Allowed possible values are "FIT_PAGE", "FIT_WIDTH", "TWO_COLUMN", "TWO_COLUMN_FIT_PAGE" or "". */
+    defaultViewMode: "",
+};
+var adobeDCView = null;
+/* Wait for Adobe Acrobat Services PDF Embed API to be ready */
+document.addEventListener("adobe_dc_view_sdk.ready", function () {
+    /* Initialize the AdobeDC View object */
+    adobeDCView = new AdobeDC.View({
+        /* Pass your registered client id */
+        clientId: "80096e6b990447dcadd74d055b55ac2e",
+        /* Pass the div id in which PDF should be rendered */
+        divId: "pdfviewer",
+    });
+});
 
         function selectDetalle() {
             var item = $('#productosTable tbody tr.highlight');
@@ -1032,7 +1049,20 @@
                     if(data.error){
                         console.log(data.error);
                     }
-                    $('#pdfviewer').html('<object id="objpdf" type="application/pdf" data="data:application/pdf;base64,'+data.PDF+'" width="100%" style="height: 70vh;">El explorador no soporta este tipo de objetos.</object>');
+                    var url = URL.createObjectURL(b64toBlob(data.PDF, 'application/pdf')) + '#toolbar=1&scrollbar=1';
+                    adobeDCView.previewFile({
+                        content: {
+                            location: {
+                                url: url,
+
+                            },
+                        },
+                        metaData: {
+                            /* file name */
+                            fileName: "VistaPreviaFactura.pdf"
+                        }
+                    }, viewerConfig);
+                    //$('#pdfviewer').html('<iframe id="objpdf" type="application/pdf" src="'+url+'" width="100%" style="height: 70vh;"></iframe>');
                     $('#loadingModal').modal('hide');
                     $('#modal-vistaprevia').modal('show');
             });
@@ -1549,8 +1579,30 @@
         $(document).on('select2:open', () => {
             document.querySelector('.select2-search__field').focus();
         });
+
     </script>
     <script>
+
+        function b64toBlob(b64Data, contentType) {
+            var byteCharacters = atob(b64Data)
+
+            var byteArrays = []
+
+            for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+                var slice = byteCharacters.slice(offset, offset + 512),
+                    byteNumbers = new Array(slice.length)
+                for (let i = 0; i < slice.length; i++) {
+                    byteNumbers[i] = slice.charCodeAt(i)
+                }
+                var byteArray = new Uint8Array(byteNumbers)
+
+                byteArrays.push(byteArray)
+            }
+
+            var blob = new Blob(byteArrays, { type: contentType })
+            return blob
+        }
+
         (function(a) {
             function f(c) {
                 if (!a("#toast-container").length) {
