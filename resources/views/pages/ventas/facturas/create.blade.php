@@ -691,7 +691,7 @@
                     <h5 class="modal-title" id="staticBackdropLabel">Vista previa de documento</h5>
                 </div>
                 <div class="modal-body">
-                    <div id="pdfviewer" style="height: 80vh;">
+                    <div id="pdfviewer" style="height: 70vh;">
 
                     </div>
                 </div>
