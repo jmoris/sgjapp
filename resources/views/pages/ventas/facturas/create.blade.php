@@ -781,7 +781,8 @@
         });
 
         const viewerConfig = {
-            defaultViewMode: "FIT_WIDTH",
+            //defaultViewMode: "FIT_WIDTH",
+            embedMode: "IN_LINE",
         };
 
         document.addEventListener("adobe_dc_view_sdk.ready", function () {
@@ -1055,8 +1056,7 @@
                             },
                         },
                         metaData: {
-                            /* file name */
-                            fileName: "VistaPreviaFactura.pdf"
+                            fileName: "VistaPrevia.pdf",
                         }
                     }, viewerConfig);
                     //$('#pdfviewer').html('<iframe id="objpdf" type="application/pdf" src="'+url+'" width="100%" style="height: 70vh;"></iframe>');
