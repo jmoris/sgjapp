@@ -301,7 +301,8 @@ class FacturaController extends Controller
                 ],
                 'tipo_pago' => $request->tipo_pago,
                 'detalles' => $detalle,
-                'referencias' => $referencias
+                'referencias' => $referencias,
+                'correo_dte' => $cliente->email_dte
             ];
 
             Log::info("Datos enviados Factura:");
