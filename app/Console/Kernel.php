@@ -112,7 +112,6 @@ class Kernel extends ConsoleKernel
                     $emisor = Ajustes::getEmisor();
                     // Facturas
                     $pendientes = Factura::where('estado', 'regexp', '[0-3]0[0|1]')->get();
-                    Log::info("Facturas pendientes revision: ".count($pendientes));
                     foreach ($pendientes as $doc) {
                         $endpoint = env('FACTURAPI_ENDPOINT').'documentos/33/'.$doc->folio.'?contribuyente='. $emisor['rut'];
                         $ch = curl_init($endpoint);
