@@ -130,7 +130,6 @@ class Kernel extends ConsoleKernel
                         $estadoPago = substr($estado, 2, 1);
                         $factEstado = $estadoSii.$estadoXml.$estadoPago;
                         Factura::where('id', $doc->id)->update(['estado' => $factEstado]);
-                        Log::info("Factura ".$doc->folio." estado:".$doc->estado." nuevo estado:".$factEstado);
                     }
                     // Notas de credito
                     $pendientes = NotaCredito::where('estado', 'regexp', '[0-3]0')->get();
