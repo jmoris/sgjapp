@@ -124,7 +124,11 @@ class Kernel extends ConsoleKernel
                         $result = curl_exec($ch);
                         curl_close($ch);
                         $docData = json_decode($result, true);
-                        $factEstado = substr_replace(strval($doc->estado), strval($docData['email_recibido']), 1, 1);
+                        $estado = strval($doc->estado);
+                        $estadoSii = substr($estado, 0, 1);
+                        $estadoXml = strval($docData['email_recibido']);
+                        $estadoPago = substr($estado, 2, 1);
+                        $factEstado = $estadoSii.$estadoXml.$estadoPago;
                         Factura::where('id', $doc->id)->update(['estado' => $factEstado]);
                         Log::info("Factura ".$doc->folio." estado:".$doc->estado." nuevo estado:".$factEstado);
                     }
@@ -141,8 +145,11 @@ class Kernel extends ConsoleKernel
                         $result = curl_exec($ch);
                         curl_close($ch);
                         $docData = json_decode($result, true);
-                        $factEstado = substr_replace($doc->estado, $docData['email_recibido'], 1, 1);
-                        NotaCredito::where('id', $doc->id)->update(['estado' => $factEstado]);
+                        $estado = strval($doc->estado);
+                        $estadoSii = substr($estado, 0, 1);
+                        $estadoXml = strval($docData['email_recibido']);
+                        $ncEstado = $estadoSii.$estadoXml;
+                        NotaCredito::where('id', $doc->id)->update(['estado' => $ncEstado]);
                     }
                 }catch(Exception $ex){
                     Log::error($ex);
