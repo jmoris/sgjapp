@@ -781,13 +781,14 @@
         });
 
         const viewerConfig = {
-            //defaultViewMode: "FIT_WIDTH",
-            embedMode: "LIGHT_BOX",
+            defaultViewMode: "FIT_WIDTH",
+            showAnnotationTools: false
         };
 
         document.addEventListener("adobe_dc_view_sdk.ready", function () {
             adobeDCView = new AdobeDC.View({
                 clientId: "{{env('ADOBE_PDF_EMBED_KEY')}}",
+                divId: "pdfviewer"
             });
         });
 
@@ -1051,7 +1052,6 @@
                         content: {
                             location: {
                                 url: url,
-
                             },
                         },
                         metaData: {
