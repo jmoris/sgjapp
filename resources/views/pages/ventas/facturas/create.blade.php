@@ -691,7 +691,7 @@
                     <h5 class="modal-title" id="staticBackdropLabel">Vista previa de documento</h5>
                 </div>
                 <div class="modal-body">
-                    <div id="pdfviewer">
+                    <div id="pdfviewer" style="height: 80vh;">
 
                     </div>
                 </div>
@@ -739,6 +739,8 @@
 
 @push('custom-scripts')
     <script>
+        var adobeDCView = null;
+
         var editIndex = null;
         var editHtml = null;
         var index = 0;
@@ -779,20 +781,15 @@
         });
 
         const viewerConfig = {
-    /* Allowed possible values are "FIT_PAGE", "FIT_WIDTH", "TWO_COLUMN", "TWO_COLUMN_FIT_PAGE" or "". */
-    defaultViewMode: "",
-};
-var adobeDCView = null;
-/* Wait for Adobe Acrobat Services PDF Embed API to be ready */
-document.addEventListener("adobe_dc_view_sdk.ready", function () {
-    /* Initialize the AdobeDC View object */
-    adobeDCView = new AdobeDC.View({
-        /* Pass your registered client id */
-        clientId: "80096e6b990447dcadd74d055b55ac2e",
-        /* Pass the div id in which PDF should be rendered */
-        divId: "pdfviewer",
-    });
-});
+            defaultViewMode: "FIT_WIDTH",
+        };
+
+        document.addEventListener("adobe_dc_view_sdk.ready", function () {
+            adobeDCView = new AdobeDC.View({
+                clientId: "{{env('ADOBE_PDF_EMBED_KEY')}}",
+                divId: "pdfviewer",
+            });
+        });
 
         function selectDetalle() {
             var item = $('#productosTable tbody tr.highlight');
