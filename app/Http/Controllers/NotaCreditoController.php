@@ -128,6 +128,13 @@ class NotaCreditoController extends Controller
             curl_close($ch);
 
             $docData = json_decode($result);
+            if($docData->success == false){
+                return response()->json([
+                    'success' => 'false',
+                    'msg' => 'No se pudo generar el documento en la API',
+                    'error' => $docData->error
+                ]);
+            }
 
             $nc = new NotaCredito();
             $nc->folio = $docData->folio;

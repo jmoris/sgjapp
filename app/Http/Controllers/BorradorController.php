@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Borrador;
 use App\InfoBorrador;
 use App\LineaBorrador;
+use App\ReferenciaBorrador;
 use App\Unidad;
 use Exception;
 use Illuminate\Http\Request;
@@ -25,7 +26,7 @@ class BorradorController extends Controller
      */
     public function getBorrador(Request $request, $id){
         try{
-            $borrador = Borrador::with('lineas', 'datos')->findOrFail($id);
+            $borrador = Borrador::with('lineas', 'referencias', 'datos')->findOrFail($id);
             return $borrador;
         }catch(Exception $ex){
             return response()->json([
@@ -45,6 +46,7 @@ class BorradorController extends Controller
                 'fecha_emision' => 'required',
                 'externo' => 'required',
                 'items' => 'required|array',
+                'referencias' => 'nullable|array',
                 'proyecto' => 'required',
                 'glosa' => 'nullable'
             ]);
@@ -92,6 +94,24 @@ class BorradorController extends Controller
                 $linea->descuento = ((!array_key_exists('descuento', $item))?0:$item['descuento']);
                 $linea->save();
                 $subtotal += intval($linea->precio_unitario * $linea->cantidad);
+            }
+            if(isset($request->referencias)){
+                ReferenciaBorrador::where('borrador_id', $borrador->id)->delete();
+                foreach($request->referencias as $ref){
+                    $referencia = new ReferenciaBorrador();
+                    $referencia->tipo = $ref['tipo'];
+                    $referencia->folio = $ref['folio'];
+                    $referencia->fecha = date('Y-m-d', strtotime($ref['fecha']));
+                    $referencia->razon = ($ref['razon']==null)?'':$ref['razon'];
+                    if($referencia->codigo == false){
+                        $referencia->codigo = null;
+                    }else{
+                        $referencia->codigo = $ref['codigo'];
+                    }
+
+                    $referencia->borrador_id = $borrador['id'];
+                    $referencia->save();
+                }
             }
             Log::info($request->info);
             InfoBorrador::where('borrador_id', $borrador->id)->delete();

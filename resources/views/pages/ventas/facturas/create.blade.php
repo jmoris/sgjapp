@@ -914,6 +914,7 @@
                             obj.precio = obj.precio_unitario; // replace name with the property used for the text
                             return obj;
                 });
+                referencias = resp.referencias;
                 resp.datos.forEach(function(item){
                     console.log(item);
                     if(item['nombre']=='lista_id'){
@@ -922,6 +923,7 @@
                     }
                 });
                 renderDetalles();
+                renderReferencias();
                 seleccionarLista();
             });
         }
@@ -964,6 +966,7 @@
                     }
                 ],
                 items: fixedDetalle,
+                referencias: referencias,
                 proyecto: idProyecto,
                 glosa: $('#glosaTxt').val(),
                 _token: $('meta[name="_token"]').attr('content')
@@ -1048,6 +1051,11 @@
                         console.log(data.error);
                     }
                     var url = URL.createObjectURL(b64toBlob(data.PDF, 'application/pdf')) + '#toolbar=1&scrollbar=1';
+                    adobeDCView = null;
+                    adobeDCView = new AdobeDC.View({
+                        clientId: "{{env('ADOBE_PDF_EMBED_KEY')}}",
+                        divId: "pdfviewer"
+                    });
                     adobeDCView.previewFile({
                         content: {
                             location: {
@@ -1163,6 +1171,30 @@
             // Se calculan los totales y se aumenta el indice
             calcSubtotalFila();
             calcularTotales();
+        }
+
+        function renderReferencias(){
+            referencias.forEach(function(ref, index) {
+                console.log(ref);
+                var tipo = $(`#ref_tipo option[value="${ref.tipo}"]`).text();
+                var row = `
+                <tr detIndex="${index}">
+                    <td style="width: 40%">${tipo}</td>
+                    <td style="width: 30%">${ref.folio}</td>
+                    <td style="width: 25%">${ref.fecha}</td>
+                    <td style="width:5% min-width:80px; padding: .75em;">
+                         <button type="button" onclick="agregarReferencia()"
+                                                                        title="Agregar detalle a la lista"
+                                                                        class="btn btn-sm btn-outline-primary"
+                                                                        style="padding:.25em .5em; float:right;">
+                                                                        <span class="mdi mdi-plus"></span></button>
+                    </td>
+                </tr>`;
+                // Se inserta antes del rowDetalle que es nuestro formulario estatico
+                $(row).insertBefore($('#rowReferencia'));
+                index++;
+            });
+            index++;
         }
 
         function seleccionarCliente() {
@@ -1597,6 +1629,16 @@
 
             var blob = new Blob(byteArrays, { type: contentType })
             return blob
+        }
+
+        function base64ToArrayBuffer(base64) {
+            var bin = window.atob(base64);
+            var len = bin.length;
+            var uInt8Array = new Uint8Array(len);
+            for (var i = 0; i < len; i++) {
+                uInt8Array[i] = bin.charCodeAt(i);
+            }
+            return uInt8Array.buffer;
         }
 
         (function(a) {

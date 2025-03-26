@@ -321,10 +321,11 @@ class FacturaController extends Controller
             Log::info($result);
             curl_close($ch);
             $docData = json_decode($result);
-            if($docData->folio == null){
+            if($docData->success == false){
                 return response()->json([
                     'success' => 'false',
                     'msg' => 'No se pudo generar el documento en la API',
+                    'error' => $docData->error
                 ]);
             }
 

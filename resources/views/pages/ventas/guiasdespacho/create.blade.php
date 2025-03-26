@@ -494,77 +494,77 @@
                                                                     <select id="ref_tipo"
                                                                         class="form-control form-control-sm">
                                                                         <option></option>
-                                                                        <option value="30">Factura</option>
-                                                                        <option value="32">Factura de venta bienes y
+                                                                        <option value="30">(30) Factura</option>
+                                                                        <option value="32">(32) Factura de venta bienes y
                                                                             servicios no afectos o exentos de iva </option>
-                                                                        <option value="33">Factura electronica
+                                                                        <option value="33">(33) Factura electronica
                                                                         </option>
-                                                                        <option value="34">Factura no afecta o exenta
+                                                                        <option value="34">(34) Factura no afecta o exenta
                                                                             electronica </option>
-                                                                        <option value="35">Boleta </option>
-                                                                        <option value="38">Boleta exenta </option>
-                                                                        <option value="39">Boleta electronica </option>
-                                                                        <option value="40">Liquidacion factura
+                                                                        <option value="35">(35) Boleta </option>
+                                                                        <option value="38">(38) Boleta exenta </option>
+                                                                        <option value="39">(39) Boleta electronica </option>
+                                                                        <option value="40">(40) Liquidacion factura
                                                                         </option>
-                                                                        <option value="41">Boleta exenta electronica
+                                                                        <option value="41">(41) Boleta exenta electronica
                                                                         </option>
-                                                                        <option value="43">Liquidacion factura
+                                                                        <option value="43">(43) Liquidacion factura
                                                                             electronica </option>
-                                                                        <option value="45">Factura de compra </option>
-                                                                        <option value="46">Factura de compra
+                                                                        <option value="45">(45) Factura de compra </option>
+                                                                        <option value="46">(46) Factura de compra
                                                                             electronica </option>
-                                                                        <option value="47">Vale electronico especial
+                                                                        <option value="47">(47) Vale electronico especial
                                                                         </option>
-                                                                        <option value="48">Comprobantes pago
+                                                                        <option value="48">(48) Comprobantes pago
                                                                             electronico </option>
-                                                                        <option value="50">Guía de despacho </option>
-                                                                        <option value="52">Guía de despacho electronica
+                                                                        <option value="50">(50) Guía de despacho </option>
+                                                                        <option value="52">(52) Guía de despacho electronica
                                                                         </option>
-                                                                        <option value="55">Nota de debito </option>
-                                                                        <option value="56">Nota de debito electronica
+                                                                        <option value="55">(55) Nota de debito </option>
+                                                                        <option value="56">(56) Nota de debito electronica
                                                                         </option>
-                                                                        <option value="60">Nota de credito </option>
-                                                                        <option value="61">Nota de credito electronica
+                                                                        <option value="60">(60) Nota de credito </option>
+                                                                        <option value="61">(61) Nota de credito electronica
                                                                         </option>
-                                                                        <option value="101">Factura de exportacion
+                                                                        <option value="101">(101) Factura de exportacion
                                                                         </option>
-                                                                        <option value="102">Factura vta exenta a zona
+                                                                        <option value="102">(102) Factura vta exenta a zona
                                                                             franca prim </option>
-                                                                        <option value="103">Liquidacion </option>
-                                                                        <option value="104">Nota de debito de
+                                                                        <option value="103">(103) Liquidacion </option>
+                                                                        <option value="104">(104) Nota de debito de
                                                                             exportacion </option>
-                                                                        <option value="105">Boleta liq res 1423 76
+                                                                        <option value="105">(105) Boleta liq res 1423 76
                                                                         </option>
-                                                                        <option value="106">Nota de credito de
+                                                                        <option value="106">(106) Nota de credito de
                                                                             exportacion </option>
-                                                                        <option value="108">Srf solicitud registro de
+                                                                        <option value="108">(108) Srf solicitud registro de
                                                                             factura </option>
-                                                                        <option value="109">Factura turista </option>
-                                                                        <option value="110">Factura de exportacion
+                                                                        <option value="109">(109) Factura turista </option>
+                                                                        <option value="110">(110) Factura de exportacion
                                                                             electronica </option>
-                                                                        <option value="111">Nota de debito de
+                                                                        <option value="111">(111) Nota de debito de
                                                                             exportacion electronica </option>
-                                                                        <option value="112">Nota de credito de
+                                                                        <option value="112">(112) Nota de credito de
                                                                             exportacion electronica </option>
-                                                                        <option value="801">Orden de compra </option>
-                                                                        <option value="802">Nota de pedido </option>
-                                                                        <option value="803">Contrato </option>
-                                                                        <option value="804">Resolucion </option>
-                                                                        <option value="805">Proceso chilecompra
+                                                                        <option value="801">(801) Orden de compra </option>
+                                                                        <option value="802">(802) Nota de pedido </option>
+                                                                        <option value="803">(803) Contrato </option>
+                                                                        <option value="804">(804) Resolucion </option>
+                                                                        <option value="805">(805) Proceso chilecompra
                                                                         </option>
-                                                                        <option value="806">Ficha chilecompra </option>
-                                                                        <option value="807">Dus </option>
-                                                                        <option value="808">B l conocimiento de embarque
+                                                                        <option value="806">(806) Ficha chilecompra </option>
+                                                                        <option value="807">(807) Dus </option>
+                                                                        <option value="808">(808) B l conocimiento de embarque
                                                                         </option>
-                                                                        <option value="809">AWB (Air Will Bill)</option>
-                                                                        <option value="810">MIC/DTA </option>
-                                                                        <option value="811">Carta de porte </option>
-                                                                        <option value="812">Resolución del SNA donde
+                                                                        <option value="809">(809) AWB (Air Will Bill)</option>
+                                                                        <option value="810">(810) MIC/DTA </option>
+                                                                        <option value="811">(811) Carta de porte </option>
+                                                                        <option value="812">(812) Resolución del SNA donde
                                                                             califica Servicios de Exportación</option>
-                                                                        <option value="813">Pasaporte </option>
-                                                                        <option value="814"> Certificado de Depósito Bolsa
+                                                                        <option value="813">(813) Pasaporte </option>
+                                                                        <option value="814">(814) Certificado de Depósito Bolsa
                                                                             Prod. Chile.
-                                                                        <option value="815">Vale de Prenda Bolsa Prod. Chile</option>
+                                                                        <option value="815">(815) Vale de Prenda Bolsa Prod. Chile</option>
                                                                     </select>
                                                                 </td>
                                                                 <td style="width: 30%">
@@ -1008,6 +1008,30 @@
             calcularTotales();
         }
 
+        function renderReferencias(){
+            referencias.forEach(function(ref, index) {
+                console.log(ref);
+                var tipo = $(`#ref_tipo option[value="${ref.tipo}"]`).text();
+                var row = `
+                <tr detIndex="${index}">
+                    <td style="width: 40%">${tipo}</td>
+                    <td style="width: 30%">${ref.folio}</td>
+                    <td style="width: 25%">${ref.fecha}</td>
+                    <td style="width:5% min-width:80px; padding: .75em;">
+                         <button type="button" onclick="agregarReferencia()"
+                                                                        title="Agregar detalle a la lista"
+                                                                        class="btn btn-sm btn-outline-primary"
+                                                                        style="padding:.25em .5em; float:right;">
+                                                                        <span class="mdi mdi-plus"></span></button>
+                    </td>
+                </tr>`;
+                // Se inserta antes del rowDetalle que es nuestro formulario estatico
+                $(row).insertBefore($('#rowReferencia'));
+                index++;
+            });
+            index++;
+        }
+
         function cargarBorrador(){
             var idBorrador = $('#selectBorrador option:selected').val();
             $.get("/api/borradores/" + idBorrador).done(function(resp) {
@@ -1021,6 +1045,7 @@
                             obj.precio = obj.precio || obj.precio_unitario; // replace name with the property used for the text
                             return obj;
                 });
+                referencias = resp.referencias;
                 resp.datos.forEach(function(item){
                     console.log(item);
                     if(item['nombre']=='lista_id'){
@@ -1039,6 +1064,7 @@
                     }
                 });
                 renderDetalles();
+                renderReferencias();
                 seleccionarLista();
             });
         }
@@ -1090,6 +1116,7 @@
                     }
                 ],
                 items: fixedDetalle,
+                referencias: referencias,
                 proyecto: idProyecto,
                 glosa: $('#glosaTxt').val(),
                 _token: $('meta[name="_token"]').attr('content')
@@ -1421,7 +1448,7 @@
             // Se inserta el producto en nuestra lista
             referencias.push(referencia);
             ref_index++;
-
+            console.log(referencias);
         }
 
         function eliminarDetalle(index) {

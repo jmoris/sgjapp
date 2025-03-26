@@ -14,6 +14,10 @@ class Borrador extends Model
         return $this->hasMany(LineaBorrador::class);
     }
 
+    public function referencias(){
+        return $this->hasMany(ReferenciaBorrador::class);
+    }
+
     public function datos(){
         return $this->hasMany(InfoBorrador::class);
     }
