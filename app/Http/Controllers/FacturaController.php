@@ -54,7 +54,8 @@ class FacturaController extends Controller
         $categorias = CategoriaDocumento::all();
         $fact = Factura::where('folio', $folio)->first();
         $pagos = PagoFactura::where('factura_id', $fact->id)->get();
-        return view('pages.ventas.facturas.detail', ['documento' => $data, 'factura' => $fact, 'categorias' => $categorias, 'pagos' => $pagos]);
+        $proyectos = Proyecto::all();
+        return view('pages.ventas.facturas.detail', ['documento' => $data, 'factura' => $fact, 'categorias' => $categorias, 'pagos' => $pagos, 'proyectos' => $proyectos]);
     }
 
     public function newFactura(){

@@ -364,6 +364,22 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="col-md-12">
+                                        <div class="d-flex justify-content-between align-items-baseline">
+                                            <h4 class="card-title mb-0">ASIGNACIÓN PROYECTO/OBRA DE DOCUMENTO</h4>
+                                        </div>
+                                        <div class="row my-2">
+                                            <label class="col-sm-4 col-form-label col-form-label-sm">Proyecto/Obra</label>
+                                            <div class="col-sm-8">
+                                                <select onchange="categorizarDocumento()" id="categoriaDoc" class="form-control form-control-sm">
+                                                    <option>Sin proyecto</option>
+                                                    @foreach($proyectos as $proy)
+                                                    <option value="{{$proy->id}}" @if($factura->proyecto_id == $cat->id) selected @endif>{{$proy->nombre}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
 
                                 </div>
                             </div>
@@ -674,6 +690,28 @@
                         subtitle: 'ahora',
                         position: 'top-right',
                         content: 'Documento categorizado correctamente.',
+                        delay: 3000
+                });
+                }
+            });
+        }
+
+        function asignarProyectoDocumento(){
+            var data = {
+                proyecto: $('#proyectoDoc option:selected').val()
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "/api/compras/asignarproyecto/factura/{{$documento['Encabezado']['Emisor']['RUTEmisor']}}/{{intval($documento['Encabezado']['IdDoc']['Folio'])}}",
+                data: data, // serializes the form's elements.
+                success: function(data){
+                    $.toast({
+                        type: 'success',
+                        title: 'Asignación de proyecto de documento',
+                        subtitle: 'ahora',
+                        position: 'top-right',
+                        content: 'Documento asignado correctamente.',
                         delay: 3000
                 });
                 }
