@@ -54,7 +54,7 @@
                                                     aria-selected="true">Facturas</button>
                                             </li>
                                             <li class="nav-item">
-                                                <button class="nav-link active" id="fact-compra-tab" data-bs-toggle="tab"
+                                                <button class="nav-link" id="fact-compra-tab" data-bs-toggle="tab"
                                                     data-bs-target="#facturascompra" type="button" role="tab"
                                                     aria-selected="true">Facturas Compra</button>
                                             </li>
@@ -391,6 +391,12 @@ crossorigin="anonymous" referrerpolicy="no-referrer"></script>
                         text: 'Excel Resumen',
                         action: function(e, dt, node, config) {
                             location.href = "/api/reportes/excel/proyecto/52/{{ $proyecto->id }}/0"
+                        }
+                    },
+                    {
+                        text: 'Excel Detallado',
+                        action: function(e, dt, node, config) {
+                            location.href = "/api/reportes/excel/proyecto/52/{{ $proyecto->id }}/1"
                         }
                     }]
                 }
