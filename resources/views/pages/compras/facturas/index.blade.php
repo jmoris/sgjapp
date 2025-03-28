@@ -184,7 +184,7 @@
 
             $('#estado').on('change', function() {
                 if(this.value == 2){
-                    facturasTable.column(3).search("^$", true, false).draw();
+                    facturasTable.column(3).search(null).draw();
                 }else if(this.value == 1){
                     facturasTable.column(3).search( '^(?!\s*$).+', true, false ).draw();
                 }else if(this.value == 0){
