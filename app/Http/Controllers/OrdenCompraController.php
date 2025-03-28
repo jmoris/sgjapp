@@ -279,7 +279,7 @@ class OrdenCompraController extends Controller
                 ]);
                 $subtotal += $linea->precio_unitario * $linea->cantidad;
             }
-
+            return print_r($dte, true);
             $pdf = new \SolucionTotal\CorePDF\PDF($dte, 1, 'https://intranet.joremet.cl/logo_joremet.png', 2);
             $pdf->setCedible(false);
             //$pdf->setLeyendaImpresion('Sistema de facturacion por SoluciónTotal');
