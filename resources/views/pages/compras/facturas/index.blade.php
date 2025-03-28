@@ -268,6 +268,12 @@
                     },
                     {
                         data: 'proyecto_id',
+                        render: function(data, type, row) {
+                            if(row.proyecto_id == null)
+                                return 'No asignado';
+                            else
+                                return row.proyecto.nombre;
+                        }
                     },
                     {
                         data: 'fecha_emision',
