@@ -327,7 +327,7 @@
                                 html += '<button type="button" title="Ver Detalle" onclick="verFactura(\'' + row.folio +
                                 '\')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-text-box-search-outline"></i></button>';
                                 html += '<button type="button" title="Ver PDF Factura" onclick="vistaPreviaFactura(\'' + row.folio +
-                                '\')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-magnify"></i></button>';
+                                '\')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-download"></i></button>';
                                 html += '</div>';
                             //var html = '';
                             return html;
