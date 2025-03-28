@@ -56,7 +56,7 @@ class FacturaCompraController extends Controller
         $categorias = CategoriaDocumento::all();
         $fact = FacturaCompra::where('rut_emisor', $rutEmisor)->where('folio', $folio)->first();
         $pagos = PagoFacturaCompra::where('factura_compra_id', $fact->id)->get();
-        $proyectos = Proyecto::orderBy('nombre', 'asc');
+        $proyectos = Proyecto::orderBy('nombre', 'asc')->get();
         return view('pages.compras.facturas.detail', ['documento' => $data, 'factura' => $fact, 'categorias' => $categorias, 'pagos' => $pagos, 'proyectos' => $proyectos]);
     }
 
