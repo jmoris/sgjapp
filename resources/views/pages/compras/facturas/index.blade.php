@@ -184,7 +184,7 @@
 
             $('#estado').on('change', function() {
                 if(this.value == 2){
-                    facturasTable.column(3).search('No asignado').draw();
+                    facturasTable.column(3).search("No asignado").draw();
                 }else if(this.value == 1){
                     facturasTable.column(3).search(this.value).draw();
                 }else if(this.value == 0){
