@@ -175,7 +175,7 @@ class ReporteController extends Controller
                 $activeWorksheet->getStyle('B2')->getFont()->setBold( true );
                 $activeWorksheet->getStyle('B2')->getAlignment()->setHorizontal('center');
                 $activeWorksheet->getStyle('B2')->getFont()->setSize(18);
-                $activeWorksheet->setCellValue('B3', 'Ordenes de Compra Asociadas');
+                $activeWorksheet->setCellValue('B3', $titleText.' Asociadas');
                 $activeWorksheet->getStyle('B3')->getAlignment()->setHorizontal('center');
                 $activeWorksheet->getStyle('B3')->getFont()->setSize(18);
                 $inicial = 5;
@@ -216,7 +216,7 @@ class ReporteController extends Controller
                 $celdasTotales = [];
                 foreach($docs as $doc){
                     $activeWorksheet->setCellValue('B'.$startIndex, $doc->folio);
-                    $activeWorksheet->setCellValue('C'.$startIndex, $doc->proveedor->razon_social);
+                    $activeWorksheet->setCellValue('C'.$startIndex, (isset($doc->proveedor))?$doc->proveedor->razon_social:$doc->cliente->razon_social);
                     $activeWorksheet->setCellValue('D'.$startIndex, date('d-m-Y', strtotime($doc->fecha_emision)));
                     $activeWorksheet->setCellValue('E'.$startIndex, $doc->monto_total);
                     $activeWorksheet->getStyle('E'.$startIndex)->getNumberFormat()->setFormatCode('$ #,###0_-');
