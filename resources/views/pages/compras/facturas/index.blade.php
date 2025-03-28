@@ -183,9 +183,9 @@
 
             $('#estado').on('change', function() {
                 if(this.value == 2){
-                    $('#tabla').DataTable().column(3).search('^$', true, false).draw();
+                    facturasTable.column(3).search( '^(?!\s*$).+', true, false ).draw();
                 }else{
-                    $('#tabla').DataTable().column(3).search("").draw();
+                    facturasTable.column(3).search("").draw();
                 }
             });
 
