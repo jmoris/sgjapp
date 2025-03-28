@@ -49,6 +49,15 @@
                                                 placeholder="Enter first name">
                                         </div>
                                     </div>
+                                    <div class="col-md-4">
+                                        <div class="mb-3">
+                                            <label class="form-label">Estado Proyecto</label>
+                                            <select class="form-control form-control-sm" id="estado">
+                                                <option value="1">Asignado</option>
+                                                <option value="2">Sin asignar</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="row">
@@ -59,6 +68,7 @@
                                                 <th>Folio</th>
                                                 <th>Emisor</th>
                                                 <th>RUT</th>
+                                                <th>Proyecto</th>
                                                 <th>Fecha</th>
                                                 <th>Monto Total</th>
                                                 <th></th>
@@ -171,6 +181,15 @@
                 $('#tabla').DataTable().column(1).search(filtro.razon_social).draw();
             });
 
+            $('#estado').on('change', function() {
+                if(this.value == 2){
+
+                    $('#tabla').DataTable().column(3).search('^$', true, false).draw();
+                }else{
+                    $('#tabla').DataTable().column(3).search().draw();
+                }
+            });
+
             $('#rut').on('change', function() {
                 var rut = $(this).inputmask('unmaskedvalue');
                 var dv = ''
@@ -244,6 +263,9 @@
                     {
                         data: 'rut_emisor',
                         responsivePriority: 3
+                    },
+                    {
+                        data: 'proyecto_id',
                     },
                     {
                         data: 'fecha_emision',
