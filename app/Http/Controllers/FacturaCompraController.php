@@ -6,6 +6,7 @@ use App\CategoriaDocumento;
 use App\FacturaCompra;
 use App\Helpers\Ajustes;
 use App\PagoFacturaCompra;
+use App\Proyecto;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -55,7 +56,8 @@ class FacturaCompraController extends Controller
         $categorias = CategoriaDocumento::all();
         $fact = FacturaCompra::where('rut_emisor', $rutEmisor)->where('folio', $folio)->first();
         $pagos = PagoFacturaCompra::where('factura_compra_id', $fact->id)->get();
-        return view('pages.compras.facturas.detail', ['documento' => $data, 'factura' => $fact, 'categorias' => $categorias, 'pagos' => $pagos]);
+        $proyectos = Proyecto::all();
+        return view('pages.compras.facturas.detail', ['documento' => $data, 'factura' => $fact, 'categorias' => $categorias, 'pagos' => $pagos, 'proyectos' => $proyectos]);
     }
 
     /*
