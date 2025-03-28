@@ -279,13 +279,13 @@ class OrdenCompraController extends Controller
                 $subtotal += $linea->precio_unitario * $linea->cantidad;
             }
 
-            $pdf = new \SolucionTotal\CorePDF\PDF($dte, 1, 'https://i.imgur.com/oWL7WBw.jpeg', 2);
+            $pdf = new \SolucionTotal\CorePDF\PDF($dte, 1, 'https://intranet.joremet.cl/logo_joremet.png', 2);
             $pdf->setCedible(false);
             //$pdf->setLeyendaImpresion('Sistema de facturacion por SoluciónTotal');
             $pdf->setTelefono("75 2 412060");
             $pdf->setWeb('www.joremet.cl');
             $pdf->setMail("contacto@joremet.cl");
-            $pdf->setMarcaAgua('https://i.imgur.com/oWL7WBw.jpeg');
+            $pdf->setMarcaAgua('https://intranet.joremet.cl/logo_joremet.png');
             $glosa = str_replace('//', '<br>', $oc->glosa);
             $pdf->setGlosa($glosa);
             $pdf->setObra($oc->proyecto->nombre);
