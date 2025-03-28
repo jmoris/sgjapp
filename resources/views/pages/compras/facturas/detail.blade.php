@@ -371,7 +371,7 @@
                                         <div class="row my-2">
                                             <label class="col-sm-4 col-form-label col-form-label-sm">Proyecto/Obra</label>
                                             <div class="col-sm-8">
-                                                <select onchange="asignarProyectoDocumento()" id="categoriaDoc" class="form-control form-control-sm">
+                                                <select onchange="asignarProyectoDocumento()" id="proyectoDoc" class="form-control form-control-sm">
                                                     <option>Sin proyecto</option>
                                                     @foreach($proyectos as $proy)
                                                     <option value="{{$proy->id}}" @if($factura->proyecto_id == $cat->id) selected @endif>{{$proy->nombre}}</option>
