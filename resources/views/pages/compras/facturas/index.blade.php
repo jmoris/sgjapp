@@ -248,7 +248,7 @@
                     url: '/assets/js/datatables/es-ES.json',
                 },
                 order: [
-                    [3, 'desc']
+                    [4, 'desc']
                 ],
                 columns: [
                     {
@@ -332,6 +332,9 @@
                     responsivePriority: 3
                 },
                 {
+                        data: 'proyecto_id',
+                },
+                {
                     data: 'fecha_emision',
                     responsivePriority: 3,
                     render: function(data, type, row) {
@@ -373,7 +376,7 @@
         DataTable.ext.search.push(function(settings, data, dataIndex) {
             let min = minDate.val();
             let max = maxDate.val();
-            let date = new Date(data[3]);
+            let date = new Date(data[4]);
 
             if (
                 (min === null && max === null) ||
