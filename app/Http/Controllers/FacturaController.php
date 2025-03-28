@@ -236,6 +236,29 @@ class FacturaController extends Controller
         ]);
     }
 
+    public function asignarProyectoFacatura(Request $request, $folio){
+        $validator = Validator::make($request->all(), [
+            'proyecto' => 'required',
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'success' => 'false',
+                'msg' => 'La información ingresada no es suficiente para completar el registro',
+                'error' => $validator->errors()
+            ]);
+        }
+
+        $documento = Factura::where('folio', $folio)->first();
+        $documento->proyecto_id = $request->proyecto;
+        $documento->save();
+
+        return response()->json([
+            'success' => true,
+            'msg' => 'Proyecto asignado exitosamente',
+        ]);
+    }
+
     public function storeFactura(Request $request){
         try{
             $validator = Validator::make($request->all(), [

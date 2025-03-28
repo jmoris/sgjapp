@@ -114,6 +114,31 @@ class FacturaCompraController extends Controller
         ]);
     }
 
+    public function asignarProyectoFactura(Request $request, $emisor, $folio){
+        $validator = Validator::make($request->all(), [
+            'proyecto' => 'required',
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'success' => 'false',
+                'msg' => 'La información ingresada no es suficiente para completar el registro',
+                'error' => $validator->errors()
+            ]);
+        }
+
+        $documento = FacturaCompra::where('rut_emisor', $emisor)->where('folio', $folio)->first();
+        $documento->proyecto_id = $request->proyecto;
+        $documento->save();
+
+        return response()->json([
+            'success' => true,
+            'msg' => 'Proyecto asignado exitosamente',
+        ]);
+    }
+
+
+
     public function vistaPreviaFactura(Request $request, $rutEmisor, $tipo, $folio){
         $emisor = Ajustes::getEmisor();
         $endpoint =  env('FACTURAPI_ENDPOINT').'documentos/compras/generar/xml/'.$rutEmisor.'/'.$tipo.'/'.$folio.'?contribuyente='.$emisor['rut'];

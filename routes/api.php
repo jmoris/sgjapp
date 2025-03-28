@@ -192,6 +192,7 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
         Route::get('facturas/vistaprevia/{rutEmisor}/{tipo}/{folio}', [FacturaCompraController::class, 'vistaPreviaFactura']);
         Route::get('facturas/descargar/{emisor}/{folio}', [FacturaCompraController::class, 'descargarPDF']);
         Route::post('categorizar/factura/{emisor}/{folio}', [FacturaCompraController::class, 'categorizarFactura']);
+        Route::post('proyectos/factura/{emisor}/{folio}', [FacturaCompraController::class, 'asignarProyectoFactura']);
         Route::post('facturas/pagos/{id}', [FacturaCompraController::class, 'agregarPago']);
         Route::post('facturas/pagos/eliminar/{id}', [FacturaCompraController::class, 'eliminarPago']);
 
@@ -219,6 +220,7 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
         Route::get('facturas', [FacturaController::class, 'getAll']);
         Route::post('facturas', [FacturaController::class, 'storeFactura']);
         Route::post('categorizar/factura/{folio}', [FacturaController::class, 'categorizarFactura']);
+        Route::post('proyectos/factura/{folio}', [FacturaController::class, 'asignarProyectoFacatura']);
         Route::post('facturas/vistaprevia', [FacturaController::class, 'vistaPreviaEnvioFactura']);
         Route::get('facturas/vistaprevia/{folio}', [FacturaController::class, 'vistaPreviaFactura']);
         Route::get('facturas/descargar/{folio}', [FacturaController::class, 'descargarXML']);
