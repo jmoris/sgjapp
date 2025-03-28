@@ -184,9 +184,9 @@
 
             $('#estado').on('change', function() {
                 if(this.value == 2){
-                    facturasTable.column(3).search(null).draw();
+                    facturasTable.column(3).search('No asignado').draw();
                 }else if(this.value == 1){
-                    facturasTable.column(3).search( '^(?!\s*$).+', true, false ).draw();
+                    facturasTable.column(3).search(this.value).draw();
                 }else if(this.value == 0){
                     facturasTable.column(3).search("").draw();
                 }
@@ -335,7 +335,13 @@
                     responsivePriority: 3
                 },
                 {
-                        data: 'proyecto_id',
+                    data: 'proyecto_id',
+                    render: function(data, type, row) {
+                        if(row.proyecto_id == null)
+                            return 'No asignado';
+                        else
+                            return row.proyecto.nombre;
+                    }
                 },
                 {
                     data: 'fecha_emision',

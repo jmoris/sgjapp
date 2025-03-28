@@ -79,7 +79,7 @@ class FacturaCompraController extends Controller
             Log::info("ENDPOINT FACTURAS COMPRA: ". $endpoint);
 
             return $result;*/
-            $data = FacturaCompra::whereRaw('1=1');
+            $data = FacturaCompra::with('proyecto')->whereRaw('1=1');
 
             if($request->has('feMinDate') and $request->has('feMaxDate')){
                 $data->where('fecha_emision', '>=', $request->feMinDate);
