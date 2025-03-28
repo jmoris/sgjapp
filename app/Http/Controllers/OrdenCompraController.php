@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Comuna;
 use App\Config;
 use App\Helpers\Ajustes;
+use App\Helpers\Herramientas;
 use App\LineaOC;
 use App\OrdenCompra;
 use App\Producto;
@@ -253,7 +254,7 @@ class OrdenCompraController extends Controller
                     'Receptor' => [
                         'RUTRecep' => $oc->proveedor->rut,
                         'RznSocRecep' => $oc->proveedor->razon_social,
-                        'GiroRecep' => $oc->proveedor->giro,
+                        'GiroRecep' => Herramientas::sanitizarString($oc->proveedor->giro),
                         'DirRecep' => $oc->proveedor->direccion,
                         'CmnaRecep' => $oc->proveedor->comuna->nombre,
                         'CdgIntRecep' => 'CASA MATRIZ'
@@ -279,7 +280,6 @@ class OrdenCompraController extends Controller
                 ]);
                 $subtotal += $linea->precio_unitario * $linea->cantidad;
             }
-            return print_r($dte, true);
             $pdf = new \SolucionTotal\CorePDF\PDF($dte, 1, 'https://intranet.joremet.cl/logo_joremet.png', 2);
             $pdf->setCedible(false);
             //$pdf->setLeyendaImpresion('Sistema de facturacion por SoluciónTotal');
