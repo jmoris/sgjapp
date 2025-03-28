@@ -53,6 +53,7 @@
                                         <div class="mb-3">
                                             <label class="form-label">Estado Proyecto</label>
                                             <select class="form-control form-control-sm" id="estado">
+                                                <option value="0">Seleccione proyecto</option>
                                                 <option value="1">Asignado</option>
                                                 <option value="2">Sin asignar</option>
                                             </select>
@@ -183,8 +184,10 @@
 
             $('#estado').on('change', function() {
                 if(this.value == 2){
+                    facturasTable.column(3).search("^$", true, false).draw();
+                }else if(this.value == 1){
                     facturasTable.column(3).search( '^(?!\s*$).+', true, false ).draw();
-                }else{
+                }else if(this.value == 0){
                     facturasTable.column(3).search("").draw();
                 }
             });
