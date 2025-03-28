@@ -54,7 +54,7 @@
                                                     aria-selected="true">Facturas</button>
                                             </li>
                                             <li class="nav-item">
-                                                <button class="nav-link active" id="fact-tab" data-bs-toggle="tab"
+                                                <button class="nav-link active" id="fact-compra-tab" data-bs-toggle="tab"
                                                     data-bs-target="#facturascompra" type="button" role="tab"
                                                     aria-selected="true">Facturas Compra</button>
                                             </li>
@@ -106,12 +106,12 @@
                                                 </table>
                                             </div>
                                             <div class="tab-pane mx-4 fade show active" id="facturascompra" role="tabpanel"
-                                                aria-labelledby="fact-tab">
+                                                aria-labelledby="fact-compra-tab">
                                                 <div style="width:100%; margin-top:24px;"></div>
                                                 <div class="d-flex justify-content-between align-items-baseline mb-3">
                                                     <h4 class="card-title mb-0">FACTURAS COMPRA ASOCIADAS</h4>
                                                 </div>
-                                                <table id="tablaFact" class="ms-2 table w-100">
+                                                <table id="tablaFactCompra" class="ms-2 table w-100">
                                                     <thead>
                                                         <th>Folio</th>
                                                         <th>Fecha</th>
@@ -325,6 +325,36 @@ crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         });
 
         $('#tablaFact').DataTable({
+            layout: {
+                topStart: {
+                    buttons: [{
+                        text: 'Excel Resumen',
+                        action: function(e, dt, node, config) {
+                            location.href = "/api/reportes/excel/proyecto/33/{{ $proyecto->id }}/0"
+                        }
+                    }]
+                }
+            },
+            lengthMenu: [5, 10, 20, 50],
+            responsive: true,
+            search: {
+                return: true
+            },
+            language: {
+                url: '/assets/js/datatables/es-ES.json',
+                thousands: '.'
+            },
+            columnDefs: [{
+                target: 3,
+                render: DataTable.render.number('.', ',', 0, '$')
+            }],
+            order: [
+                [0, 'desc']
+            ],
+            fixedColumns: true,
+        });
+
+        $('#tablaFactCompra').DataTable({
             layout: {
                 topStart: {
                     buttons: [{
