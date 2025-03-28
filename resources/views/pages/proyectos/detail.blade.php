@@ -105,7 +105,7 @@
                                                     </tbody>
                                                 </table>
                                             </div>
-                                            <div class="tab-pane mx-4 fade show active" id="facturascompra" role="tabpanel"
+                                            <div class="tab-pane mx-4 fade show" id="facturascompra" role="tabpanel"
                                                 aria-labelledby="fact-compra-tab">
                                                 <div style="width:100%; margin-top:24px;"></div>
                                                 <div class="d-flex justify-content-between align-items-baseline mb-3">
@@ -357,12 +357,12 @@ crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         $('#tablaFactCompra').DataTable({
             layout: {
                 topStart: {
-                    buttons: [{
+                    buttons: [/*{
                         text: 'Excel Resumen',
                         action: function(e, dt, node, config) {
                             location.href = "/api/reportes/excel/proyecto/33/{{ $proyecto->id }}/0"
                         }
-                    }]
+                    }*/]
                 }
             },
             lengthMenu: [5, 10, 20, 50],
