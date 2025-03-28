@@ -183,10 +183,9 @@
 
             $('#estado').on('change', function() {
                 if(this.value == 2){
-
                     $('#tabla').DataTable().column(3).search('^$', true, false).draw();
                 }else{
-                    $('#tabla').DataTable().column(3).search().draw();
+                    $('#tabla').DataTable().column(3).search("").draw();
                 }
             });
 
