@@ -230,6 +230,7 @@ class OrdenCompraController extends Controller
 
     public function vistaPreviaOC(Request $request, $folio, $rev = 1){
         try{
+            ini_set('max_execution_time', 300);
             $emisor = Ajustes::getEmisor();
             $oc = OrdenCompra::with('proveedor', 'proveedor.comuna')->where('folio', $folio)->where('rev', $rev)->first();
             $dte = [
