@@ -209,7 +209,7 @@
         });
 
         function vistaPreviaFactura(folio) {
-            window.open('/api/ventas/facturas/vistaprevia/' + folio);
+            window.open('/api/ventas/facturas/vistaprevia/' + folio + '/?descargar=1');
         }
 
         function verFactura(folio) {

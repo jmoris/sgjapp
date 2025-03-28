@@ -419,7 +419,11 @@ class FacturaController extends Controller
             $glosa = str_replace('//', '<br>', $fact->glosa);
             $pdf->setGlosa($glosa);
             $pdf->construir();
-            $pdf->generar(1);
+            if($request->descargar==1){
+                $pdf->generar(0);
+            }else{
+                $pdf->generar(1);
+            }
         }catch(Exception $ex){
             Log::error($ex);
             return response()->json([
