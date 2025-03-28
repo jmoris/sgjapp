@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Factura;
+use App\FacturaCompra;
 use App\GuiaDespacho;
 use App\NotaCredito;
 use App\OrdenCompra;
@@ -31,7 +32,7 @@ class ProyectoController extends Controller
     public function detailProyecto($id){
         $proyecto = Proyecto::find($id);
         $facturas = Factura::where('proyecto_id', $proyecto->id)->with('cliente')->get();
-        $facturascompra = Factura::where('proyecto_id', $proyecto->id)->get();
+        $facturascompra = FacturaCompra::where('proyecto_id', $proyecto->id)->get();
         $guias = GuiaDespacho::where('proyecto_id', $proyecto->id)->with('cliente')->get();
         $nc = NotaCredito::where('proyecto_id', $proyecto->id)->with('cliente')->get();
         $ocs = OrdenCompra::where('proyecto_id', $proyecto->id)->where('rev_activa', true)->where('estado', '!=', -1)->with('proveedor')->get();
