@@ -54,6 +54,11 @@
                                                     aria-selected="true">Facturas</button>
                                             </li>
                                             <li class="nav-item">
+                                                <button class="nav-link active" id="fact-tab" data-bs-toggle="tab"
+                                                    data-bs-target="#facturascompra" type="button" role="tab"
+                                                    aria-selected="true">Facturas Compra</button>
+                                            </li>
+                                            <li class="nav-item">
                                                 <button class="nav-link" id="guias-tab" data-bs-toggle="tab"
                                                     data-bs-target="#guias" type="button" role="tab"
                                                     >Guias Despacho</button>
@@ -93,6 +98,36 @@
                                                                 <td>{{ $fact->monto_total }}</td>
                                                                 <td><button type="button" title="Ver Orden de Compra"
                                                                         onclick="vistaPreviaFacturas({{ $fact->folio }})"
+                                                                        class="btn btn-outline-primary btnxs px-1 py-0"><i
+                                                                            class="mdi mdi-18 mdi-magnify"></i></button></td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="tab-pane mx-4 fade show active" id="facturascompra" role="tabpanel"
+                                                aria-labelledby="fact-tab">
+                                                <div style="width:100%; margin-top:24px;"></div>
+                                                <div class="d-flex justify-content-between align-items-baseline mb-3">
+                                                    <h4 class="card-title mb-0">FACTURAS COMPRA ASOCIADAS</h4>
+                                                </div>
+                                                <table id="tablaFact" class="ms-2 table w-100">
+                                                    <thead>
+                                                        <th>Folio</th>
+                                                        <th>Fecha</th>
+                                                        <th>Razon Social</th>
+                                                        <th>Monto Total</th>
+                                                        <th></th>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach ($facturascompra as $fact)
+                                                            <tr>
+                                                                <td>{{ $fact->folio }}</td>
+                                                                <td>{{ date('d/m/Y', strtotime($fact->fecha_emision)) }}</td>
+                                                                <td>{{ $fact->razon_social_emisor }}</td>
+                                                                <td>{{ $fact->monto_total }}</td>
+                                                                <td><button type="button" title="Ver Factura"
+                                                                        onclick="vistaPreviaFacturasCompra('{{$fact->rut_emisor}}',{{ $fact->folio }})"
                                                                         class="btn btn-outline-primary btnxs px-1 py-0"><i
                                                                             class="mdi mdi-18 mdi-magnify"></i></button></td>
                                                             </tr>
@@ -384,6 +419,9 @@ crossorigin="anonymous" referrerpolicy="no-referrer"></script>
         }
         function vistaPreviaFacturas(id) {
             window.open('/api/ventas/facturas/vistaprevia/' + id);
+        }
+        function vistaPreviaFacturasCompra(emisor, id) {
+            window.open('/api/compras/facturas/vistaprevia/' + emisor + '/' + id);
         }
         function vistaPreviaGuias(id) {
             window.open('/api/ventas/guiasdespacho/vistaprevia/' + id);
