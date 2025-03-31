@@ -350,7 +350,7 @@
                                                                             style="max-width: 100px;">
                                                                             @foreach ($unidades as $unidad)
                                                                                 <option value="{{ $unidad->id }}">
-                                                                                    {{ $unidad->abreviacion }}</option>
+                                                                                    {{ $unidad->nombre }}</option>
                                                                             @endforeach
                                                                         </select>
                                                                     </div>
@@ -1586,7 +1586,7 @@
                                             <select id="unidadEditTxt" class="form-control-sm"
                                                 style="max-width: 100px;">
                                                 @foreach ($unidades as $unidad)
-                                                <option value="{{ $unidad->id }}">{{ $unidad->abreviacion }}</option>
+                                                <option value="{{ $unidad->id }}">{{ $unidad->nombre }}</option>
                                                 @endforeach
                                             </select> &nbsp;
                                         </div>`);

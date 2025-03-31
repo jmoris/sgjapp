@@ -170,14 +170,14 @@ class FacturaController extends Controller
                         'GiroEmis' => $emisor['giro'],
                         'Acteco' => 251100,
                         'DirOrigen' => $emisor['direccion'],
-                        'CmnaOrigen' => 'TENO',
+                        'CmnaOrigen' => Herramientas::sanitizarString(Comuna::find($emisor['comuna'])->nombre),
                     ],
                     'Receptor' => [
                         'RUTRecep' => $cliente->rut,
                         'RznSocRecep' => Herramientas::sanitizarString($cliente->razon_social),
                         'GiroRecep' =>  Herramientas::sanitizarString($cliente->giro),
                         'DirRecep' =>  $cliente->direccion,
-                        'CmnaRecep' =>  $cliente->comuna->nombre,
+                        'CmnaRecep' =>  Herramientas::sanitizarString($cliente->comuna->nombre),
                         'CdgIntRecep' => 'CASA MATRIZ'
                     ],
                     'Totales' => [
@@ -321,7 +321,7 @@ class FacturaController extends Controller
                     'razon_social'=> $cliente->razon_social,
                     'giro'=> $cliente->giro,
                     'direccion'=> $cliente->direccion,
-                    'comuna'=> $cliente->comuna->nombre,
+                    'comuna'=> Herramientas::sanitizarString($cliente->comuna->nombre),
                 ],
                 'tipo_pago' => $request->tipo_pago,
                 'detalles' => $detalle,

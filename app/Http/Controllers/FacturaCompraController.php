@@ -86,6 +86,13 @@ class FacturaCompraController extends Controller
                 $data->where('fecha_emision', '<=', date('Y-m-d', strtotime($request->feMaxDate)));
                 //$data->whereBetween('fecha_emision', [$request->feMinDate, $request->feMaxDate]);
             }
+            if($request->has('proyecto')){
+                if($request->proyecto == 1){
+                    $data->where('proyecto_id', '!=', null);
+                }else if($request->proyecto == 2){
+                    $data->where('proyecto_id', null);
+                }
+            }
             return DataTables::of($data)
             ->addIndexColumn()
             ->make(true);

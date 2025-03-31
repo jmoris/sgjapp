@@ -115,7 +115,8 @@
                 max: ''
             },
             tipo_traslado: '',
-            tipo_despacho: ''
+            tipo_despacho: '',
+            proyecto: null
         };
 
         $(document).ready(function() {
@@ -183,13 +184,16 @@
             });
 
             $('#estado').on('change', function() {
-                if(this.value == 2){
-                    facturasTable.column(3).search("No asignado").draw();
+                filtro.proyecto = this.value;
+                /*if(this.value == 2){
+                    facturasTable.column(3).search('^$',false,true).draw()
                 }else if(this.value == 1){
                     facturasTable.column(3).search(this.value).draw();
                 }else if(this.value == 0){
                     facturasTable.column(3).search("").draw();
-                }
+                }*/
+                $('#tabla').DataTable().destroy();
+                cargarDocumentos('', '', '', '');
             });
 
             $('#rut').on('change', function() {
@@ -242,6 +246,7 @@
                             d.fvMinDate = fvMin;
                             d.fvMaxDate = fvMax;
                         }
+                        d.proyecto = this.filtro.proyecto;
                     }
                 },
                 search: {

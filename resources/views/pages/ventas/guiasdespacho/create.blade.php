@@ -417,7 +417,7 @@
                                                                             style="max-width: 100px;">
                                                                             @foreach ($unidades as $unidad)
                                                                                 <option value="{{ $unidad->id }}">
-                                                                                    {{ $unidad->abreviacion }}</option>
+                                                                                    {{ $unidad->nombre }}</option>
                                                                             @endforeach
                                                                         </select>
                                                                     </div>
