@@ -126,7 +126,7 @@ class FacturaController extends Controller
             $neto = 0;
             foreach($request->items as $item){
                 array_push($detalle, [
-                    'NmbItem' => Herramientas::sanitizarString($item['nombre']),
+                    'NmbItem' => mb_convert_encoding($item['nombre'], 'ISO-8859-1'),
                     'DscItem' => ((!array_key_exists('descripcion', $item))?false:Herramientas::sanitizarString($item['descripcion'])),
                     'UnmdItem' => Unidad::find($item['unidad'])->abreviacion,
                     'PrcItem' => $item['precio'],
