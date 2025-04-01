@@ -31,6 +31,7 @@
                                         <thead>
                                             <tr>
                                                 <th>Nombre</th>
+                                                <th>Estado</th>
                                                 <th></th>
                                             </tr>
                                         </thead>
@@ -99,9 +100,33 @@
                 {
                     data: 'nombre',
                     responsivePriority: 1,
-                    width: '80%',
+                    width: '60%',
                     render: function(data, type, row){
                         return '<a href="javascript:void(0);" class="text-decoration-none text-black" onclick="verProyecto('+row.id+')">'+row.nombre+'</a>'
+                    }
+                },
+                {
+                    data: 'estado',
+                    responsivePriority: 1,
+                    width: '20%',
+                    render: function(data, type, row){
+                        var color = '';
+                        var texto = '';
+                        switch(row.estado){
+                            case 0:
+                                texto = 'EN CURSO';
+                                color = 'bg-success';
+                                break;
+                            case 1:
+                                texto = 'CERRADO';
+                                color = 'bg-danger';
+                                break;
+                            case 2:
+                                texto = 'ATRASADO';
+                                color = 'bg-warning';
+                                break;
+                        }
+                        return '<span class="badge ' + color + '">'+texto+'</span>';
                     }
                 },
                 {

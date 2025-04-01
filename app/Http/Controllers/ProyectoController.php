@@ -103,6 +103,7 @@ class ProyectoController extends Controller
             $proyecto = Proyecto::findOrFail($id);
             $proyecto->nombre = $request->nombre;
             $proyecto->monto_proyecto = $request->monto_proyecto;
+            $proyecto->estado = $request->estado;
             $proyecto->save();
 
             return response()->json([

@@ -30,6 +30,28 @@
                                                 disabled>
                                         </div>
                                         <div class="mb-3">
+                                            @php
+                                                $texto = '';
+                                                $color = '';
+                                                switch($proyecto->estado){
+                                                    case 0:
+                                                        $texto = 'EN CURSO';
+                                                        $color = 'bg-success';
+                                                        break;
+                                                    case 1:
+                                                        $texto = 'CERRADO';
+                                                        $color = 'bg-danger';
+                                                    break;
+                                                    case 2:
+                                                        $texto = 'ATRASADO';
+                                                        $color = 'bg-warning';
+                                                    break;
+                                                }
+                                            @endphp
+                                            <label class="form-label mb-0">Estado del Proyecto:</label><br>
+                                            <div id="estado_proyecto"><span id="estado" proyecto_id="{{$proyecto->estado}}" class="badge {{$color}}">{{ $texto }}</span></div>
+                                        </div>
+                                        <div class="mb-3">
                                             <label class="form-label">Monto del Proyecto:</label>
                                             <input type="text" name="monto_proyecto" id="monto_proyecto" class="form-control"
                                                 placeholder="Ingrese el monto del proyecto" value="{{ number_format($proyecto->monto_proyecto, 0, ',', '.') }}"
@@ -268,7 +290,8 @@ crossorigin="anonymous" referrerpolicy="no-referrer"></script>
                     url: '/api/ventas/proyectos/editar/{{$proyecto->id}}',
                     data: {
                         nombre:$('#nombre').val(),
-                        monto_proyecto:$('#monto_proyecto').inputmask('unmaskedvalue')
+                        monto_proyecto:$('#monto_proyecto').inputmask('unmaskedvalue'),
+                        estado: $('#estado').val()
                     }, // serializes the form's elements.
                     success: function(data){
                         if(!data.success){
@@ -278,12 +301,38 @@ crossorigin="anonymous" referrerpolicy="no-referrer"></script>
                             $('#editText').text('Editar');
                             $('#nombre').attr('disabled', true);
                             $('#monto_proyecto').attr('disabled', true);
+                            var color = '';
+                            var texto = '';
+                            console.log(data.data.estado);
+                            switch(parseInt(data.data.estado)){
+                                case 0:
+                                    texto = 'EN CURSO';
+                                    color = 'bg-success';
+                                    break;
+                                case 1:
+                                    texto = 'CERRADO';
+                                    color = 'bg-danger';
+                                    break;
+                                case 2:
+                                    texto = 'ATRASADO';
+                                    color = 'bg-warning';
+                                    break;
+                            }
+                            var html = '<span proyecto_id="'+data.data.estado+'" class="badge ' + color + '">'+texto+'</span>';
+                            $('#estado_proyecto').html(html);
                         }
                     }
                 });
             }else{
                 $('#nombre').removeAttr('disabled');
                 $('#monto_proyecto').removeAttr('disabled');
+                var proyecto_id = $('#estado_proyecto span').attr('proyecto_id');
+                $('#estado_proyecto').html(`
+                    <select id="estado" class="form-control form-control-sm">
+                        <option ${(proyecto_id==0)?'selected':''} value="0">EN CURSO</option>
+                        <option ${(proyecto_id==1)?'selected':''} value="1">CERRADO</option>
+                        <option ${(proyecto_id==2)?'selected':''} value="2">ATRASADO</option>
+                    </select>`);
                 $('#editText').text('Guardar');
             }
         }
@@ -457,7 +506,7 @@ crossorigin="anonymous" referrerpolicy="no-referrer"></script>
             window.open('/api/ventas/facturas/vistaprevia/' + id);
         }
         function vistaPreviaFacturasCompra(emisor, id) {
-            window.open('/api/compras/facturas/vistaprevia/' + emisor + '/' + id);
+            window.open('/api/compras/facturas/vistaprevia/' + emisor + '/33/' + id);
         }
         function vistaPreviaGuias(id) {
             window.open('/api/ventas/guiasdespacho/vistaprevia/' + id);
