@@ -35,7 +35,7 @@ return [
 
     'connections' => [
         'tenant' => [
-            'driver' => env('DB_CONNECTION', 'mysql'),
+            'driver' => env('DB_TENANT_CONN', 'mysql'),
             'database' => null,
             'host' => env('DB_HOST', '127.0.0.1'),
             'username' => env('DB_USERNAME', 'root'),
@@ -44,7 +44,7 @@ return [
         ],
 
         'landlord' => [
-            'driver' => env('DB_CONNECTION', 'mysql'),
+            'driver' => env('DB_TENANT_CONN', 'mysql'),
             'database' => env('DB_DATABASE', 'laravel'),
             'host' => env('DB_HOST', '127.0.0.1'),
             'username' => env('DB_USERNAME', 'root'),
