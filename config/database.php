@@ -35,20 +35,20 @@ return [
 
     'connections' => [
         'tenant' => [
-            'driver' => 'pgsql',
+            'driver' => env('DB_CONNECTION', 'mysql'),
             'database' => null,
-            'host' => '127.0.0.1',
-            'username' => 'postgres',
-            'password' => 'Moris.234',
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'username' => env('DB_USERNAME', 'root'),
+            'password' => env('DB_PASSWORD', ''),
             // And other options if needed ...
         ],
 
         'landlord' => [
-            'driver' => 'pgsql',
-            'database' => 'sgjapp_landlord',
-            'host' => '127.0.0.1',
-            'username' => 'postgres',
-            'password' => 'Moris.234',
+            'driver' => env('DB_CONNECTION', 'mysql'),
+            'database' => env('DB_DATABASE', 'laravel'),
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'username' => env('DB_USERNAME', 'root'),
+            'password' => env('DB_PASSWORD', ''),
             // And other options if needed ...
         ],
 

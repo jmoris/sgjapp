@@ -13,4 +13,3 @@ yarn-error.log
 composer.lock
 
 public/coredte.log
-config/database.php
