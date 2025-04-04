@@ -374,7 +374,7 @@
                                                 <select onchange="asignarProyectoDocumento()" id="proyectoDoc" class="form-control form-control-sm">
                                                     <option>Sin proyecto</option>
                                                     @foreach($proyectos as $proy)
-                                                    <option value="{{$proy->id}}" @if($factura->proyecto_id == $cat->id) selected @endif>{{$proy->nombre}}</option>
+                                                    <option value="{{$proy->id}}" @if($factura->proyecto_id == $proy->id) selected @endif>{{$proy->nombre}}</option>
                                                     @endforeach
                                                 </select>
                                             </div>
