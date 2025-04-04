@@ -30,7 +30,7 @@ class OrdenCompraController extends Controller
         $comunas = Comuna::all();
         $proveedores = Proveedor::all();
         $unidades = Unidad::all();
-        $proyectos = Proyecto::where('estado', 0)->get();
+        $proyectos = Proyecto::where('estado', '!=', 1)->orderBy('nombre', 'asc')->get();
         return view('pages.compras.ordenescompra.create', ['proveedores' => $proveedores, 'unidades' => $unidades,'comunas' => $comunas, 'emisor' => $emisor, 'proyectos' => $proyectos]);
     }
 
@@ -40,7 +40,7 @@ class OrdenCompraController extends Controller
         $comunas = Comuna::all();
         $proveedores = Proveedor::all();
         $unidades = Unidad::all();
-        $proyectos = Proyecto::where('estado', 0)->get();
+        $proyectos = Proyecto::where('estado', '!=', 1)->orderBy('nombre', 'asc')->get();
         return view('pages.compras.ordenescompra.edit', ['oc' => $oc, 'proveedores' => $proveedores, 'unidades' => $unidades,'comunas' => $comunas, 'emisor' => $emisor, 'proyectos' => $proyectos]);
     }
     /*

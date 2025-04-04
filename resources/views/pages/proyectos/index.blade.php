@@ -118,7 +118,7 @@
                                 color = 'bg-success';
                                 break;
                             case 1:
-                                texto = 'CERRADO';
+                                texto = 'TERMINADO';
                                 color = 'bg-danger';
                                 break;
                             case 2:

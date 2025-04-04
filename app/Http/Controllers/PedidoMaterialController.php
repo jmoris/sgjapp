@@ -28,7 +28,7 @@ class PedidoMaterialController extends Controller
         $comunas = Comuna::all();
         $clientes = Cliente::all();
         $unidades = Unidad::all();
-        $proyectos = Proyecto::where('estado', 0)->get();
+        $proyectos = Proyecto::where('estado', '!=', 1)->orderBy('nombre', 'asc')->get();
         $borradores = Borrador::where('user_id', auth()->user()->id)->where('tipo_doc', 999)->get();
         return view('pages.compras.pedidosmateriales.create', ['clientes' => $clientes, 'unidades' => $unidades,'comunas' => $comunas, 'emisor' => $emisor, 'proyectos' => $proyectos, 'borradores' => $borradores]);
     }

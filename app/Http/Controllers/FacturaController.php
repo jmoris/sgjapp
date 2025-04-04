@@ -64,7 +64,7 @@ class FacturaController extends Controller
         $clientes = Cliente::orderBy('razon_social', 'asc')->get(); // aqui clientes
         $unidades = Unidad::orderBy('nombre', 'asc')->get();
         $listas = ListaPrecio::all();
-        $proyectos = Proyecto::where('estado', 0)->orderBy('nombre', 'asc')->get();
+        $proyectos = Proyecto::where('estado', '!=', 1)->orderBy('nombre', 'asc')->get();
         $borradores = Borrador::where('user_id', auth()->user()->id)->where('tipo_doc', 33)->orderBy('updated_at', 'desc')->get();
         return view('pages.ventas.facturas.create', ['borradores'=>$borradores, 'clientes' => $clientes, 'unidades' => $unidades,'comunas' => $comunas, 'emisor' => $emisor, 'listas' => $listas, 'proyectos' => $proyectos]);
     }
@@ -345,7 +345,7 @@ class FacturaController extends Controller
             Log::info($result);
             curl_close($ch);
             $docData = json_decode($result);
-            if($docData->success == false){
+            if(!$docData->success){
                 return response()->json([
                     'success' => 'false',
                     'msg' => 'No se pudo generar el documento en la API',
