@@ -10,6 +10,7 @@ use App\Helpers\Ajustes;
 use App\NotaCredito;
 use App\NotaCreditoCompra;
 use App\Notifications\DocumentoRecibido;
+use App\OrdenCompra;
 use App\Permiso;
 use App\User;
 use Exception;
@@ -220,7 +221,11 @@ class Kernel extends ConsoleKernel
                     $doc = FacturaCompra::where('rut_emisor', $data->rut_emisor)->where('folio', $data->folio)->where('tiene_xml', false)->first();
                     if($doc != null){
                         $users = User::all();
-
+                        $doc->oc_id = $data->oc_id;
+                        $ocdoc = OrdenCompra::where('folio', $data->oc_id)->first();
+                        if($ocdoc != null){
+                            $doc->proyecto_id = $ocdoc->proyecto_id;
+                        }
                         $doc->fecha_vencimiento = date('Y-m-d', strtotime($data->fecha_vencimiento));
                         $doc->tiene_xml = true;
                         $doc->save();
