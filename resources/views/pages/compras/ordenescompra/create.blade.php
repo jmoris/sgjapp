@@ -237,7 +237,7 @@
                                                                         <option>Seleccione proyecto</option>
                                                                         @foreach ($proyectos as $proyecto)
                                                                             <option value="{{ $proyecto->id }}">
-                                                                                {{ $proyecto->nombre }}</option>
+                                                                                {{ (($proyecto->proyectopadre)?$proyecto->proyectopadre->nombre.' - ':'').$proyecto->nombre }}</option>
                                                                         @endforeach
                                                                     </select>
                                                                 </div>

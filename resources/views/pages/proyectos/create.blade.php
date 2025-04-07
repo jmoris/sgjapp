@@ -35,9 +35,19 @@
                                                         placeholder="Ingrese el monto del proyecto">
                                                 </div>
                                             </div><!-- Col -->
+                                            <div class="col-sm-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Proyecto Padre</label>
+                                                    <select class="form-control" id="proyecto_id" name="proyecto_id">
+                                                        <option>Seleccione un proyecto padre</option>
+                                                        @foreach($proyectos as $proyecto)
+                                                        <option value="{{ $proyecto->id }}">{{ $proyecto->nombre }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="row">
-
                                         </div>
                                         <div class="float-end">
                                             <button type="submit" class="btn btn-primary submit"><i

@@ -7,6 +7,7 @@ use App\Factura;
 use App\FacturaCompra;
 use App\GuiaDespacho;
 use App\Helpers\Ajustes;
+use App\ListaCorreo;
 use App\NotaCredito;
 use App\NotaCreditoCompra;
 use App\Notifications\DocumentoRecibido;
@@ -43,6 +44,24 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')
         //          ->hourly();
         Tenant::all()->eachCurrent(function(Tenant $tenant) use ($schedule) {
+            /**
+             * Tarea que envia el reporte de facturas de compra por categorizar todos los dias a las 1/:00
+             */
+            $schedule->call($tenant->callback(function() {
+                $emisor = Ajustes::getEmisor();
+                $pendientes = FacturaCompra::whereNull('proyecto_id')->get();
+
+                // Se podria hacer estadisticas recorriendo la coleccion
+                foreach($pendientes as $pendiente){
+
+                }
+
+                // Luego podriamos armar el corrreo con las estadisticas y enviarlo a las listas de correo
+                $correos = ListaCorreo::where('lista', 'reportes')->get();
+
+
+
+            }))->dailyAt('17:00');
             /**
              * Tarea que revisa el estado de los documentos pendientes
              */

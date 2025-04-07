@@ -102,7 +102,7 @@
                     responsivePriority: 1,
                     width: '60%',
                     render: function(data, type, row){
-                        return '<a href="javascript:void(0);" class="text-decoration-none text-black" onclick="verProyecto('+row.id+')">'+row.nombre+'</a>'
+                        return '<a href="javascript:void(0);" class="text-decoration-none text-black" onclick="verProyecto('+row.id+')">'+ ((row.proyectopadre)?row.proyectopadre.nombre +' - ':'') + row.nombre+'</a>'
                     }
                 },
                 {

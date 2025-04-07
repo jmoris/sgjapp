@@ -35,7 +35,7 @@ class GuiaDespachoController extends Controller
         $clientes = Cliente::orderBy('razon_social', 'asc')->get(); // aqui clientes
         $unidades = Unidad::orderBy('nombre', 'asc')->get();
         $listas = ListaPrecio::all();
-        $proyectos = Proyecto::where('estado', '!=', 1)->orderBy('nombre', 'asc')->get();
+        $proyectos = Proyecto::where('estado', '!=', 1)->with('proyectopadre')->orderBy('nombre', 'asc')->get();
         $borradores = Borrador::where('user_id', auth()->user()->id)->where('tipo_doc', 52)->orderBy('updated_at', 'desc')->get();
         return view('pages.ventas.guiasdespacho.create', ['clientes' => $clientes, 'unidades' => $unidades,'comunas' => $comunas, 'emisor' => $emisor, 'listas' => $listas, 'proyectos' => $proyectos, 'borradores' => $borradores]);
     }

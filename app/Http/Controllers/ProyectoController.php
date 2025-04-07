@@ -21,7 +21,8 @@ class ProyectoController extends Controller
     }
 
     public function newProyecto(){
-        return view('pages.proyectos.create');
+        $proyectos = Proyecto::where('estado', 0)->whereNull('proyecto_id')->get();
+        return view('pages.proyectos.create', ['proyectos' => $proyectos]);
     }
 
     public function editProyecto($id){
@@ -44,7 +45,7 @@ class ProyectoController extends Controller
         DESDE AQUI HACIA ABAJO ESTARAN LAS FUNCIONES DE LA API
     */
     public function getAll(){
-        $data = Proyecto::query();
+        $data = Proyecto::with('proyectopadre');
         return DataTables::eloquent($data)->toJson();
     }
 
@@ -61,7 +62,8 @@ class ProyectoController extends Controller
         try{
             $validator = Validator::make($request->all(), [
                 'nombre' => 'required',
-                'monto_proyecto' => 'required|min:0'
+                'monto_proyecto' => 'required|min:0',
+                'proyecto_id' => 'nullable'
             ]);
 
             if($validator->fails()){
@@ -74,6 +76,7 @@ class ProyectoController extends Controller
             $proyecto = new Proyecto();
             $proyecto->nombre = $request->nombre;
             $proyecto->monto_proyecto = $request->monto_proyecto;
+            $proyecto->proyecto_id = $request->proyecto_id;
             $proyecto->save();
 
             return response()->json([
