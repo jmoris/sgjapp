@@ -97,26 +97,31 @@
             columns: [
                 {
                     data: 'rut',
+                    width: '10%',
                     responsivePriority: 1
                 },
                 {
                     data: 'razon_social',
+                    width: '35%',
                     responsivePriority: 2
                 },
                 {
                     data: 'direccion',
+                    width: '35%',
                     responsivePriority: 3
                 },
                 {
                     data: 'comuna.nombre',
+                    width: '12%',
                     responsivePriority: 3
                 },
                 {
                     data: null,
                     orderable:false,
+                    width: '8%',
                     render: function(data, type, row) {
                         console.log(row);
-                        var html = '<div><button type="button" title="Editar Cliente" onclick="editCliente('+row.id+')" class="btn btnxs px-1 py-0"><i class="mdi mdi-pencil"></i></button>' +
+                        var html = '<div style="text-align: right;"><button type="button" title="Editar Cliente" onclick="editCliente('+row.id+')" class="btn btnxs px-1 py-0"><i class="mdi mdi-pencil"></i></button>' +
                             '<button type="button" onclick="deleteCliente('+row.id+')" title="Eliminar Cliente" class="btn btnxs px-1 py-0"><i class="mdi mdi-trash-can"></i></button>' +
                             '</div>';
                         return html;
