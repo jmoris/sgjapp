@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\AdjuntoProyecto;
 use App\Factura;
 use App\FacturaCompra;
 use App\GuiaDespacho;
@@ -38,7 +39,16 @@ class ProyectoController extends Controller
         $nc = NotaCredito::where('proyecto_id', $proyecto->id)->with('cliente')->get();
         $ocs = OrdenCompra::where('proyecto_id', $proyecto->id)->where('rev_activa', true)->where('estado', '!=', -1)->with('proveedor')->get();
         $total = Factura::where('proyecto_id', $proyecto->id)->sum('monto_total');
-        return view('pages.proyectos.detail', ['proyecto' => $proyecto, 'facturas' => $facturas, 'facturascompra' => $facturascompra, 'guias' => $guias, 'notascredito' => $nc, 'ocs' => $ocs, 'total' => $total]);
+        $adjuntos = AdjuntoProyecto::where('proyecto_id', $proyecto->id)->get();
+        return view('pages.proyectos.detail', [
+            'proyecto' => $proyecto,
+            'facturas' => $facturas,
+            'facturascompra' => $facturascompra,
+            'guias' => $guias,
+            'notascredito' => $nc,
+            'ocs' => $ocs,
+            'total' => $total,
+            'adjuntos' => $adjuntos]);
     }
 
     /*
@@ -135,6 +145,65 @@ class ProyectoController extends Controller
             ]);
         }catch(Exception $ex){
             return $ex;
+        }
+    }
+
+    public function getAllAdjuntos(Request $request, $id){
+        $adjuntos = AdjuntoProyecto::where('proyecto_id', $id)->get();
+        return response()->json($adjuntos);
+    }
+
+    public function uploadDocumento(Request $request, $id){
+        $request->validate([
+            'file' => 'required|max:2048',
+        ]);
+
+        $file = $request->file('file');
+        $path = $file->store('proyectos/'.$id);
+
+        $adjunto = new AdjuntoProyecto();
+        $adjunto->proyecto_id = $id;
+        $adjunto->path = $path;
+        $adjunto->nombre = $file->getClientOriginalName();
+        $adjunto->save();
+
+        return response()->json([
+            'success' => true,
+            'msg' => 'Archivo adjuntando exitosamente al proyecto'
+        ]);;
+    }
+
+    public function descargarAdjunto(Request $request, $id){
+        try{
+            $adjunto = AdjuntoProyecto::find($id);
+            return response()->download(storage_path('app/'.$adjunto->path), $adjunto->nombre);
+        }catch(Exception $ex){
+            return response()->json([
+                'success' => false,
+                'msg' => 'Hubo un error al descargar el archivo adjunto',
+                'error' => $ex->getMessage()
+            ]);
+        }
+    }
+
+    public function deleteAdjunto(Request $request, $id){
+        try{
+            $adjunto = AdjuntoProyecto::find($id);
+            $path = storage_path('app/'.$adjunto->path);
+
+            unlink($path);
+            $adjunto->delete();
+
+            return response()->json([
+                'success' => true,
+                'msg' => 'Archivo adjunto eliminado exitosamente'
+            ]);
+        }catch(Exception $ex){
+            return response()->json([
+                'success' => false,
+                'msg' => 'Hubo un error al intentar eliminar el archivo adjunto',
+                'error' => $ex->getMessage()
+            ]);
         }
     }
 }

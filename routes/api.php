@@ -242,6 +242,10 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
         Route::post('proyectos', [ProyectoController::class, 'store']);
         Route::post('proyectos/editar/{id}', [ProyectoController::class, 'update']);
         Route::delete('proyectos/{id}', [ProyectoController::class, 'delete']);
+        Route::get('proyectos/{id}/adjuntos', [ProyectoController::class, 'getAllAdjuntos']);
+        Route::post('proyectos/{id}/adjuntos', [ProyectoController::class, 'uploadDocumento']);
+        Route::get('proyectos/adjuntos/{idAdjunto}', [ProyectoController::class, 'descargarAdjunto']);
+        Route::delete('proyectos/adjuntos/{idAdjunto}', [ProyectoController::class, 'deleteAdjunto']);
     });
 
     Route::get('/roles', [PermissionController::class, 'getRoles']);

@@ -67,6 +67,9 @@
                                             <input type="text" name="total" id="total" class="form-control"
                                                 value="$ {{ number_format($proyecto->monto_proyecto-$total, 0, ',', '.') }}" disabled>
                                         </div>
+                                        <div class="mb-3">
+                                            <a href="javascript:void(0)" onclick="abrirAdjuntos()"><i class="mdi mdi-file-multiple"></i> Ver archivos adjuntos</a>
+                                        </div>
                                     </div>
                                     <div class="col-md-9 border-start">
                                         <ul class="nav nav-tabs">
@@ -258,17 +261,63 @@
             </div>
         </div>
     </div>
-
+<!-- Modal -->
+<div class="modal fade" id="modalAdjuntos" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+aria-labelledby="modalAdjuntosLabel" aria-hidden="true">
+<div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h6 class="modal-title" id="modalAdjuntosLabel">DOCUMENTOS ADJUNTOS PROYECTO</h6>
+            <button id="btnAdjuntar" class="btn btn-primary ms-auto" onclick="adjuntarDocumentos()" style="padding: 0.1rem 0.5rem; font-size:0.75rem;"><i class="mdi mdi-file-upload-outline"></i> Adjuntar documentos</button>
+        </div>
+        <div class="modal-body" style="overflow-y: scroll; height: 50vh;">
+            <div class="row">
+                <div class="col-md-12" id="datadiv">
+                    <div class="box">
+                        <ul class="directory-list">
+                            <li class="folder">Adjuntos {{ $proyecto->nombre }}
+                                <ul id="files">
+                                    @foreach($adjuntos as $adjunto)
+                                        <li><a href="/api/ventas/proyectos/adjuntos/{{$adjunto->id}}">{{ $adjunto->nombre }}</a> <a href="javascript:void(0)" onclick="eliminarAdjunto({{$adjunto->id}})"><i class="ms-1 mdi mdi-delete text-danger"></i></a></li>
+                                    @endforeach
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-12 d-none" id="dropdiv">
+                    <div class="dropzone-box">
+                        <form action="/api/ventas/proyectos/{{$proyecto->id}}/adjuntos" class="dropzone" id="uploadarea">
+                            @csrf
+                            <div class="dz-message" style="margin:4em auto; " data-dz-message><i style="font-size: 3rem;" class="mdi mdi-upload"></i></br><span>Arrastre los archivos al cuadro o haga click para abrir el explorador</span></div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+    </div>
+</div>
+</div>
 @endsection
 
 @push('plugin-scripts')
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.8/jquery.inputmask.min.js"
 integrity="sha512-efAcjYoYT0sXxQRtxGY37CKYmqsFVOIwMApaEbrxJr4RwqVVGw8o+Lfh/+59TU07+suZn1BWq4fDl5fdgyCNkw=="
 crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="https://unpkg.com/dropzone@5/dist/min/dropzone.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/dropzone@5/dist/min/dropzone.min.css" type="text/css" />
 @endpush
 
 @push('custom-scripts')
     <script>
+        let myDropzone = new Dropzone("#uploadarea", { /* options */ });
+
+        myDropzone.on("queuecomplete", file => {
+            renderAdjuntos();
+        });
 
         $(document).ready(function(){
             $('#monto_proyecto').inputmask('numeric', {
@@ -280,6 +329,62 @@ crossorigin="anonymous" referrerpolicy="no-referrer"></script>
             });
         });
 
+        function abrirAdjuntos(){
+            $('#modalAdjuntos').modal('show');
+        }
+
+        function eliminarAdjunto(id){
+            Swal.fire({
+                title: "¿Quieres confirmar la eliminacion de este archivo?",
+                text: "Una vez confirmada la eliminación del archivo este sera eliminado permanentemente.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Confirmar",
+                cancelButtonText: "Cancelar"
+            }).then((modalResult) => {
+                if (modalResult.isConfirmed) {
+
+                    $.ajax({
+                        type: "DELETE",
+                        url: '/api/ventas/proyectos/adjuntos/'+id,
+                        success: function(data) {
+                            renderAdjuntos();
+                        }
+                    });
+
+                }
+            });
+        }
+
+        function renderAdjuntos(){
+            $.ajax({
+                type: "GET",
+                url: '/api/ventas/proyectos/{{$proyecto->id}}/adjuntos',
+                success: function(data) {
+                    console.log(data);
+                    $('#files').empty();
+                    data.forEach(item => {
+                        $('#files').append(`<li><a href="/api/ventas/proyectos/adjuntos/${item.id}">${item.nombre}</a> <a href="javascript:void(0)" onclick="eliminarAdjunto(${item.id})"><i class="ms-1 mdi mdi-delete text-danger"></i></a></li>`);
+                    });
+                }
+            });
+        }
+
+        function adjuntarDocumentos(){
+            if($('#datadiv').hasClass('d-none')){
+                $('#datadiv').removeClass('d-none');
+                $('#dropdiv').addClass('d-none');
+                $('#btnAdjuntar').html('<i class="mdi mdi-file-upload-outline"></i> Adjuntar documentos');
+            }else{
+                $('#dropdiv').removeClass('d-none');
+                $('#datadiv').addClass('d-none');
+                $('#btnAdjuntar').html('<i class="mdi mdi-arrow-left"></i> Volver al listado');
+            }
+            renderAdjuntos();
+
+        }
 
         function editProyecto(){
             console.log($('#editText').text());
@@ -515,4 +620,100 @@ crossorigin="anonymous" referrerpolicy="no-referrer"></script>
             window.open('/api/ventas/notascredito/vistaprevia/' + id);
         }
     </script>
+@endpush
+
+@push('style')
+    <style>
+        .dropzone-box {
+            background: white;
+            border-radius: 5px;
+            border: 2px dashed rgb(0, 135, 247);
+            border-image: none;
+            max-width: 600px;
+            height: 40vh;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .dropzone-box .dropzone {
+            max-height: 100%;
+            height: 40vh;
+            border: none;
+        }
+
+        .box {
+            width: 100%;
+            border-radius: 2px;
+            max-height: 100%;
+            overflow-y: scroll;
+        }
+
+        @media (min-width: 544px) {
+        .box {
+            width: 100%;
+            max-height: 100%;
+            overflow-y: scroll;
+        }
+        }
+
+
+        /* The list style
+        -------------------------------------------------------------- */
+
+        .directory-list ul {
+        margin-left: 10px;
+        padding-left: 20px;
+        border-left: 1px dashed #ddd;
+        }
+
+        .directory-list li {
+        list-style: none;
+        color: #000;
+        font-size: 17px;
+        font-weight: normal;
+        }
+
+        .directory-list a {
+        border-bottom: 1px solid transparent;
+        color: #000;
+        text-decoration: none;
+        transition: all 0.2s ease;
+        }
+
+        .directory-list a:hover {
+        border-color: #eee;
+        color: #000;
+        }
+
+        .directory-list .folder,
+        .directory-list .folder > a {
+        color: #000;
+        font-weight: bold;
+        }
+
+
+        /* The icons
+        -------------------------------------------------------------- */
+
+        .directory-list li:before {
+        margin-right: 10px;
+        content: "";
+        height: 20px;
+        vertical-align: middle;
+        width: 20px;
+        background-repeat: no-repeat;
+        display: inline-block;
+        /* file icon by default */
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path fill='lightgrey' d='M85.714,42.857V87.5c0,1.487-0.521,2.752-1.562,3.794c-1.042,1.041-2.308,1.562-3.795,1.562H19.643 c-1.488,0-2.753-0.521-3.794-1.562c-1.042-1.042-1.562-2.307-1.562-3.794v-75c0-1.487,0.521-2.752,1.562-3.794 c1.041-1.041,2.306-1.562,3.794-1.562H50V37.5c0,1.488,0.521,2.753,1.562,3.795s2.307,1.562,3.795,1.562H85.714z M85.546,35.714 H57.143V7.311c3.05,0.558,5.505,1.767,7.366,3.627l17.41,17.411C83.78,30.209,84.989,32.665,85.546,35.714z' /></svg>");
+        background-position: center 2px;
+        background-size: 60% auto;
+        }
+
+        .directory-list li.folder:before {
+        /* folder icon if folder class is specified */
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path fill='lightblue' d='M96.429,37.5v39.286c0,3.423-1.228,6.361-3.684,8.817c-2.455,2.455-5.395,3.683-8.816,3.683H16.071 c-3.423,0-6.362-1.228-8.817-3.683c-2.456-2.456-3.683-5.395-3.683-8.817V23.214c0-3.422,1.228-6.362,3.683-8.817 c2.455-2.456,5.394-3.683,8.817-3.683h17.857c3.422,0,6.362,1.228,8.817,3.683c2.455,2.455,3.683,5.395,3.683,8.817V25h37.5 c3.422,0,6.361,1.228,8.816,3.683C95.201,31.138,96.429,34.078,96.429,37.5z' /></svg>");
+        background-position: center top;
+        background-size: 75% auto;
+        }
+    </style>
 @endpush

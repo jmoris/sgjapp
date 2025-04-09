@@ -239,6 +239,7 @@ class Kernel extends ConsoleKernel
                 foreach($docData as $data){
                     $doc = FacturaCompra::where('rut_emisor', $data->rut_emisor)->where('folio', $data->folio)->where('tiene_xml', false)->first();
                     if($doc != null){
+                        Log::info(json_encode($data));
                         $users = User::all();
                         $doc->oc_id = $data->oc_id;
                         $ocdoc = OrdenCompra::where('folio', $data->oc_id)->first();
