@@ -39,7 +39,7 @@
                                                 <div class="mb-3">
                                                     <label class="form-label">Proyecto Padre</label>
                                                     <select class="form-control" id="proyecto_id" name="proyecto_id">
-                                                        <option>Seleccione un proyecto padre</option>
+                                                        <option value="">Seleccione un proyecto padre</option>
                                                         @foreach($proyectos as $proyecto)
                                                         <option value="{{ $proyecto->id }}">{{ $proyecto->nombre }}</option>
                                                         @endforeach

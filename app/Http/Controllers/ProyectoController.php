@@ -86,7 +86,11 @@ class ProyectoController extends Controller
             $proyecto = new Proyecto();
             $proyecto->nombre = $request->nombre;
             $proyecto->monto_proyecto = $request->monto_proyecto;
-            $proyecto->proyecto_id = $request->proyecto_id;
+            if($request->proyecto_id != ''){
+                $proyecto->proyecto_id = $request->proyecto_id;
+            }else{
+                $proyecto->proyecto_id = null;
+            }
             $proyecto->save();
 
             return response()->json([
