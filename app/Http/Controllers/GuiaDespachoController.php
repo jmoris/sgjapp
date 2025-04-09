@@ -160,7 +160,7 @@ class GuiaDespachoController extends Controller
                 return response()->json([
                     'success' => 'false',
                     'msg' => 'No se pudo generar el documento en la API',
-                    'error' => $docData->error
+                    'error' => $docData->msg
                 ]);
             }
 
