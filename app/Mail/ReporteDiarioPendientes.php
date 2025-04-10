@@ -29,7 +29,7 @@ class ReporteDiarioPendientes extends Mailable
     {
         return new Envelope(
             from: new Address('no-responder@soluciontotal.cl', 'SoluciónTotal Chile'),
-            subject: 'Reporte de Facturas pendientes de categorizar',
+            subject: 'Reporte de Facturas Pendientes',
         );
     }
 
