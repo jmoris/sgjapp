@@ -81,7 +81,7 @@ class AuthController extends Controller
 			if (Auth::guard('web')->attempt($userdata, ($request->remember_me!=null)?$request->remember_me:false)){
 				// validation successful
                 $user = Auth::user();
-
+                Log::info("El usuario ".$user->name." inicio sesion en la empresa ".$tenant->name);
                 //Log::info("---------------------------------------------------");
                 //Log::info("Cookie Tenant: ".decrypt(Cookie::get('tenant')));
                 //Log::info("Estado Auth:". (Auth::check()?'Conectado':'Desconectado') );

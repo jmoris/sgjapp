@@ -8,6 +8,7 @@ use App\FacturaCompra;
 use App\GuiaDespacho;
 use App\Helpers\Ajustes;
 use App\ListaCorreo;
+use App\Mail\ReporteDiarioPendientes;
 use App\NotaCredito;
 use App\NotaCreditoCompra;
 use App\Notifications\DocumentoRecibido;
@@ -18,6 +19,7 @@ use Exception;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 use Spatie\Multitenancy\Models\Tenant;
 
@@ -47,19 +49,20 @@ class Kernel extends ConsoleKernel
             /**
              * Tarea que envia el reporte de facturas de compra por categorizar todos los dias a las 1/:00
              */
-            $schedule->call($tenant->callback(function() {
+            $schedule->call($tenant->callback(function() use($tenant) {
                 $emisor = Ajustes::getEmisor();
                 $pendientes = FacturaCompra::whereNull('proyecto_id')->get();
 
                 // Se podria hacer estadisticas recorriendo la coleccion
-                foreach($pendientes as $pendiente){
+                /*foreach($pendientes as $pendiente){
 
-                }
+                }*/
 
                 // Luego podriamos armar el corrreo con las estadisticas y enviarlo a las listas de correo
                 $correos = ListaCorreo::where('lista', 'reportes')->get();
-
-
+                foreach($correos as $correo){
+                    Mail::to($correo->direccion)->send(new ReporteDiarioPendientes($correo->usuario->name.' '.$correo->usuario->lastname, $tenant->name, count($pendientes)));
+                }
 
             }))->dailyAt('17:00');
             /**
