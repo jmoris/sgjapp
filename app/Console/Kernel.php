@@ -49,7 +49,7 @@ class Kernel extends ConsoleKernel
             /**
              * Tarea que envia el reporte de facturas de compra por categorizar todos los dias a las 1/:00
              */
-            $schedule->call($tenant->callback(function() use($tenant) {
+            $schedule->call($tenant->callback(function() {
                 $emisor = Ajustes::getEmisor();
                 $pendientes = FacturaCompra::whereNull('proyecto_id')->get();
 
@@ -61,7 +61,7 @@ class Kernel extends ConsoleKernel
                 // Luego podriamos armar el corrreo con las estadisticas y enviarlo a las listas de correo
                 $correos = ListaCorreo::where('lista', 'reportes')->get();
                 foreach($correos as $correo){
-                    Mail::to($correo->direccion)->send(new ReporteDiarioPendientes($correo->usuario->name.' '.$correo->usuario->lastname, $tenant->name, count($pendientes)));
+                    Mail::to($correo->direccion)->send(new ReporteDiarioPendientes(($correo->usuario->name.' '.$correo->usuario->lastname), $emisor['razon_social'], count($pendientes)));
                 }
 
             }))->dailyAt('17:00');
