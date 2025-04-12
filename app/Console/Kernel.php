@@ -59,6 +59,7 @@ class Kernel extends ConsoleKernel
                 }*/
 
                 // Luego podriamos armar el corrreo con las estadisticas y enviarlo a las listas de correo
+                Log::info("Enviando reporte de la empresa ".$emisor['razon_social']);
                 $correos = ListaCorreo::where('lista', 'reportes')->get();
                 foreach($correos as $correo){
                     Mail::to($correo->direccion)->send(new ReporteDiarioPendientes(($correo->usuario->name.' '.$correo->usuario->lastname), $emisor['razon_social'], count($pendientes)));

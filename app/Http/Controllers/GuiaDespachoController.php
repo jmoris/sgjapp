@@ -157,6 +157,7 @@ class GuiaDespachoController extends Controller
             curl_close($ch);
             $docData = json_decode($result);
             if(!$docData->success){
+                Log::info(json_encode($docData));
                 return response()->json([
                     'success' => 'false',
                     'msg' => 'No se pudo generar el documento en la API',
