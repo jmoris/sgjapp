@@ -348,11 +348,9 @@ class Kernel extends ConsoleKernel
 
                 }))->dailyAt('17:00');
             }
-            return 1;
         }catch(Exception $ex){
             Log::info("Hubo un error al ejecutar las tareas programadas");
             Log::info("ERROR: ". $ex->getMessage());
-            return 0;
         }
     }
 
