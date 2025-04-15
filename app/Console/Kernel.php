@@ -187,26 +187,25 @@ class Kernel extends ConsoleKernel
                     curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
                     $result = curl_exec($ch);
                     $response = json_decode($result);
-                    if($response == null){
-                        return 0;
-                    }
-                    if($response->data != null){
-                        foreach($response->data as $doc){
-                            $fecha = str_replace('/', '-', $doc->detFchDoc);
-                            $rut_emisor = $doc->detRutDoc.'-'.$doc->detDvDoc;
-                            if(FacturaCompra::where('rut_emisor', $rut_emisor)->where('folio', intval($doc->detNroDoc))->count() == 0){
+                    if($response != null){
+                        if($response->data != null){
+                            foreach($response->data as $doc){
+                                $fecha = str_replace('/', '-', $doc->detFchDoc);
+                                $rut_emisor = $doc->detRutDoc.'-'.$doc->detDvDoc;
+                                if(FacturaCompra::where('rut_emisor', $rut_emisor)->where('folio', intval($doc->detNroDoc))->count() == 0){
 
-                                $factura = new FacturaCompra();
-                                $factura->rut_emisor = $rut_emisor;
-                                $factura->razon_social_emisor = $doc->detRznSoc;
-                                $factura->folio = $doc->detNroDoc;
-                                $factura->fecha_emision = date('Y-m-d', strtotime($fecha));
-                                $factura->monto_neto = $doc->detMntNeto;
-                                $factura->monto_iva = $doc->detMntIVA;
-                                $factura->monto_total = $doc->detMntTotal;
-                                $factura->tiene_xml = false;
-                                $factura->save();
+                                    $factura = new FacturaCompra();
+                                    $factura->rut_emisor = $rut_emisor;
+                                    $factura->razon_social_emisor = $doc->detRznSoc;
+                                    $factura->folio = $doc->detNroDoc;
+                                    $factura->fecha_emision = date('Y-m-d', strtotime($fecha));
+                                    $factura->monto_neto = $doc->detMntNeto;
+                                    $factura->monto_iva = $doc->detMntIVA;
+                                    $factura->monto_total = $doc->detMntTotal;
+                                    $factura->tiene_xml = false;
+                                    $factura->save();
 
+                                }
                             }
                         }
                     }
@@ -221,28 +220,27 @@ class Kernel extends ConsoleKernel
                     curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
                     $result = curl_exec($ch);
                     curl_close($ch);
-                    if($result == null){
-                        return 0;
-                    }
-                    $docData = json_decode($result);
+                    if($result != null){
+                        $docData = json_decode($result);
 
-                    foreach($docData as $data){
-                        $doc = FacturaCompra::where('rut_emisor', $data->rut_emisor)->where('folio', $data->folio)->where('tiene_xml', false)->first();
-                        if($doc != null){
-                            $users = User::all();
-                            $doc->oc_id = $data->oc_id;
-                            $ocdoc = OrdenCompra::where('folio', $data->oc_id)->first();
-                            if($ocdoc != null){
-                                $doc->proyecto_id = $ocdoc->proyecto_id;
-                            }
-                            $doc->fecha_vencimiento = date('Y-m-d', strtotime($data->fecha_vencimiento));
-                            $doc->tiene_xml = true;
-                            $doc->save();
-                            try{
-                                Notification::sendNow($users, new DocumentoRecibido($data->rut_emisor, 33, $data->folio));
-                                Log::info("Se envia notificacion a usuarios por doc ". $data->rut_emisor." - ".$data->folio);
-                            }catch(Exception $ex){
-                                Log::error('Hubo un error al intentar enviar la notificacion del contriuyente '.$data->rut_emisor. ' folio '.$data->folio);
+                        foreach($docData as $data){
+                            $doc = FacturaCompra::where('rut_emisor', $data->rut_emisor)->where('folio', $data->folio)->where('tiene_xml', false)->first();
+                            if($doc != null){
+                                $users = User::all();
+                                $doc->oc_id = $data->oc_id;
+                                $ocdoc = OrdenCompra::where('folio', $data->oc_id)->first();
+                                if($ocdoc != null){
+                                    $doc->proyecto_id = $ocdoc->proyecto_id;
+                                }
+                                $doc->fecha_vencimiento = date('Y-m-d', strtotime($data->fecha_vencimiento));
+                                $doc->tiene_xml = true;
+                                $doc->save();
+                                try{
+                                    Notification::sendNow($users, new DocumentoRecibido($data->rut_emisor, 33, $data->folio));
+                                    Log::info("Se envia notificacion a usuarios por doc ". $data->rut_emisor." - ".$data->folio);
+                                }catch(Exception $ex){
+                                    Log::error('Hubo un error al intentar enviar la notificacion del contriuyente '.$data->rut_emisor. ' folio '.$data->folio);
+                                }
                             }
                         }
                     }
@@ -276,26 +274,25 @@ class Kernel extends ConsoleKernel
                     curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
                     $result = curl_exec($ch);
                     $response = json_decode($result);
-                    if($response == null){
-                        return 0;
-                    }
-                    if($response->data != null){
-                        foreach($response->data as $doc){
-                            $fecha = str_replace('/', '-', $doc->detFchDoc);
-                            $rut_emisor = $doc->detRutDoc.'-'.$doc->detDvDoc;
-                            if(NotaCreditoCompra::where('rut_emisor', $rut_emisor)->where('folio', intval($doc->detNroDoc))->count() == 0){
+                    if($response != null){
+                        if($response->data != null){
+                            foreach($response->data as $doc){
+                                $fecha = str_replace('/', '-', $doc->detFchDoc);
+                                $rut_emisor = $doc->detRutDoc.'-'.$doc->detDvDoc;
+                                if(NotaCreditoCompra::where('rut_emisor', $rut_emisor)->where('folio', intval($doc->detNroDoc))->count() == 0){
 
-                                $factura = new NotaCreditoCompra();
-                                $factura->rut_emisor = $rut_emisor;
-                                $factura->razon_social_emisor = $doc->detRznSoc;
-                                $factura->folio = $doc->detNroDoc;
-                                $factura->fecha_emision = date('Y-m-d', strtotime($fecha));
-                                $factura->monto_neto = $doc->detMntNeto;
-                                $factura->monto_iva = $doc->detMntIVA;
-                                $factura->monto_total = $doc->detMntTotal;
-                                $factura->tiene_xml = false;
-                                $factura->save();
+                                    $factura = new NotaCreditoCompra();
+                                    $factura->rut_emisor = $rut_emisor;
+                                    $factura->razon_social_emisor = $doc->detRznSoc;
+                                    $factura->folio = $doc->detNroDoc;
+                                    $factura->fecha_emision = date('Y-m-d', strtotime($fecha));
+                                    $factura->monto_neto = $doc->detMntNeto;
+                                    $factura->monto_iva = $doc->detMntIVA;
+                                    $factura->monto_total = $doc->detMntTotal;
+                                    $factura->tiene_xml = false;
+                                    $factura->save();
 
+                                }
                             }
                         }
                     }
@@ -310,24 +307,23 @@ class Kernel extends ConsoleKernel
                     curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
                     $result = curl_exec($ch);
                     curl_close($ch);
-                    if($result == null){
-                        return 0;
-                    }
-                    $docData = json_decode($result);
+                    if($result != null){
+                        $docData = json_decode($result);
 
-                    foreach($docData as $data){
-                        $doc = NotaCreditoCompra::where('rut_emisor', $data->rut_emisor)->where('folio', $data->folio)->where('tiene_xml', false)->first();
-                        if($doc != null){
-                            $users = User::all();
+                        foreach($docData as $data){
+                            $doc = NotaCreditoCompra::where('rut_emisor', $data->rut_emisor)->where('folio', $data->folio)->where('tiene_xml', false)->first();
+                            if($doc != null){
+                                $users = User::all();
 
-                            $doc->fecha_vencimiento = date('Y-m-d', strtotime($data->fecha_vencimiento));
-                            $doc->tiene_xml = true;
-                            $doc->save();
-                            try{
-                                Notification::sendNow($users, new DocumentoRecibido($data->rut_emisor, 61, $data->folio));
-                                Log::info("Se envia notificacion a usuarios por doc ". $data->rut_emisor." - ".$data->folio);
-                            }catch(Exception $ex){
-                                Log::error('Hubo un error al intentar enviar la notificacion del contriuyente '.$data->rut_emisor. ' folio '.$data->folio);
+                                $doc->fecha_vencimiento = date('Y-m-d', strtotime($data->fecha_vencimiento));
+                                $doc->tiene_xml = true;
+                                $doc->save();
+                                try{
+                                    Notification::sendNow($users, new DocumentoRecibido($data->rut_emisor, 61, $data->folio));
+                                    Log::info("Se envia notificacion a usuarios por doc ". $data->rut_emisor." - ".$data->folio);
+                                }catch(Exception $ex){
+                                    Log::error('Hubo un error al intentar enviar la notificacion del contriuyente '.$data->rut_emisor. ' folio '.$data->folio);
+                                }
                             }
                         }
                     }
