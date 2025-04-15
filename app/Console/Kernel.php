@@ -43,14 +43,14 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $tenants = Tenant::all();
-        try{
-            foreach($tenants as $tenant){
-                Log::info("Contexto Tenant : ".$tenant->name);
-                $tenant->makeCurrent();
-                /**
-                 * Tarea que revisa el estado de los documentos pendientes
-                 */
-                $schedule->call($tenant->callback(function() {
+        foreach($tenants as $tenant){
+            Log::info("Contexto Tenant : ".$tenant->name);
+            $tenant->makeCurrent();
+            /**
+             * Tarea que revisa el estado de los documentos pendientes
+             */
+            $schedule->call($tenant->callback(function() {
+                try{
                     $emisor = Ajustes::getEmisor();
                     $pendientes = DocumentoPendiente::all();
                     foreach ($pendientes as $doc) {
@@ -108,12 +108,16 @@ class Kernel extends ConsoleKernel
                         }
 
                     }
-                }))->everyMinute();
+                }catch(Exception $ex){
+                    Log::info("Error revisando el estado en el SII de los documentos generados");
+                }
+            }))->everyMinute();
 
-                /**
-                 * Tarea que revisa el estado del correo de los documentos generados
-                 */
-                $schedule->call($tenant->callback(function() {
+            /**
+             * Tarea que revisa el estado del correo de los documentos generados
+             */
+            $schedule->call($tenant->callback(function() {
+                try{
                     $emisor = Ajustes::getEmisor();
                     // Facturas
                     $pendientes = Factura::where('estado', 'regexp', '[0-3]0[0|1]')->get();
@@ -154,12 +158,16 @@ class Kernel extends ConsoleKernel
                         $ncEstado = $estadoSii.$estadoXml;
                         NotaCredito::where('id', $doc->id)->update(['estado' => $ncEstado]);
                     }
-                }))->everyMinute();
+                }catch(Exception $ex){
+                    Log::info("Error revisando estado de correo intercambio documentos generados");
+                }
+            }))->everyMinute();
 
-                /**
-                 * Tarea que revisa cada 15 min las facturas de compra recibidas
-                 */
-                $schedule->call($tenant->callback(function() {
+            /**
+             * Tarea que revisa cada 15 min las facturas de compra recibidas
+             */
+            $schedule->call($tenant->callback(function() {
+                try{
                     // Periodo es el mes actual
                     $periodo = date('Ym');
                     $emisor = Ajustes::getEmisor();
@@ -236,15 +244,19 @@ class Kernel extends ConsoleKernel
                             }
                         }
                     }
-                    // Opcion 1: Hacer un merge de arrays e ingresar masivamente
-                    // Opcion 2: Insertar todos los docs del RCV y luego hacer un update masivo
-                    // con los docs recibidos en el correo (tiene_xml = si)
-                }))->everyFifteenMinutes();
+                }catch(Exception $ex){
+                    Log::info("Error sincronizado las facturas de compra");
+                }
+                // Opcion 1: Hacer un merge de arrays e ingresar masivamente
+                // Opcion 2: Insertar todos los docs del RCV y luego hacer un update masivo
+                // con los docs recibidos en el correo (tiene_xml = si)
+            }))->everyFifteenMinutes();
 
-                /**
-                 * Tarea que revisa cada 15 min las notas de credito de compra recibidas
-                 */
-                $schedule->call($tenant->callback(function() {
+            /**
+             * Tarea que revisa cada 15 min las notas de credito de compra recibidas
+             */
+            $schedule->call($tenant->callback(function() {
+                try{
                     // Periodo es el mes actual
                     $periodo = date('Ym');
                     $emisor = Ajustes::getEmisor();
@@ -315,30 +327,29 @@ class Kernel extends ConsoleKernel
                             }
                         }
                     }
-                    // Opcion 1: Hacer un merge de arrays e ingresar masivamente
-                    // Opcion 2: Insertar todos los docs del RCV y luego hacer un update masivo
-                    // con los docs recibidos en el correo (tiene_xml = si)
-                }))->everyFifteenMinutes();
+                }catch(Exception $ex){
+                    Log::info("Error sincronizando las notas de credito de compra");
+                }
+                // Opcion 1: Hacer un merge de arrays e ingresar masivamente
+                // Opcion 2: Insertar todos los docs del RCV y luego hacer un update masivo
+                // con los docs recibidos en el correo (tiene_xml = si)
+            }))->everyFifteenMinutes();
 
-                /**
-                 * Tarea que envia el reporte de facturas de compra por categorizar todos los dias a las 1/:00
-                 */
-                $schedule->call($tenant->callback(function() {
-                    $emisor = Ajustes::getEmisor();
-                    $pendientes = FacturaCompra::whereNull('proyecto_id')->get();
+            /**
+             * Tarea que envia el reporte de facturas de compra por categorizar todos los dias a las 1/:00
+             */
+            $schedule->call($tenant->callback(function() {
+                $emisor = Ajustes::getEmisor();
+                $pendientes = FacturaCompra::whereNull('proyecto_id')->get();
 
-                    // Luego podriamos armar el corrreo con las estadisticas y enviarlo a las listas de correo
-                    Log::info("Enviando reporte de la empresa ".$emisor['razon_social']);
-                    $correos = ListaCorreo::where('lista', 'reportes')->get();
-                    foreach($correos as $correo){
-                        Mail::to($correo->direccion)->send(new ReporteDiarioPendientes(($correo->usuario->name.' '.$correo->usuario->lastname), $emisor['razon_social'], count($pendientes)));
-                    }
+                // Luego podriamos armar el corrreo con las estadisticas y enviarlo a las listas de correo
+                Log::info("Enviando reporte de la empresa ".$emisor['razon_social']);
+                $correos = ListaCorreo::where('lista', 'reportes')->get();
+                foreach($correos as $correo){
+                    Mail::to($correo->direccion)->send(new ReporteDiarioPendientes(($correo->usuario->name.' '.$correo->usuario->lastname), $emisor['razon_social'], count($pendientes)));
+                }
 
-                }))->dailyAt('17:00');
-            }
-        }catch(Exception $ex){
-            Log::info("Hubo un error al ejecutar las tareas programadas");
-            Log::info("ERROR: ". $ex->getMessage());
+            }))->dailyAt('17:55');
         }
     }
 
