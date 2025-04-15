@@ -359,6 +359,7 @@ class FacturaCompraController extends Controller
             ]);
         }catch(Exception $ex){
             Log::info("Error sincronizado las facturas de compra");
+            Log::error($ex);
             return response()->json([
                 'success' => false,
                 'msg' => 'Hubo un error intentando sincronizar los documentos con la API',
