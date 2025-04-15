@@ -45,6 +45,7 @@ class Kernel extends ConsoleKernel
         $tenants = Tenant::all();
         try{
             foreach($tenants as $tenant){
+                $tenant->makeCurrent();
                 /**
                  * Tarea que revisa el estado de los documentos pendientes
                  */
@@ -161,11 +162,13 @@ class Kernel extends ConsoleKernel
                 /**
                  * Tarea que revisa cada 15 min las facturas de compra recibidas
                  */
-                $schedule->call($tenant->callback(function() use ($tenant){
-                    Log::info("[COMPRA] Se inicia revision de facturas en contribuyente ".$tenant->name);
+                $schedule->call($tenant->callback(function() {
                     // Periodo es el mes actual
                     $periodo = date('Ym');
                     $emisor = Ajustes::getEmisor();
+
+                    Log::info("[COMPRA] Se inicia revision de facturas en contribuyente ".$emisor['razon_social']);
+
                     // Obtener RCV de Compra, estos documentos son los recibidos en el SII
                     $data = [
                         'contribuyente' => $emisor['rut'],
@@ -250,11 +253,11 @@ class Kernel extends ConsoleKernel
                 /**
                  * Tarea que revisa cada 15 min las notas de credito de compra recibidas
                  */
-                $schedule->call($tenant->callback(function() use ($tenant){
-                    Log::info("[COMPRA] Se inicia revision de notas de credito en contribuyente ".$tenant->name);
+                $schedule->call($tenant->callback(function() {
                     // Periodo es el mes actual
                     $periodo = date('Ym');
                     $emisor = Ajustes::getEmisor();
+                    Log::info("[COMPRA] Se inicia revision de notas de credito en contribuyente ".$emisor['razon_social']);
                     // Obtener RCV de Compra, estos documentos son los recibidos en el SII
                     $data = [
                         'contribuyente' => $emisor['rut'],
@@ -348,9 +351,11 @@ class Kernel extends ConsoleKernel
 
                 }))->dailyAt('17:00');
             }
+            return 1;
         }catch(Exception $ex){
             Log::info("Hubo un error al ejecutar las tareas programadas");
             Log::info("ERROR: ". $ex->getMessage());
+            return 0;
         }
     }
 

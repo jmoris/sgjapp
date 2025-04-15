@@ -45,7 +45,7 @@ return [
 
         'landlord' => [
             'driver' => env('DB_TENANT_CONN', 'mysql'),
-            'database' => env('DB_DATABASE', 'laravel'),
+            'database' => env('DB_DATABASE', 'sgjapp_landlord'),
             'host' => env('DB_HOST', '127.0.0.1'),
             'username' => env('DB_USERNAME', 'root'),
             'password' => env('DB_PASSWORD', ''),
