@@ -311,7 +311,7 @@
                                                                 <tr>
                                                                     <td>{{ isset($det['CdgItem']['VlrCodigo']) ? $det['CdgItem']['VlrCodigo'] : '-' }}
                                                                     </td>
-                                                                    <td>{{ $det['NmbItem'] }}</td>
+                                                                    <td>{!! $det['NmbItem'] !!}</td>
                                                                     <td>{{ isset($det['QtyItem']) ? $det['QtyItem'] : 1 }}</td>
                                                                     @php
                                                                         $precio = 0;
