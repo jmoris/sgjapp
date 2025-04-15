@@ -5,11 +5,15 @@ namespace App\Http\Controllers;
 use App\CategoriaDocumento;
 use App\FacturaCompra;
 use App\Helpers\Ajustes;
+use App\Notifications\DocumentoRecibido;
+use App\OrdenCompra;
 use App\PagoFacturaCompra;
 use App\Proyecto;
+use App\User;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Validator;
 use SolucionTotal\CoreDTE\Sii\EnvioDte;
 use Yajra\DataTables\Facades\DataTables;
@@ -264,6 +268,101 @@ class FacturaCompraController extends Controller
                 'success' => false,
                 'msg' => 'Hubo un problema al eliminar el pago',
                 'error' => $ex->getMessage()
+            ]);
+        }
+    }
+
+    public function sincronizarDocumentos(Request $request){
+        try{
+            // Periodo es el mes actual
+            $periodo = date('Ym');
+            if(isset($request->periodo))
+                $periodo = $request->periodo;
+            $emisor = Ajustes::getEmisor();
+
+            Log::info("[COMPRA] Se inicia revision de facturas en contribuyente ".$emisor['razon_social']);
+
+            // Obtener RCV de Compra, estos documentos son los recibidos en el SII
+            $data = [
+                'contribuyente' => $emisor['rut'],
+                'operacion' => 'COMPRA',
+                'periodo' => $periodo,
+                'tipo_doc' => 33
+            ];
+            $url = env('FACTURAPI_ENDPOINT').'rcv/detalle?'.http_build_query($data);
+            $ch = curl_init( $url );
+            curl_setopt( $ch, CURLOPT_POST, false);
+            curl_setopt( $ch, CURLOPT_HTTPHEADER, [
+                'Content-Type:application/json',
+                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
+            ]);
+            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+            $result = curl_exec($ch);
+            $response = json_decode($result);
+            if($response != null){
+                if($response->data != null){
+                    foreach($response->data as $doc){
+                        $fecha = str_replace('/', '-', $doc->detFchDoc);
+                        $rut_emisor = $doc->detRutDoc.'-'.$doc->detDvDoc;
+                        if(FacturaCompra::where('rut_emisor', $rut_emisor)->where('folio', intval($doc->detNroDoc))->count() == 0){
+
+                            $factura = new FacturaCompra();
+                            $factura->rut_emisor = $rut_emisor;
+                            $factura->razon_social_emisor = $doc->detRznSoc;
+                            $factura->folio = $doc->detNroDoc;
+                            $factura->fecha_emision = date('Y-m-d', strtotime($fecha));
+                            $factura->monto_neto = $doc->detMntNeto;
+                            $factura->monto_iva = $doc->detMntIVA;
+                            $factura->monto_total = $doc->detMntTotal;
+                            $factura->tiene_xml = false;
+                            $factura->save();
+
+                        }
+                    }
+                }
+            }
+            // Obtener los documentos recibidos en el correo
+            $endpoint =  env('FACTURAPI_ENDPOINT').'documentos/compras?contribuyente='.$emisor['rut'].'&tipo=33&periodo='.$periodo;
+            $ch = curl_init( $endpoint );
+            curl_setopt( $ch, CURLOPT_POST, false);
+            curl_setopt( $ch, CURLOPT_HTTPHEADER, [
+                'Content-Type:application/json',
+                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
+            ]);
+            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+            $result = curl_exec($ch);
+            curl_close($ch);
+            if($result != null){
+                $docData = json_decode($result);
+
+                foreach($docData as $data){
+                    $doc = FacturaCompra::where('rut_emisor', $data->rut_emisor)->where('folio', $data->folio)->where('tiene_xml', false)->first();
+                    if($doc != null){
+                        $users = User::all();
+                        $doc->oc_id = $data->oc_id;
+                        $ocdoc = OrdenCompra::where('folio', $data->oc_id)->first();
+                        if($ocdoc != null){
+                            $doc->proyecto_id = $ocdoc->proyecto_id;
+                        }
+                        $doc->fecha_vencimiento = date('Y-m-d', strtotime($data->fecha_vencimiento));
+                        $doc->tiene_xml = true;
+                        $doc->save();
+                        Notification::sendNow($users, new DocumentoRecibido($data->rut_emisor, 33, $data->folio));
+                        Log::info("Se envia notificacion a usuarios por doc ". $data->rut_emisor." - ".$data->folio);
+                    }
+                }
+            }
+            return response()->json([
+                'success' => true,
+                'msg' => 'Los documentos fueron sincronizados correctamente',
+                'timestamp' => now(),
+            ]);
+        }catch(Exception $ex){
+            Log::info("Error sincronizado las facturas de compra");
+            return response()->json([
+                'success' => false,
+                'msg' => 'Hubo un error intentando sincronizar los documentos con la API',
+                'timestamp' => now(),
             ]);
         }
     }

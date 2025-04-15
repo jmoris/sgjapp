@@ -189,6 +189,7 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
 
     Route::prefix('compras')->group(function(){
         Route::get('facturas', [FacturaCompraController::class, 'getAll']);
+        Route::get('facturas/sincronizar', [FacturaCompraController::class, 'sincronizarDocumentos']);
         Route::get('facturas/vistaprevia/{rutEmisor}/{tipo}/{folio}', [FacturaCompraController::class, 'vistaPreviaFactura']);
         Route::get('facturas/descargar/{emisor}/{folio}', [FacturaCompraController::class, 'descargarPDF']);
         Route::post('categorizar/factura/{emisor}/{folio}', [FacturaCompraController::class, 'categorizarFactura']);
@@ -200,6 +201,7 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
         Route::get('guiasdespacho/vistaprevia/{rutEmisor}/{tipo}/{folio}', [GuiaDespachoCompraController::class, 'vistaPreviaFactura']);
 
         Route::get('notascredito', [NotaCreditoCompraController::class, 'getAll']);
+        Route::get('notascredito/sincronizar', [NotaCreditoCompraController::class, 'sincronizarDocumentos']);
         Route::get('notascredito/vistaprevia/{rutEmisor}/{tipo}/{folio}', [NotaCreditoCompraController::class, 'vistaPreviaNC']);
         Route::get('notascredito/descargar/{emisor}/{folio}', [NotaCreditoCompraController::class, 'descargarPDF']);
 

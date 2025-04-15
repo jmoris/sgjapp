@@ -16,6 +16,11 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-baseline">
                                 <h6 class="card-title mb-3">LISTA DE FACTURAS DE COMPRA</h6>
+                                <button onclick="sincronizarDocumentos()" class="btn btn-outline-primary btn-sm align-end"
+                                    title="Sincronizar documentos con el SII">
+                                    <i class="mdi mdi-refresh"></i>
+                                </button>
+
                             </div>
                             <div class="col-md-12 mb-3">
                                 <div class="row mx-5">
@@ -220,6 +225,18 @@
 
         });
 
+        function sincronizarDocumentos() {
+            $.ajax({
+                type: "GET",
+                url: '/api/compras/facturas/sincronizar',
+                success: function(data) {
+                    if (data.success == true) {
+                        console.log(data);
+                    }
+                }
+            });
+        }
+
         function verDocumento(emisor, folio) {
             location.href = `/compras/facturas/detalle/${emisor}/${folio}`;
         }
@@ -258,8 +275,7 @@
                 order: [
                     [4, 'desc']
                 ],
-                columns: [
-                    {
+                columns: [{
                         data: 'folio',
                         responsivePriority: 1
                     },
@@ -274,7 +290,7 @@
                     {
                         data: 'proyecto_id',
                         render: function(data, type, row) {
-                            if(row.proyecto_id == null)
+                            if (row.proyecto_id == null)
                                 return 'No asignado';
                             else
                                 return row.proyecto.nombre;
@@ -284,7 +300,8 @@
                         data: 'fecha_emision',
                         responsivePriority: 3,
                         render: function(data, type, row) {
-                            var fecha = moment(row.fecha_emision, 'YYYY-MM-DD HH:mm:ss').format('DD/MM/YYYY');
+                            var fecha = moment(row.fecha_emision, 'YYYY-MM-DD HH:mm:ss').format(
+                                'DD/MM/YYYY');
                             return fecha;
                         }
                     },
@@ -301,15 +318,18 @@
                         render: function(data, type, row) {
                             var html = '';
                             html = '<div>';
-                            if(row.tiene_xml){
-                                html += '<button type="button" title="Ver Factura" onclick="verDocumento(\'' +
-                                row.rut_emisor + '\',' + row.folio +
-                                ')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-text-box-search-outline"></i></button>';
-                                html += '<button type="button" title="Descargar PDF Factura" onclick="vistaPreviaDocumento(\'' +
-                                row.rut_emisor + '\',' + row.folio +
-                                ')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-download"></i></button>';
-                            }else{
-                                html += '<button type="button" title="Documento XML no disponible" class="btn btn-outline-secondary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-text-box-search-outline"></i></button>';
+                            if (row.tiene_xml) {
+                                html +=
+                                    '<button type="button" title="Ver Factura" onclick="verDocumento(\'' +
+                                    row.rut_emisor + '\',' + row.folio +
+                                    ')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-text-box-search-outline"></i></button>';
+                                html +=
+                                    '<button type="button" title="Descargar PDF Factura" onclick="vistaPreviaDocumento(\'' +
+                                    row.rut_emisor + '\',' + row.folio +
+                                    ')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-download"></i></button>';
+                            } else {
+                                html +=
+                                    '<button type="button" title="Documento XML no disponible" class="btn btn-outline-secondary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-text-box-search-outline"></i></button>';
                             }
                             html += '</div>';
                             return html;
@@ -348,7 +368,7 @@
                 {
                     data: 'proyecto_id',
                     render: function(data, type, row) {
-                        if(row.proyecto_id == null)
+                        if (row.proyecto_id == null)
                             return 'No asignado';
                         else
                             return row.proyecto.nombre;
@@ -375,12 +395,13 @@
                     render: function(data, type, row) {
                         var html = '';
                         html = '<div>';
-                        if(row.tiene_xml){
+                        if (row.tiene_xml) {
                             html += '<button type="button" title="Ver Factura" onclick="verDocumento(\'' +
-                            row.rut_emisor + '\',' + row.folio +
-                            ')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-text-box-search-outline"></i></button>';
-                        }else{
-                            html += '<button type="button" title="Documento XML no disponible" class="btn btn-outline-secondary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-text-box-search-outline"></i></button>';
+                                row.rut_emisor + '\',' + row.folio +
+                                ')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-text-box-search-outline"></i></button>';
+                        } else {
+                            html +=
+                                '<button type="button" title="Documento XML no disponible" class="btn btn-outline-secondary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-text-box-search-outline"></i></button>';
                         }
                         html += '</div>';
                         return html;

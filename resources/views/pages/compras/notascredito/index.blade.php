@@ -16,6 +16,10 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-baseline">
                                 <h6 class="card-title mb-3">LISTA DE NOTAS DE CREDITO DE COMPRA</h6>
+                                <button onclick="sincronizarDocumentos()" class="btn btn-outline-primary btn-sm align-end"
+                                title="Sincronizar documentos con el SII">
+                                    <i class="mdi mdi-refresh"></i>
+                                </button>
                             </div>
                             <div class="col-md-12 mb-3">
                                 <div class="row mx-5">
@@ -194,6 +198,18 @@
             });
 
         });
+
+        function sincronizarDocumentos() {
+            $.ajax({
+                type: "GET",
+                url: '/api/compras/notascredito/sincronizar',
+                success: function(data) {
+                    if (data.success == true) {
+                        console.log(data);
+                    }
+                }
+            });
+        }
 
         function verDocumento(emisor, folio) {
             location.href = `/compras/notascredito/detalle/${emisor}/${folio}`;
