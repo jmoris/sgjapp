@@ -161,7 +161,8 @@ class Kernel extends ConsoleKernel
                 /**
                  * Tarea que revisa cada 15 min las facturas de compra recibidas
                  */
-                $schedule->call($tenant->callback(function(){
+                $schedule->call($tenant->callback(function() use ($tenant){
+                    Log::info("[COMPRA] Se inicia revision de facturas en contribuyente ".$tenant->name);
                     // Periodo es el mes actual
                     $periodo = date('Ym');
                     $emisor = Ajustes::getEmisor();
@@ -249,7 +250,8 @@ class Kernel extends ConsoleKernel
                 /**
                  * Tarea que revisa cada 15 min las notas de credito de compra recibidas
                  */
-                $schedule->call($tenant->callback(function(){
+                $schedule->call($tenant->callback(function() use ($tenant){
+                    Log::info("[COMPRA] Se inicia revision de notas de credito en contribuyente ".$tenant->name);
                     // Periodo es el mes actual
                     $periodo = date('Ym');
                     $emisor = Ajustes::getEmisor();
