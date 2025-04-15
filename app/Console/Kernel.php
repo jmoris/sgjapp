@@ -45,6 +45,7 @@ class Kernel extends ConsoleKernel
         $tenants = Tenant::all();
         try{
             foreach($tenants as $tenant){
+                Log::info("Contexto Tenant : ".$tenant->name);
                 $tenant->makeCurrent();
                 /**
                  * Tarea que revisa el estado de los documentos pendientes
