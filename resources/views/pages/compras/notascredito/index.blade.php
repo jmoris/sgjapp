@@ -206,6 +206,7 @@
                 success: function(data) {
                     if (data.success == true) {
                         console.log(data);
+                        location.reload();
                     }
                 }
             });
