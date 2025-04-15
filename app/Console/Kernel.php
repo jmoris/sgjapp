@@ -114,49 +114,45 @@ class Kernel extends ConsoleKernel
                  * Tarea que revisa el estado del correo de los documentos generados
                  */
                 $schedule->call($tenant->callback(function() {
-                    try{
-                        $emisor = Ajustes::getEmisor();
-                        // Facturas
-                        $pendientes = Factura::where('estado', 'regexp', '[0-3]0[0|1]')->get();
-                        foreach ($pendientes as $doc) {
-                            $endpoint = env('FACTURAPI_ENDPOINT').'documentos/33/'.$doc->folio.'?contribuyente='. $emisor['rut'];
-                            $ch = curl_init($endpoint);
-                            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                                'Content-Type:application/json',
-                                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
-                            ]);
-                            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                            $result = curl_exec($ch);
-                            curl_close($ch);
-                            $docData = json_decode($result, true);
-                            $estado = strval($doc->estado);
-                            $estadoSii = substr($estado, 0, 1);
-                            $estadoXml = strval($docData['email_recibido']);
-                            $estadoPago = substr($estado, 2, 1);
-                            $factEstado = $estadoSii.$estadoXml.$estadoPago;
-                            Factura::where('id', $doc->id)->update(['estado' => $factEstado]);
-                        }
-                        // Notas de credito
-                        $pendientes = NotaCredito::where('estado', 'regexp', '[0-3]0')->get();
-                        foreach ($pendientes as $doc) {
-                            $endpoint = env('FACTURAPI_ENDPOINT').'documentos/61/'.$doc->folio.'?contribuyente='. $emisor['rut'];
-                            $ch = curl_init($endpoint);
-                            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                                'Content-Type:application/json',
-                                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
-                            ]);
-                            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                            $result = curl_exec($ch);
-                            curl_close($ch);
-                            $docData = json_decode($result, true);
-                            $estado = strval($doc->estado);
-                            $estadoSii = substr($estado, 0, 1);
-                            $estadoXml = strval($docData['email_recibido']);
-                            $ncEstado = $estadoSii.$estadoXml;
-                            NotaCredito::where('id', $doc->id)->update(['estado' => $ncEstado]);
-                        }
-                    }catch(Exception $ex){
-                        Log::error($ex);
+                    $emisor = Ajustes::getEmisor();
+                    // Facturas
+                    $pendientes = Factura::where('estado', 'regexp', '[0-3]0[0|1]')->get();
+                    foreach ($pendientes as $doc) {
+                        $endpoint = env('FACTURAPI_ENDPOINT').'documentos/33/'.$doc->folio.'?contribuyente='. $emisor['rut'];
+                        $ch = curl_init($endpoint);
+                        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                            'Content-Type:application/json',
+                            'Authorization: Bearer '.env('FACTURAPI_TOKEN')
+                        ]);
+                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                        $result = curl_exec($ch);
+                        curl_close($ch);
+                        $docData = json_decode($result, true);
+                        $estado = strval($doc->estado);
+                        $estadoSii = substr($estado, 0, 1);
+                        $estadoXml = strval($docData['email_recibido']);
+                        $estadoPago = substr($estado, 2, 1);
+                        $factEstado = $estadoSii.$estadoXml.$estadoPago;
+                        Factura::where('id', $doc->id)->update(['estado' => $factEstado]);
+                    }
+                    // Notas de credito
+                    $pendientes = NotaCredito::where('estado', 'regexp', '[0-3]0')->get();
+                    foreach ($pendientes as $doc) {
+                        $endpoint = env('FACTURAPI_ENDPOINT').'documentos/61/'.$doc->folio.'?contribuyente='. $emisor['rut'];
+                        $ch = curl_init($endpoint);
+                        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                            'Content-Type:application/json',
+                            'Authorization: Bearer '.env('FACTURAPI_TOKEN')
+                        ]);
+                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                        $result = curl_exec($ch);
+                        curl_close($ch);
+                        $docData = json_decode($result, true);
+                        $estado = strval($doc->estado);
+                        $estadoSii = substr($estado, 0, 1);
+                        $estadoXml = strval($docData['email_recibido']);
+                        $ncEstado = $estadoSii.$estadoXml;
+                        NotaCredito::where('id', $doc->id)->update(['estado' => $ncEstado]);
                     }
                 }))->everyMinute();
 
@@ -235,12 +231,8 @@ class Kernel extends ConsoleKernel
                                 $doc->fecha_vencimiento = date('Y-m-d', strtotime($data->fecha_vencimiento));
                                 $doc->tiene_xml = true;
                                 $doc->save();
-                                try{
-                                    Notification::sendNow($users, new DocumentoRecibido($data->rut_emisor, 33, $data->folio));
-                                    Log::info("Se envia notificacion a usuarios por doc ". $data->rut_emisor." - ".$data->folio);
-                                }catch(Exception $ex){
-                                    Log::error('Hubo un error al intentar enviar la notificacion del contriuyente '.$data->rut_emisor. ' folio '.$data->folio);
-                                }
+                                Notification::sendNow($users, new DocumentoRecibido($data->rut_emisor, 33, $data->folio));
+                                Log::info("Se envia notificacion a usuarios por doc ". $data->rut_emisor." - ".$data->folio);
                             }
                         }
                     }
@@ -318,12 +310,8 @@ class Kernel extends ConsoleKernel
                                 $doc->fecha_vencimiento = date('Y-m-d', strtotime($data->fecha_vencimiento));
                                 $doc->tiene_xml = true;
                                 $doc->save();
-                                try{
-                                    Notification::sendNow($users, new DocumentoRecibido($data->rut_emisor, 61, $data->folio));
-                                    Log::info("Se envia notificacion a usuarios por doc ". $data->rut_emisor." - ".$data->folio);
-                                }catch(Exception $ex){
-                                    Log::error('Hubo un error al intentar enviar la notificacion del contriuyente '.$data->rut_emisor. ' folio '.$data->folio);
-                                }
+                                Notification::sendNow($users, new DocumentoRecibido($data->rut_emisor, 61, $data->folio));
+                                Log::info("Se envia notificacion a usuarios por doc ". $data->rut_emisor." - ".$data->folio);
                             }
                         }
                     }
