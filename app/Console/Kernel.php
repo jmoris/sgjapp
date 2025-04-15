@@ -318,8 +318,6 @@ class Kernel extends ConsoleKernel
                             $doc = NotaCreditoCompra::where('rut_emisor', $data->rut_emisor)->where('folio', $data->folio)->where('tiene_xml', false)->first();
                             if($doc != null){
                                 $users = User::all();
-
-                                $doc->fecha_vencimiento = date('Y-m-d', strtotime($data->fecha_vencimiento));
                                 $doc->tiene_xml = true;
                                 $doc->save();
                                 Notification::sendNow($users, new DocumentoRecibido($data->rut_emisor, 61, $data->folio));
