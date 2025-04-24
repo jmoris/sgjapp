@@ -169,6 +169,7 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
     Route::prefix('compras')->group(function(){
         Route::prefix('facturas')->middleware('tag:ver-factura')->group(function(){
             Route::get('/', [FacturaCompraController::class, 'index']);
+            Route::get('/pendientes', [FacturaCompraController::class, 'indexPendientes']);
             Route::get('/detalle/{rutEmisor}/{folio}', [FacturaCompraController::class, 'show']);
         });
         Route::prefix('guiasdespacho')->middleware('tag:ver-guia-despacho')->group(function(){

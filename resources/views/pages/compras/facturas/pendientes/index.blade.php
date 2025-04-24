@@ -5,7 +5,7 @@
 @section('content')
     <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
         <div>
-            <h4 class="mb-3 mb-md-0">Gestión de Facturas de Compra</h4>
+            <h4 class="mb-3 mb-md-0">Gestión de Facturas Pendientes de Acuse</h4>
         </div>
     </div>
     <div class="row">
@@ -15,14 +15,8 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-baseline">
-                                <h6 class="card-title mb-3">LISTA DE FACTURAS DE COMPRA</h6>
-                                <div class="align-end">
-                                    <button onclick="verDocumentosPendientes()" class="btn btn-primary btn-sm">Documentos Pendientes</button>
-                                    <button onclick="sincronizarDocumentos()" class="py-1 btn btn-sm btn-outline-primary"
-                                        title="Sincronizar documentos con el SII">
-                                        <i class="mdi mdi-refresh"></i>
-                                    </button>
-                                </div>
+                                <h6 class="card-title mb-3">LISTA DE FACTURAS PENDIENTES</h6>
+                                <!--aqui boton-->
                             </div>
                             <div class="col-md-12 mb-3">
                                 <div class="row mx-5">
@@ -76,14 +70,22 @@
                                                 <th>Folio</th>
                                                 <th>Emisor</th>
                                                 <th>RUT</th>
-                                                <th>Proyecto</th>
                                                 <th>Fecha</th>
                                                 <th>Monto Total</th>
                                                 <th></th>
                                             </tr>
                                         </thead>
                                         <tbody>
-
+                                            @foreach ($documentos as $documento)
+                                            <tr>
+                                                <td>{{ $documento->detNroDoc }}</td>
+                                                <td>{{ $documento->detRznSoc }}</td>
+                                                <td>{{ $documento->detRutDoc.'-'.$documento->detDvDoc }}</td>
+                                                <td>{{ date('d/m/Y', strtotiem($documento->detFchDoc)) }}</td>
+                                                <td>{{ $documento->detMntTotal }}</td>
+                                                <td><input type="checkbox"/></td>
+                                            </tr>
+                                            @endforeach
                                         </tbody>
                                     </table>
                                 </div>
@@ -227,23 +229,6 @@
 
         });
 
-        function verDocumentosPendientes(){
-            location.href = '/compras/facturas/pendientes';
-        }
-
-        function sincronizarDocumentos() {
-            $.ajax({
-                type: "GET",
-                url: '/api/compras/facturas/sincronizar',
-                success: function(data) {
-                    if (data.success == true) {
-                        console.log(data);
-                        location.reload();
-                    }
-                }
-            });
-        }
-
         function verDocumento(emisor, folio) {
             location.href = `/compras/facturas/detalle/${emisor}/${folio}`;
         }
@@ -258,21 +243,6 @@
                     topEnd: null
                 },
                 responsive: true,
-                ajax: {
-                    url: '/api/compras/facturas',
-                    data: function(d) {
-                        d.ffecha = (feMin == '' && feMax == '') ? false : true;
-                        if (feMin != '' && feMax != '') {
-                            d.feMinDate = feMin;
-                            d.feMaxDate = feMax;
-                        }
-                        if (fvMin != '' && fvMax != '') {
-                            d.fvMinDate = fvMin;
-                            d.fvMaxDate = fvMax;
-                        }
-                        d.proyecto = this.filtro.proyecto;
-                    }
-                },
                 search: {
                     return: true
                 },
@@ -282,69 +252,8 @@
                 order: [
                     [4, 'desc']
                 ],
-                columns: [{
-                        data: 'folio',
-                        responsivePriority: 1
-                    },
-                    {
-                        data: 'razon_social_emisor',
-                        responsivePriority: 2
-                    },
-                    {
-                        data: 'rut_emisor',
-                        responsivePriority: 3
-                    },
-                    {
-                        data: 'proyecto_id',
-                        render: function(data, type, row) {
-                            if (row.proyecto_id == null)
-                                return 'No asignado';
-                            else
-                                return row.proyecto.nombre;
-                        }
-                    },
-                    {
-                        data: 'fecha_emision',
-                        responsivePriority: 3,
-                        render: function(data, type, row) {
-                            var fecha = moment(row.fecha_emision, 'YYYY-MM-DD HH:mm:ss').format(
-                                'DD/MM/YYYY');
-                            return fecha;
-                        }
-                    },
-                    {
-                        data: 'monto_total',
-                        responsivePriority: 3,
-                        render: function(data, type, row) {
-                            return '$' + row.monto_total.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.');
-                        }
-                    },
-                    {
-                        data: null,
-                        orderable: false,
-                        render: function(data, type, row) {
-                            var html = '';
-                            html = '<div>';
-                            if (row.tiene_xml) {
-                                html +=
-                                    '<button type="button" title="Ver Factura" onclick="verDocumento(\'' +
-                                    row.rut_emisor + '\',' + row.folio +
-                                    ')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-text-box-search-outline"></i></button>';
-                                html +=
-                                    '<button type="button" title="Descargar PDF Factura" onclick="vistaPreviaDocumento(\'' +
-                                    row.rut_emisor + '\',' + row.folio +
-                                    ')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-download"></i></button>';
-                            } else {
-                                html +=
-                                    '<button type="button" title="Documento XML no disponible" class="btn btn-outline-secondary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-text-box-search-outline"></i></button>';
-                            }
-                            html += '</div>';
-                            return html;
-                        }
-                    },
-                ],
                 processing: true,
-                serverSide: true
+                serverSide: false
             });
         }
 

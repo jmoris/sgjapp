@@ -41,6 +41,36 @@ class FacturaCompraController extends Controller
         return view('pages.compras.facturas.index', ['documentos' => $data]);
     }
 
+    public function indexPendientes(Request $request){
+        $emisor = Ajustes::getEmisor();
+            Log::info("[COMPRA] Revision de documentos pendientes en contribuyente ".$emisor['razon_social']);
+            // Obtener RCV de Compra, estos documentos son los recibidos en el SII
+            $dataPost = [
+                'contribuyente' => $emisor['rut'],
+                'operacion' => 'COMPRA',
+                'periodo' => date('Ym'),
+                'detalle' => 'PENDIENTE',
+                'tipo_doc' => 33
+            ];
+            $url = env('FACTURAPI_ENDPOINT').'rcv/detalle?'.http_build_query($dataPost);
+            $ch = curl_init( $url );
+            curl_setopt( $ch, CURLOPT_POST, false);
+            curl_setopt( $ch, CURLOPT_HTTPHEADER, [
+                'Content-Type:application/json',
+                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
+            ]);
+            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+            $result = curl_exec($ch);
+            $response = json_decode($result);
+            $data = [];
+            if($response != null){
+                if($response->data != null){
+                    $data = $response->data;
+                }
+            }
+        return view('pages.compras.facturas.pendientes.index', ['documentos' => $data]);
+    }
+
     public function show($rutEmisor, $folio){
         $emisor = Ajustes::getEmisor();
         $endpoint =  env('FACTURAPI_ENDPOINT').'documentos/compras/generar/xml/'.$rutEmisor.'/33/'.$folio.'?contribuyente='.$emisor['rut'];
