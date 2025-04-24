@@ -42,27 +42,19 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row mx-5">
-                                    <div class="col-md-4">
-                                        <div class="mb-3">
-                                            <label class="form-label">Fecha emisión</label>
-                                            <input type="text" id="fecha_emision" class="form-control form-control-sm"
-                                                placeholder="Enter first name">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <div class="mb-3">
-                                            <label class="form-label">Estado Proyecto</label>
-                                            <select class="form-control form-control-sm" id="estado">
-                                                <option value="0">Seleccione proyecto</option>
-                                                <option value="1">Asignado</option>
-                                                <option value="2">Sin asignar</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                             <div class="row">
+                                <div class="col-12 d-flex justify-content-md-end">
+                                    <div class="dropdown">
+                                        <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                            Acuse de recibo masivo
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                          <li><a class="dropdown-item" href="#">Acuse de Recibo de Mercaderías y Servicios</a></li>
+                                          <li><a class="dropdown-item" href="#">Acuse de Recibo Mercaderías en Guía Despacho del Mes Anterior</a></li>
+                                        </ul>
+                                      </div>
+                                </div>
                                 <div class="col-12">
                                     <table id="tabla" class="compact hover order-column row-border" style="width:100%">
                                         <thead>
@@ -82,7 +74,7 @@
                                                 <td>{{ $documento->detRznSoc }}</td>
                                                 <td>{{ $documento->detRutDoc.'-'.$documento->detDvDoc }}</td>
                                                 <td>{{ date('d/m/Y', strtotime(str_replace('/', '-', $documento->detFchDoc))) }}</td>
-                                                <td>{{ $documento->detMntTotal }}</td>
+                                                <td>$ {{ number_format($documento->detMntTotal, 0, ',', '.') }}</td>
                                                 <td><input type="checkbox"/></td>
                                             </tr>
                                             @endforeach
