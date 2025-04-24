@@ -81,7 +81,7 @@
                                                 <td>{{ $documento->detNroDoc }}</td>
                                                 <td>{{ $documento->detRznSoc }}</td>
                                                 <td>{{ $documento->detRutDoc.'-'.$documento->detDvDoc }}</td>
-                                                <td>{{ date('d/m/Y', strtotiem($documento->detFchDoc)) }}</td>
+                                                <td>{{ date('d/m/Y', strtotime($documento->detFchDoc)) }}</td>
                                                 <td>{{ $documento->detMntTotal }}</td>
                                                 <td><input type="checkbox"/></td>
                                             </tr>
