@@ -75,12 +75,12 @@
                                         <thead>
                                             <tr>
                                                 <th style="width: 10%;">Folio</th>
-                                                <th style="width: 40%;">Emisor</th>
+                                                <th style="width: 35%;">Emisor</th>
                                                 <th style="width: 10%;">RUT</th>
                                                 <th style="width: 15%;">Proyecto</th>
                                                 <th style="width: 10%;">Fecha</th>
-                                                <th style="width: 15%;">Monto Total</th>
-                                                <th></th>
+                                                <th style="width: 10%;">Monto Total</th>
+                                                <th style="width: 10%;"></th>
                                             </tr>
                                         </thead>
                                         <tbody>
