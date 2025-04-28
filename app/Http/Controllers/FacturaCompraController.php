@@ -64,7 +64,7 @@ class FacturaCompraController extends Controller
             $response = json_decode($result);
             $data = [];
             Log::info($result);
-            if($response->original->success != false){
+            if($response->success != false){
                 if($response->data != null){
                     $data = $response->data;
                 }
