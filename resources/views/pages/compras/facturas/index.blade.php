@@ -75,12 +75,12 @@
                                         <thead>
                                             <tr>
                                                 <th style="width: 10%;">Folio</th>
-                                                <th style="width: 35%;">Emisor</th>
+                                                <th style="width: 37%;">Emisor</th>
                                                 <th style="width: 10%;">RUT</th>
                                                 <th style="width: 15%;">Proyecto</th>
                                                 <th style="width: 10%;">Fecha</th>
                                                 <th style="width: 10%;">Monto Total</th>
-                                                <th style="width: 10%;"></th>
+                                                <th style="width: 8%;"></th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -406,7 +406,7 @@
                     orderable: false,
                     render: function(data, type, row) {
                         var html = '';
-                        html = '<div>';
+                        html = '<div class="text-end">';
                         if (row.tiene_xml) {
                             html += '<button type="button" title="Ver Factura" onclick="verDocumento(\'' +
                                 row.rut_emisor + '\',' + row.folio +
