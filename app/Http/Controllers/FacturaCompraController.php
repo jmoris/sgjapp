@@ -42,7 +42,7 @@ class FacturaCompraController extends Controller
     }
 
     public function indexPendientes(Request $request){
-        $emisor = Ajustes::getEmisor();
+            $emisor = Ajustes::getEmisor();
             Log::info("[COMPRA] Revision de documentos pendientes en contribuyente ".$emisor['razon_social']);
             // Obtener RCV de Compra, estos documentos son los recibidos en el SII
             $dataPost = [
@@ -63,12 +63,13 @@ class FacturaCompraController extends Controller
             $result = curl_exec($ch);
             $response = json_decode($result);
             $data = [];
-            if($response != null){
+            Log::info($result);
+            if($response->original->success != false){
                 if($response->data != null){
                     $data = $response->data;
                 }
             }
-        return view('pages.compras.facturas.pendientes.index', ['documentos' => $data]);
+        return view('pages.compras.facturas.pendientes.index', ['emisor' => $emisor, 'documentos' => $data]);
     }
 
     public function show($rutEmisor, $folio){
