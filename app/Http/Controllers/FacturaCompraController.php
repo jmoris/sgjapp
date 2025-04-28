@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Validator;
+use phpseclib\Crypt\RC2;
 use SolucionTotal\CoreDTE\Sii\EnvioDte;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -63,13 +64,42 @@ class FacturaCompraController extends Controller
             $result = curl_exec($ch);
             $response = json_decode($result);
             $data = [];
-            Log::info($result);
-            if($response->success != false){
+            if($response != null){
                 if($response->data != null){
                     $data = $response->data;
                 }
             }
         return view('pages.compras.facturas.pendientes.index', ['emisor' => $emisor, 'documentos' => $data]);
+    }
+
+    public function indexReclamadas(Request $request){
+        $emisor = Ajustes::getEmisor();
+        Log::info("[COMPRA] Revision de documentos pendientes en contribuyente ".$emisor['razon_social']);
+        // Obtener RCV de Compra, estos documentos son los recibidos en el SII
+        $dataPost = [
+            'contribuyente' => $emisor['rut'],
+            'operacion' => 'COMPRA',
+            'periodo' => date('Ym'),
+            'detalle' => 'RECLAMADO',
+            'tipo_doc' => 33
+        ];
+        $url = env('FACTURAPI_ENDPOINT').'rcv/detalle?'.http_build_query($dataPost);
+        $ch = curl_init( $url );
+        curl_setopt( $ch, CURLOPT_POST, false);
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, [
+            'Content-Type:application/json',
+            'Authorization: Bearer '.env('FACTURAPI_TOKEN')
+        ]);
+        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+        $result = curl_exec($ch);
+        $response = json_decode($result);
+        $data = [];
+        if($response != null){
+            if($response->data != null){
+                $data = $response->data;
+            }
+        }
+    return view('pages.compras.facturas.reclamadas.index', ['emisor' => $emisor, 'documentos' => $data]);
     }
 
     public function show($rutEmisor, $folio){
@@ -395,6 +425,39 @@ class FacturaCompraController extends Controller
                 'success' => false,
                 'msg' => 'Hubo un error intentando sincronizar los documentos con la API',
                 'timestamp' => now(),
+            ]);
+        }
+    }
+
+    public function agregarEventoDTE(Request $request){
+        try{
+            $url = env('FACTURAPI_ENDPOINT').'rcv/agregarevento';
+            $emisor = Ajustes::getEmisor();
+            $dataPost = [
+                'contribuyente' => $emisor['rut'],
+                'rut_receptor' => $request->rut,
+                'tipo' => '33',
+                'folio' => $request->folio,
+                'evento' => $request->evento
+            ];
+            $ch = curl_init($url );
+            curl_setopt( $ch, CURLOPT_POST, true);
+            curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode($dataPost) );
+            curl_setopt( $ch, CURLOPT_HTTPHEADER, [
+                'Content-Type:application/json',
+                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
+            ]);
+            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+            $result = curl_exec($ch);
+            Log::info($result);
+            curl_close($ch);
+            return $result;
+        }catch(Exception $ex){
+            Log::info($ex);
+            return response()->json([
+                'success' => false,
+                'msg' => 'Hubo un error al agregar el evento al DTE',
+                'error' => $ex->getMessage()
             ]);
         }
     }

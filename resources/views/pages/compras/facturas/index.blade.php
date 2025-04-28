@@ -18,6 +18,7 @@
                                 <h6 class="card-title mb-3">LISTA DE FACTURAS DE COMPRA</h6>
                                 <div class="align-end">
                                     <button onclick="verDocumentosPendientes()" class="btn btn-primary btn-sm">Documentos Pendientes</button>
+                                    <button onclick="verDocumentosReclamados()" class="btn btn-danger btn-sm">Documentos Reclamados</button>
                                     <button onclick="sincronizarDocumentos()" class="py-1 btn btn-sm btn-outline-primary"
                                         title="Sincronizar documentos con el SII">
                                         <i class="mdi mdi-refresh"></i>
@@ -226,6 +227,10 @@
             });
 
         });
+
+        function verDocumentosReclamados(){
+            location.href = '/compras/facturas/reclamadas';
+        }
 
         function verDocumentosPendientes(){
             location.href = '/compras/facturas/pendientes';

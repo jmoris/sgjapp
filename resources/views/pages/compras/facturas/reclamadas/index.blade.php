@@ -1,11 +1,11 @@
 @extends('layout.master')
 
-@section('title', 'Gestión de Facturas Pendientes')
+@section('title', 'Gestión de Facturas Reclamadas')
 
 @section('content')
     <div class="d-flex justify-content-between align-items-center flex-wrap grid-margin">
         <div>
-            <h4 class="mb-3 mb-md-0">Gestión de Facturas Pendientes de Acuse de Recibo</h4>
+            <h4 class="mb-3 mb-md-0">Gestión de Facturas Reclamadas</h4>
         </div>
         <div class="align-end">
             <button type="button" class="btn btn-danger" onclick="location.href = '/compras/facturas'">
@@ -21,7 +21,7 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-baseline">
-                                <h6 class="card-title mb-3">LISTA DE FACTURAS PENDIENTES</h6>
+                                <h6 class="card-title mb-3">LISTA DE FACTURAS RECLAMADAS</h6>
                                 <!--aqui boton-->
                             </div>
                             <div class="col-md-12 mb-3">
@@ -50,33 +50,10 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-12 d-flex justify-content-md-end">
-                                    <div class="dropdown">
-                                        <button class="btn btn-primary dropdown-toggle" type="button"
-                                            id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                            Acciones masivas
-                                        </button>
-                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                            <li><a class="dropdown-item" onclick="agregarEventoDTE('ERM')" href="#">Otorga Recibo de Mercaderías o
-                                                    Servicios (ERM)</a></li>
-                                            <li><a class="dropdown-item" onclick="agregarEventoDTE('RCD')" href="#">Reclamo al Contenido del Documento
-                                                    (RCD)</a></li>
-                                            <hr style="margin: 5px 0;">
-                                            <li><a class="dropdown-item" onclick="agregarEventoDTE('ACD')" href="#">Acepta Contenido del Documento
-                                                    (ACD)</a></li>
-                                            <li><a class="dropdown-item" onclick="agregarEventoDTE('RFP')" href="#">Reclamo por Falta Parcial de
-                                                    Mercaderías (RFP)</a></li>
-                                            <li><a class="dropdown-item" onclick="agregarEventoDTE('RFT')" href="#">Reclamo por Falta Total de
-                                                    Mercaderías (RFT)</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
                                 <div class="col-12">
                                     <table id="tabla" class="compact hover order-column row-border" style="width:100%">
                                         <thead>
                                             <tr>
-                                                <th style="width:10%" class="text-start"><input type="checkbox"
-                                                        id="selectall"> Todas </input></th>
                                                 <th style="width:10%" class="text-start">Folio</th>
                                                 <th style="width:35%" class="text-start">Emisor</th>
                                                 <th style="width:15%" class="text-start">RUT</th>
@@ -87,9 +64,6 @@
                                         <tbody>
                                             @foreach ($documentos as $documento)
                                                 <tr>
-                                                    <td><input class="ms-1 selectedId" name="selectedId" type="checkbox"
-                                                            emisor="{{ $documento->detRutDoc . '-' . $documento->detDvDoc }}"
-                                                            folio="{{ $documento->detNroDoc }}" /></td>
                                                     <td class="text-start">{{ $documento->detNroDoc }}</td>
                                                     <td class="text-start">{{ $documento->detRznSoc }}</td>
                                                     <td class="text-start">
