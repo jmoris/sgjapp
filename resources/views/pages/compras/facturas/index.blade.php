@@ -74,12 +74,12 @@
                                     <table id="tabla" class="compact hover order-column row-border" style="width:100%">
                                         <thead>
                                             <tr>
-                                                <th>Folio</th>
-                                                <th>Emisor</th>
-                                                <th>RUT</th>
-                                                <th>Proyecto</th>
-                                                <th>Fecha</th>
-                                                <th>Monto Total</th>
+                                                <th style="width: 10%;">Folio</th>
+                                                <th style="width: 40%;">Emisor</th>
+                                                <th style="width: 10%;">RUT</th>
+                                                <th style="width: 15%;">Proyecto</th>
+                                                <th style="width: 10%;">Fecha</th>
+                                                <th style="width: 15%;">Monto Total</th>
                                                 <th></th>
                                             </tr>
                                         </thead>

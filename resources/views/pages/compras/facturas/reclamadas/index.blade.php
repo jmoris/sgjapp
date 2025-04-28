@@ -55,9 +55,9 @@
                                         <thead>
                                             <tr>
                                                 <th style="width:10%" class="text-start">Folio</th>
-                                                <th style="width:35%" class="text-start">Emisor</th>
-                                                <th style="width:15%" class="text-start">RUT</th>
-                                                <th style="width:15%" class="text-start">Fecha</th>
+                                                <th style="width:45%" class="text-start">Emisor</th>
+                                                <th style="width:10%" class="text-start">RUT</th>
+                                                <th style="width:10%" class="text-start">Fecha</th>
                                                 <th style="width:15%" class="text-start">Monto Total</th>
                                             </tr>
                                         </thead>
