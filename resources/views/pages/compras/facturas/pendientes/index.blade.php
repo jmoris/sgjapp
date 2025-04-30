@@ -57,16 +57,16 @@
                                             Acciones masivas
                                         </button>
                                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                                            <li><a class="dropdown-item" onclick="agregarEventoDTE('ERM')" href="#">Otorga Recibo de Mercaderías o
+                                            <li><a class="dropdown-item" onclick="botonAgregarEvento('ERM')" href="#">Otorga Recibo de Mercaderías o
                                                     Servicios (ERM)</a></li>
-                                            <li><a class="dropdown-item" onclick="agregarEventoDTE('RCD')" href="#">Reclamo al Contenido del Documento
+                                            <li><a class="dropdown-item" onclick="botonAgregarEvento('RCD')" href="#">Reclamo al Contenido del Documento
                                                     (RCD)</a></li>
                                             <hr style="margin: 5px 0;">
-                                            <li><a class="dropdown-item" onclick="agregarEventoDTE('ACD')" href="#">Acepta Contenido del Documento
+                                            <li><a class="dropdown-item" onclick="botonAgregarEvento('ACD')" href="#">Acepta Contenido del Documento
                                                     (ACD)</a></li>
-                                            <li><a class="dropdown-item" onclick="agregarEventoDTE('RFP')" href="#">Reclamo por Falta Parcial de
+                                            <li><a class="dropdown-item" onclick="botonAgregarEvento('RFP')" href="#">Reclamo por Falta Parcial de
                                                     Mercaderías (RFP)</a></li>
-                                            <li><a class="dropdown-item" onclick="agregarEventoDTE('RFT')" href="#">Reclamo por Falta Total de
+                                            <li><a class="dropdown-item" onclick="botonAgregarEvento('RFT')" href="#">Reclamo por Falta Total de
                                                     Mercaderías (RFT)</a></li>
                                         </ul>
                                     </div>
@@ -222,6 +222,23 @@
 
         });
 
+        function botonAgregarEvento(evento){
+            Swal.fire({
+                title: "Confirmar registro de evento en DTE",
+                text: "La acción que desea realizar es irreversible, ¿desea continuar con la operación?",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#6571FF",
+                cancelButtonColor: "#FF3366",
+                confirmButtonText: "Confirmar",
+                cancelButtonText: "Cancelar"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    agregarEventoDTE(evento);
+                }
+            });
+        }
+
         function agregarEventoDTE(evento) {
             $('#loadingModal').modal('toggle');
             for(i = 0; i < selectedFacturas.length; i++){
@@ -238,18 +255,24 @@
                     url: '/api/compras/rcv/agregarevento',
                     data: dataJson, // serializes the form's elements.
                     success: function(data) {
-                        console.log(data);
+                        //console.log(data);
                         $('#loadingModal').modal('hide');
                         if (data.success == true) {
                             console.log('Evento agregado');
                         } else {
                             console.log("Error al agregar evento");
+                            console.log(data['glosa']);
+                            Swal.fire({
+                                title: "Error registrando evento en DTE",
+                                text: data.glosa,
+                                icon: "error"
+                            });
                         }
 
                     }
                 });
             }
-            location.reload();
+         //   location.reload();
         }
 
         function checkFactura(factura) {
