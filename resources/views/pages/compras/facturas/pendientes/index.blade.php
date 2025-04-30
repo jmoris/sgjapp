@@ -254,25 +254,22 @@
                     type: "POST",
                     url: '/api/compras/rcv/agregarevento',
                     data: dataJson, // serializes the form's elements.
+                    dataType: 'json',
                     success: function(data) {
-                        //console.log(data);
+                        console.log(data);
                         $('#loadingModal').modal('hide');
                         if (data.success == true) {
-                            console.log('Evento agregado');
+                            location.reload();
                         } else {
-                            console.log("Error al agregar evento");
-                            console.log(data['glosa']);
                             Swal.fire({
                                 title: "Error registrando evento en DTE",
-                                text: data.glosa,
+                                text: data.msg,
                                 icon: "error"
                             });
                         }
-
                     }
                 });
             }
-         //   location.reload();
         }
 
         function checkFactura(factura) {
