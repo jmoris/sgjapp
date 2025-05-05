@@ -80,7 +80,10 @@ class PermissionController extends Controller
                     'ordenes_compra' => [0,0,0,0],
                     'facturas' => [0,0,0,0],
                     'guias_despacho' => [0,0,0,0],
-                    'notas_credito' => [0,0,0,0]
+                    'notas_credito' => [0,0,0,0],
+                    'facturas_compra' => [0,0,0,0],
+                    'guias_despacho_compra' => [0,0,0,0],
+                    'notas_credito_compra' => [0,0,0,0],
                  ]
             ];
 

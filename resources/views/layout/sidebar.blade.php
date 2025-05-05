@@ -170,7 +170,7 @@
                 </a>
             </li>
 
-            @if (has_permission('ver-factura')||has_permission('ver-guia-despacho')||has_permission('ver-nota-credito')||has_permission('ver-nota-debito'))
+            @if (has_permission('ver-factura-compra')||has_permission('ver-guia-despacho-compra')||has_permission('ver-nota-credito-compra')||has_permission('ver-nota-debito-compra'))
             <li class="nav-item {{ active_class(['compras/facturas*', 'compras/guiasdespacho*', 'compras/notascredito*', 'compras/notasdebito*']) }}">
                 <a class="nav-link" data-bs-toggle="collapse" href="#compras" role="button"
                     aria-expanded="{{ is_active_route(['compras/facturas*', 'compras/guiasdespacho*', 'compras/notascredito*', 'compras/notasdebito*']) }}" aria-controls="compras">
@@ -180,7 +180,7 @@
                 </a>
                 <div class="collapse {{ show_class(['compras/facturas*', 'compras/guiasdespacho*', 'compras/notascredito*', 'compras/notasdebito*']) }}" id="compras">
                     <ul class="nav sub-menu">
-                        @if (has_permission('ver-factura'))
+                        @if (has_permission('ver-factura-compra'))
                             <li class="nav-item">
                                 <a href="{{ url('/compras/facturas') }}"
                                     class="nav-link {{ active_class(['compras/facturas*']) }}">
@@ -188,7 +188,7 @@
                                 </a>
                             </li>
                         @endif
-                        @if (has_permission('ver-guia-despacho'))
+                        @if (has_permission('ver-guia-despacho-compra'))
                         <li class="nav-item">
                             <a href="{{ url('/compras/guiasdespacho') }}"
                                 class="nav-link {{ active_class(['compras/guiasdespacho*']) }}">
@@ -196,7 +196,7 @@
                             </a>
                         </li>
                         @endif
-                        @if (has_permission('ver-nota-credito'))
+                        @if (has_permission('ver-nota-credito-compra'))
                         <li class="nav-item">
                             <a href="{{ url('/compras/notascredito') }}"
                                 class="nav-link {{ active_class(['compras/notascredito*']) }}">
@@ -204,7 +204,7 @@
                             </a>
                         </li>
                         @endif
-                        @if (has_permission('ver-nota-debito'))
+                        @if (has_permission('ver-nota-debito-compra'))
                         <li class="nav-item">
                             <a href="{{ url('/compras/notasdebito') }}"
                                 class="nav-link {{ active_class(['compras/notasdebito*']) }}">

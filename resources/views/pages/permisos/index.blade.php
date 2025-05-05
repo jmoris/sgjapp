@@ -178,6 +178,39 @@
                                                     <td><input class="form-check-input" type="checkbox"
                                                             id="eliminarNotaCredito" name="eliminarNotaCredito"></td>
                                                 </tr>
+                                                <tr modulename="facturas_compra">
+                                                    <td>Facturas Compras</td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="verFacturaCompra" name="verFacturaCompra"></td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="editarFacturaCompra" name="editarFacturaCompra"></td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="crearFacturaCompra" name="crearFacturaCompra"></td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="eliminarFacturaCompra" name="eliminarFacturaCompra"></td>
+                                                </tr>
+                                                <tr modulename="guias_despacho_compra">
+                                                    <td>Guias de Despacho Compras</td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="verGuiaDespachoCompra" name="verGuiaDespachoCompra"></td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="editarGuiaDespachoCompra" name="editarGuiaDespachoCompra"></td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="crearGuiaDespachoCompra" name="crearGuiaDespachoCompra"></td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="eliminarGuiaDespachoCompra" name="eliminarGuiaDespachoCompra"></td>
+                                                </tr>
+                                                <tr modulename="notas_credito_compra">
+                                                    <td>Notas de Credito Compras</td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="verNotaCreditoCompra" name="verNotaCreditoCompra"></td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="editarNotaCreditoCompra" name="editarNotaCreditoCompra"></td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="crearNotaCreditoCompra" name="crearNotaCreditoCompra"></td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="eliminarNotaCreditoCompra" name="eliminarNotaCreditoCompra"></td>
+                                                </tr>
                                             </tbody>
                                         </table>
                                         <button type="button" onclick="guardarPermisos()" class="mt-3 btn btn-primary btn-xs float-end">Guardar</button>
@@ -261,6 +294,9 @@
                 'facturas': [tienePermiso('#verFactura'),tienePermiso('#editarFactura'),tienePermiso('#crearFactura'),tienePermiso('#eliminarFactura')],
                 'guias_despacho': [tienePermiso('#verGuiaDespacho'),tienePermiso('#editarGuiaDespacho'),tienePermiso('#crearGuiaDespacho'),tienePermiso('#eliminarGuiaDespacho')],
                 'notas_credito': [tienePermiso('#verNotaCredito'),tienePermiso('#editarNotaCredito'),tienePermiso('#crearNotaCredito'),tienePermiso('#eliminarNotaCredito')],
+                'facturas_compra': [tienePermiso('#verFacturaCompra'),tienePermiso('#editarFacturaCompra'),tienePermiso('#crearFacturaCompra'),tienePermiso('#eliminarFacturaCompra')],
+                'guias_despacho_compra': [tienePermiso('#verGuiaDespachoCompra'),tienePermiso('#editarGuiaDespachoCompra'),tienePermiso('#crearGuiaDespachoCompra'),tienePermiso('#eliminarGuiaDespachoCompra')],
+                'notas_credito_compra': [tienePermiso('#verNotaCreditoCompra'),tienePermiso('#editarNotaCreditoCompra'),tienePermiso('#crearNotaCreditoCompra'),tienePermiso('#eliminarNotaCreditoCompra')],
             };
 
             console.log(datos);
