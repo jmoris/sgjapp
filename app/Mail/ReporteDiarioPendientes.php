@@ -28,7 +28,7 @@ class ReporteDiarioPendientes extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            from: new Address('no-responder@soluciontotal.cl', 'SoluciónTotal Chile'),
+            from: new Address('no-responder@soluciontotal.cl', 'Plataforma SGJApp'),
             subject: 'Reporte de Facturas Pendientes',
         );
     }

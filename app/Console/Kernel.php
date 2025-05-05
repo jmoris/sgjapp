@@ -347,7 +347,7 @@ class Kernel extends ConsoleKernel
                     Mail::to($correo->direccion)->send(new ReporteDiarioPendientes(($correo->usuario->name.' '.$correo->usuario->lastname), $emisor['razon_social'], count($pendientes)));
                 }
 
-            }))->dailyAt('17:00');
+            }))->weekdays()->dailyAt('17:00');
         }
     }
 
