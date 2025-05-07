@@ -435,7 +435,11 @@
                                                 <div class="col-md-5 text-end">
                                                     <p id="lblSubtotalDoc">
                                                         @php
-                                                            $neto = $documento['Encabezado']['Totales']['MntNeto'];
+                                                            $neto = isset(
+                                                                $documento['Encabezado']['Totales']['MntNeto'],
+                                                            )
+                                                                ? $documento['Encabezado']['Totales']['MntNeto']
+                                                                : 0;
                                                             $exento = isset(
                                                                 $documento['Encabezado']['Totales']['MntExe'],
                                                             )
