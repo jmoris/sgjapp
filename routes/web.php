@@ -167,17 +167,17 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
     });
 
     Route::prefix('compras')->group(function(){
-        Route::prefix('facturas')->middleware('tag:ver-factura')->group(function(){
+        Route::prefix('facturas')->middleware('tag:ver-factura-compra')->group(function(){
             Route::get('/', [FacturaCompraController::class, 'index']);
             Route::get('/pendientes', [FacturaCompraController::class, 'indexPendientes']);
             Route::get('/reclamadas', [FacturaCompraController::class, 'indexReclamadas']);
             Route::get('/detalle/{rutEmisor}/{folio}', [FacturaCompraController::class, 'show']);
         });
-        Route::prefix('guiasdespacho')->middleware('tag:ver-guia-despacho')->group(function(){
+        Route::prefix('guiasdespacho')->middleware('tag:ver-guia-despacho-compra')->group(function(){
             Route::get('/', [GuiaDespachoCompraController::class, 'index']);
             Route::get('/detalle/{rutEmisor}/{folio}', [GuiaDespachoCompraController::class, 'show']);
         });
-        Route::prefix('notascredito')->middleware('tag:ver-nota-credito')->group(function(){
+        Route::prefix('notascredito')->middleware('tag:ver-nota-credito-compra')->group(function(){
             Route::get('/', [NotaCreditoCompraController::class, 'index']);
             Route::get('/detalle/{rutEmisor}/{folio}', [NotaCreditoCompraController::class, 'show']);
         });
