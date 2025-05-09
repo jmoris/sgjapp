@@ -32,7 +32,7 @@
                                             <tr>
                                                 <th>SKU</th>
                                                 <th>Nombre</th>
-                                                <th>Descripcion</th>
+                                                <th>Descripción</th>
                                                 <th>Unidad Medida</th>
                                                 <th></th>
                                             </tr>
