@@ -42,10 +42,6 @@
                                                         $texto = 'CERRADO';
                                                         $color = 'bg-danger';
                                                     break;
-                                                    case 2:
-                                                        $texto = 'ATRASADO';
-                                                        $color = 'bg-warning';
-                                                    break;
                                                 }
                                             @endphp
                                             <label class="form-label mb-0">Estado del Proyecto:</label><br>
@@ -418,10 +414,6 @@ crossorigin="anonymous" referrerpolicy="no-referrer"></script>
                                     texto = 'CERRADO';
                                     color = 'bg-danger';
                                     break;
-                                case 2:
-                                    texto = 'ATRASADO';
-                                    color = 'bg-warning';
-                                    break;
                             }
                             var html = '<span proyecto_id="'+data.data.estado+'" class="badge ' + color + '">'+texto+'</span>';
                             $('#estado_proyecto').html(html);
@@ -436,7 +428,6 @@ crossorigin="anonymous" referrerpolicy="no-referrer"></script>
                     <select id="estado" class="form-control form-control-sm">
                         <option ${(proyecto_id==0)?'selected':''} value="0">EN CURSO</option>
                         <option ${(proyecto_id==1)?'selected':''} value="1">CERRADO</option>
-                        <option ${(proyecto_id==2)?'selected':''} value="2">ATRASADO</option>
                     </select>`);
                 $('#editText').text('Guardar');
             }

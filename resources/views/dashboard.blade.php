@@ -49,7 +49,7 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-baseline">
-                                <h6 class="card-title mb-0">PROYECTOS</h6>
+                                <h6 class="card-title mb-0">PROYECTOS ACTIVOS</h6>
                             </div>
                             <div class="row">
                                 <div class="col-6 col-md-12 col-xl-5">
@@ -62,7 +62,7 @@
             </div>
         </div>
     </div> <!-- row -->
-    <div class="row">
+    <div class="row d-none">
         <div class="col-lg-12 col-xl-12 stretch-card">
           <div class="card">
             <div class="card-body">
