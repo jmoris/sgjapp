@@ -98,6 +98,7 @@ class FacturaController extends Controller
     }
 
     public function vistaPreviaEnvioFactura(Request $request){
+        set_time_limit(300);
         try{
             $validator = Validator::make($request->all(), [
                 'fecha_emision' => 'required',
@@ -127,7 +128,7 @@ class FacturaController extends Controller
             foreach($request->items as $item){
                 array_push($detalle, [
                     'NmbItem' => mb_convert_encoding($item['nombre'], 'UTF-8', 'ISO-8859-1'),
-                    'DscItem' => ((!array_key_exists('descripcion', $item))?false:mb_convert_encoding($item['descripcion'], 'UTF-8', 'ISO-8859-1')),
+                    'DscItem' => ((!array_key_exists('descripcion', $item))?false:Herramientas::sanitizarString($item['descripcion'])),
                     'UnmdItem' => Unidad::find($item['unidad'])->abreviacion,
                     'PrcItem' => $item['precio'],
                     'QtyItem' => $item['cantidad'],
@@ -189,13 +190,13 @@ class FacturaController extends Controller
                 'Detalle' => $detalle,
                 'Referencia' => $referencias
             ];
-            $pdf = new \SolucionTotal\CorePDF\PDF($dte, 1, 'https://i.imgur.com/oWL7WBw.jpeg', 2);
+            $pdf = new \SolucionTotal\CorePDF\PDF($dte, 1, 'https://intranet.joremet.cl/logo_joremet.png', 2);
             $pdf->setCedible(false);
             //$pdf->setLeyendaImpresion('Sistema de facturacion por SoluciónTotal');
             $pdf->setTelefono($emisor['telefono']);
             $pdf->setWeb($emisor['web']);
             $pdf->setMail($emisor['email']);
-            $pdf->setMarcaAgua('https://i.imgur.com/oWL7WBw.jpeg');
+            $pdf->setMarcaAgua('https://intranet.joremet.cl/logo_joremet.png');
             $glosa = str_replace('//', '<br>', $request->glosa);
             $pdf->setGlosa($glosa);
             $proyecto = Proyecto::find($request->proyecto);
@@ -288,7 +289,7 @@ class FacturaController extends Controller
             foreach($request->items as $item){
                 array_push($detalle, [
                     'nombre' => $item['nombre'],
-                    'descripcion' => ((!array_key_exists('descripcion', $item))?false:$item['descripcion']),
+                    'descripcion' => ((!array_key_exists('descripcion', $item))?false:Herramientas::sanitizarString($item['descripcion'])),
                     'unidad' => Unidad::find($item['unidad'])->abreviacion,
                     'precio' => $item['precio'],
                     'cantidad' => $item['cantidad']
@@ -409,9 +410,12 @@ class FacturaController extends Controller
 
     public function vistaPreviaFactura(Request $request, $folio){
         try{
+            set_time_limit(300);
             $emisor = Ajustes::getEmisor();
             $fact = Factura::with('cliente', 'cliente.comuna')->where('folio', $folio)->first();
-            $ch = curl_init( env('FACTURAPI_ENDPOINT').'documentos/generar/xml/33/'.$folio.'?contribuyente='.$emisor['rut']);
+            $endpoint = env('FACTURAPI_ENDPOINT').'documentos/generar/xml/33/'.$folio.'?contribuyente='.$emisor['rut'];
+            Log::info("Endpoint Vista Previa : ". $endpoint);
+            $ch = curl_init( $endpoint );
             curl_setopt( $ch, CURLOPT_POST, false);
             curl_setopt( $ch, CURLOPT_HTTPHEADER, [
                 'Content-Type:application/json',
@@ -430,7 +434,7 @@ class FacturaController extends Controller
             $caratula = $EnvioDTE->getCaratula();
             $data = $dte->getDatos();
 
-            $pdf = new \SolucionTotal\CorePDF\PDF($data, 1, 'https://i.imgur.com/oWL7WBw.jpeg', 2, $dte->getTED());
+            $pdf = new \SolucionTotal\CorePDF\PDF($data, 1, 'https://intranet.joremet.cl/logo_joremet.png', 2, $dte->getTED());
             $pdf->setCedible(false);
             //$pdf->setLeyendaImpresion('Sistema de facturacion por SoluciónTotal');
             $pdf->setObra($fact->proyecto->nombre);
@@ -438,7 +442,7 @@ class FacturaController extends Controller
             $pdf->setResolucion(date('Y', strtotime($caratula['FchResol'])), $caratula['NroResol']);
             $pdf->setWeb($emisor['web']);
             $pdf->setMail($emisor['email']);
-            $pdf->setMarcaAgua('https://i.imgur.com/oWL7WBw.jpeg');
+            $pdf->setMarcaAgua('https://intranet.joremet.cl/logo_joremet.png');
             $glosa = str_replace('//', '<br>', $fact->glosa);
             $pdf->setGlosa($glosa);
             $pdf->construir();
