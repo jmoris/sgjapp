@@ -113,7 +113,8 @@ class NotaCreditoController extends Controller
                     'razon' => 'ANULA DOCUMENTO',
                     'codigo' => 1
                     ]
-                ]
+                ],
+                'correo_dte' => $cliente->email_dte
             ];
 
             $ch = curl_init( env('FACTURAPI_ENDPOINT').'documentos' );
