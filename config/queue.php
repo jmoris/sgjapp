@@ -35,7 +35,8 @@ return [
         ],
 
         'database' => [
-            'driver' => 'tenant',
+            'driver' => 'database',
+            'connection' => 'landlord',
             'table' => 'jobs',
             'queue' => 'default',
             'retry_after' => 90,
