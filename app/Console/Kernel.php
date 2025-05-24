@@ -351,6 +351,7 @@ class Kernel extends ConsoleKernel
 
                 }))->weekdays()->dailyAt('17:00');
             }
+            Tenant::forgetCurrent();
         }
     }
 
