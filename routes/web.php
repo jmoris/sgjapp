@@ -44,7 +44,10 @@ use SolucionTotal\CoreDTE\Sii\EnvioDte;
 Route::get('login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('login', [AuthController::class, 'doLogin']);
 Route::get('/', function(){
-    return Redirect::to('/dashboard');
+    if (\Spatie\Multitenancy\Models\Tenant::checkCurrent()) {
+        return Redirect::to('/dashboard');
+    }
+    return "Pagina principal";
 });
 
 
