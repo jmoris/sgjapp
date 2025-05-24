@@ -13,7 +13,7 @@
         "laravel/framework": "^10.0",
         "laravel/sanctum": "^3.2",
         "laravel/tinker": "^2.7",
-        "opcodesio/log-viewer": "*",
+        "opcodesio/log-viewer": "^3.17",
         "phpoffice/phpspreadsheet": "^1.29",
         "soluciontotal/coredte": "dev-php8",
         "soluciontotal/corepdf": "dev-sgjapp",
