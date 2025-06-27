@@ -40,7 +40,7 @@ class FactoringController extends Controller
         $factoring = Factoring::find($request->factoring);
         $cliente = Cliente::find($request->cliente);
         $fecha = date('Y-m-d', strtotime(str_replace('/', '-', $request->fecha)));
-        $documentos = Factura::where('cliente_id', $cliente->id)->where('estado', 'LIKE', '1%')->orderBy('folio', 'asc')->get();
+        $documentos = Factura::where('cliente_id', $cliente->id)->where('estado', 'LIKE', '1_0')->orderBy('folio', 'asc')->get();
         return view('pages.ventas.cesiones.selector', ['documentos' => $documentos, 'factoring' => $factoring, 'cliente' => $cliente, 'fecha' => $fecha]);
     }
 
