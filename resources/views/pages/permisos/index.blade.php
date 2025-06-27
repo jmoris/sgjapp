@@ -112,6 +112,17 @@
                                                     <td><input class="form-check-input" type="checkbox"
                                                             id="eliminarCliente" name="eliminarCliente"></td>
                                                 </tr>
+                                                <tr modulename="factorings">
+                                                    <td>Factorings</td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="verFactoring" name="verFactoring"></td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="editarFactoring" name="editarFactoring"></td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="crearFactoring" name="crearFactoring"></td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="eliminarFactoring" name="eliminarFactoring"></td>
+                                                </tr>
                                                 <tr modulename="productos">
                                                     <td>Productos</td>
                                                     <td><input class="form-check-input" type="checkbox"
@@ -177,6 +188,17 @@
                                                             id="crearNotaCredito" name="crearNotaCredito"></td>
                                                     <td><input class="form-check-input" type="checkbox"
                                                             id="eliminarNotaCredito" name="eliminarNotaCredito"></td>
+                                                </tr>
+                                                <tr modulename="cesiones">
+                                                    <td>Cesiones</td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="verCesion" name="verCesion"></td>
+                                                        <td><input class="form-check-input" type="checkbox"
+                                                                id="editarCesion" name="editarCesion"></td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="crearCesion" name="crearCesion"></td>
+                                                    <td><input class="form-check-input" type="checkbox"
+                                                            id="eliminarCesion" name="eliminarCesion"></td>
                                                 </tr>
                                                 <tr modulename="facturas_compra">
                                                     <td>Facturas Compras</td>
@@ -288,12 +310,14 @@
                 'usuarios': [tienePermiso('#verUsuarios'),tienePermiso('#editarUsuarios'),tienePermiso('#crearUsuarios'),tienePermiso('#eliminarUsuarios')],
                 'proveedores': [tienePermiso('#verProveedor'),tienePermiso('#editarProveedor'),tienePermiso('#crearProveedor'),tienePermiso('#eliminarProveedor')],
                 'clientes': [tienePermiso('#verCliente'),tienePermiso('#editarCliente'),tienePermiso('#crearCliente'),tienePermiso('#eliminarCliente')],
+                'factorings': [tienePermiso('#verFactoring'),tienePermiso('#editarFactoring'),tienePermiso('#crearFactoring'),tienePermiso('#eliminarFactoring')],
                 'productos': [tienePermiso('#verProducto'),tienePermiso('#editarProducto'),tienePermiso('#crearProducto'),tienePermiso('#eliminarProducto')],
                 'ordenes_compra': [tienePermiso('#verOrdenCompra'),tienePermiso('#editarOrdenCompra'),tienePermiso('#crearOrdenCompra'),tienePermiso('#eliminarOrdenCompra')],
                 'proyectos': [tienePermiso('#verProyecto'),tienePermiso('#editarProyecto'),tienePermiso('#crearProyecto'),tienePermiso('#eliminarProyecto')],
                 'facturas': [tienePermiso('#verFactura'),tienePermiso('#editarFactura'),tienePermiso('#crearFactura'),tienePermiso('#eliminarFactura')],
                 'guias_despacho': [tienePermiso('#verGuiaDespacho'),tienePermiso('#editarGuiaDespacho'),tienePermiso('#crearGuiaDespacho'),tienePermiso('#eliminarGuiaDespacho')],
                 'notas_credito': [tienePermiso('#verNotaCredito'),tienePermiso('#editarNotaCredito'),tienePermiso('#crearNotaCredito'),tienePermiso('#eliminarNotaCredito')],
+                'cesiones': [tienePermiso('#verCesion'),tienePermiso('#editarCesion'),tienePermiso('#crearCesion'),tienePermiso('#eliminarCesion')],
                 'facturas_compra': [tienePermiso('#verFacturaCompra'),tienePermiso('#editarFacturaCompra'),tienePermiso('#crearFacturaCompra'),tienePermiso('#eliminarFacturaCompra')],
                 'guias_despacho_compra': [tienePermiso('#verGuiaDespachoCompra'),tienePermiso('#editarGuiaDespachoCompra'),tienePermiso('#crearGuiaDespachoCompra'),tienePermiso('#eliminarGuiaDespachoCompra')],
                 'notas_credito_compra': [tienePermiso('#verNotaCreditoCompra'),tienePermiso('#editarNotaCreditoCompra'),tienePermiso('#crearNotaCreditoCompra'),tienePermiso('#eliminarNotaCreditoCompra')],

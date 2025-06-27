@@ -58,6 +58,14 @@
                     </a>
                 </li>
             @endif
+            @if (has_permission('ver-factoring'))
+                <li class="nav-item {{ active_class(['factorings*']) }}">
+                    <a href="{{ url('/factorings') }}" class="nav-link">
+                        <i class="mdi mdi-invoice-send mdi-18"></i>
+                        <span class="link-title" style="margin-left: 12px;">Factorings</span>
+                    </a>
+                </li>
+            @endif
             @if (has_permission('ver-producto'))
                 <li class="nav-item {{ active_class(['productos*']) }}">
                     <a href="{{ url('/productos') }}" class="nav-link">
@@ -84,12 +92,12 @@
             @endif
             <li class="nav-item nav-category">VENTAS</li>
             @if (has_permission('ver-proyecto'))
-                <li class="nav-item {{ active_class(['ventas/proyectos*']) }}">
-                    <a href="{{ url('ventas/proyectos') }}" class="nav-link">
-                        <i class="mdi mdi-file-document-arrow-right mdi-18"></i>
-                        <span class="link-title" style="margin-left: 12px;">Proyectos</span>
-                    </a>
-                </li>
+            <li class="nav-item {{ active_class(['ventas/proyectos*']) }}">
+                <a href="{{ url('ventas/proyectos') }}" class="nav-link">
+                    <i class="mdi mdi-file-document-arrow-right mdi-18"></i>
+                    <span class="link-title" style="margin-left: 12px;">Proyectos</span>
+                </a>
+            </li>
             @endif
             @if (has_permission('ver-factura')||has_permission('ver-guia-despacho')||has_permission('ver-nota-credito')||has_permission('ver-nota-debito'))
             <li class="nav-item {{ active_class(['ventas/facturas*', 'ventas/guiasdespacho*', 'ventas/notascredito*', 'ventas/notasdebito*']) }}">
@@ -135,6 +143,14 @@
                         @endif
                     </ul>
                 </div>
+                @if (has_permission('ver-cesion'))
+                <li class="nav-item {{ active_class(['ventas/cesiones*']) }}">
+                    <a href="{{ url('ventas/cesiones') }}" class="nav-link">
+                        <i class="mdi mdi-file-send mdi-18"></i>
+                        <span class="link-title" style="margin-left: 12px;">Cesión de Documentos</span>
+                    </a>
+                </li>
+                @endif
             </li>
             @endif
             @if (has_permission('ver-presupuesto'))

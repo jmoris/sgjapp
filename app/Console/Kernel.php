@@ -2,6 +2,8 @@
 
 namespace App\Console;
 
+use App\AEC;
+use App\Cesion;
 use App\DocumentoPendiente;
 use App\Factura;
 use App\FacturaCompra;
@@ -162,6 +164,66 @@ class Kernel extends ConsoleKernel
                         }
                     }catch(Exception $ex){
                         Log::info("Error revisando estado de correo intercambio documentos generados");
+                    }
+                }))->everyMinute();
+
+                /**
+                 * Tarea que revisa el estado de las cesión de documentos
+                 */
+                $schedule->call($tenant->callback(function() {
+                    $cesiones = Cesion::where('estado', 0)->get();
+
+                    foreach($cesiones as $cesion){
+                        $emisor = Ajustes::getEmisor();
+                        $aecs = AEC::where('cesion_id', $cesion->id)->get();
+                        $error = 0;
+                        foreach($aecs as $aec){
+                            $factura = Factura::where('id', $aec->factura_id)->first();
+                            $data = [
+                                'contribuyente' => $emisor['rut'],
+                                'folio' => $factura->folio,
+                                'rut_factoring' => $cesion->factoring->rut,
+                                'razon_social_factoring' => $cesion->factoring->razon_social,
+                                'direccion_factoring' => $cesion->factoring->direccion,
+                                'email_cesion' => $cesion->factoring->email_cesion,
+                                'email' => $cesion->factoring->email_cesion
+                            ];
+
+                            $ch = curl_init( env('FACTURAPI_ENDPOINT').'documentos/cesion' );
+                            curl_setopt( $ch, CURLOPT_POST, true);
+                            curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode($data) );
+                            curl_setopt( $ch, CURLOPT_HTTPHEADER, [
+                                'Content-Type:application/json',
+                                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
+                            ]);
+                            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+                            $result = curl_exec($ch);
+                            Log::info("Datos recibidos cesión:");
+                            Log::info($result);
+                            curl_close($ch);
+                            $docData = json_decode($result);
+                            if($docData->success){
+                                $factura = Factura::where('id', $aec->factura_id)->first();
+                                $estado = $factura->estado;
+                                $estadoEnvio = substr($estado, 0, 1);
+                                $estadoXML = substr($estado, 1, 1);
+                                $estadoCesion = 1;
+                                $factura->estado = $estadoEnvio.$estadoXML.$estadoCesion;
+                                $factura->save();
+                                $aec->track_id = $docData->trackid;
+                                $aec->estado = 1;
+                                $aec->save();
+                            }else{
+                                $error+=1;
+                            }
+                        }
+                        if($error == 0){
+                            $cesion->estado = 1;
+                            $cesion->save();
+                        }else{
+                            $cesion->estado = 2;
+                            $cesion->save();
+                        }
                     }
                 }))->everyMinute();
 

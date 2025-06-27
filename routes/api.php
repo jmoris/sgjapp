@@ -7,6 +7,7 @@ use App\Factura;
 use App\Helpers\Herramientas;
 use App\Http\Controllers\BorradorController;
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\FactoringController;
 use App\Http\Controllers\FacturaCompraController;
 use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\GuiaDespachoCompraController;
@@ -164,6 +165,11 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
     Route::post('/clientes/editar/{id}', [ClienteController::class, 'update']);
     Route::delete('/clientes/{id}', [ClienteController::class, 'delete']);
 
+    Route::get('/factorings', [FactoringController::class, 'getAll']);
+    Route::get('/factorings/{id}', [FactoringController::class, 'getById']);
+    Route::post('/factorings', [FactoringController::class, 'store']);
+    Route::post('/factorings/editar/{id}', [FactoringController::class, 'update']);
+    Route::delete('/factorings/{id}', [FactoringController::class, 'delete']);
 
     Route::get('/productos', [ProductoController::class, 'getAll']);
     Route::get('/productos/{id}', [ProductoController::class, 'getById']);
@@ -249,6 +255,13 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
         Route::post('proyectos/{id}/adjuntos', [ProyectoController::class, 'uploadDocumento']);
         Route::get('proyectos/adjuntos/{idAdjunto}', [ProyectoController::class, 'descargarAdjunto']);
         Route::delete('proyectos/adjuntos/{idAdjunto}', [ProyectoController::class, 'deleteAdjunto']);
+
+        Route::get('cesiones', [FactoringController::class, 'getAllCesiones'])->middleware('tag:ver-cesion');
+        Route::post('cesiones', [FactoringController::class, 'storeCesion'])->middleware('tag:crear-cesion');
+        Route::post('cesiones/editar/{id}', [FactoringController::class, 'updateCesion']);
+        Route::delete('cesiones/{id}', [FactoringController::class, 'deleteCesion']);
+        Route::get('cesiones/vistaprevia/{id}', [FactoringController::class, 'vistaPreviaCesion'])->middleware('tag:ver-cesion');
+
     });
 
     Route::get('/roles', [PermissionController::class, 'getRoles']);

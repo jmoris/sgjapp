@@ -284,7 +284,7 @@
                             var estado = row.estado;
                             var estadoSii = estado.slice(0, 1);
                             var estadoXml = estado.slice(1, 2);
-                            var estadoAcuse = estado.slice(2, 3);
+                            var estadoCesion = estado.slice(2, 3);
                             var html = '';
                             if (estadoSii == 0) {
                                 // en proceso
@@ -306,13 +306,18 @@
 
                             if (estadoXml == 0) {
                                 html +=
-                                    '<span class="badge bg-warning" title="XML No Enviado"><span class="mdi mdi-24 mdi mdi-send-clock"></span></span>';
+                                    '<span class="badge bg-warning me-1" title="XML No Enviado"><span class="mdi mdi-24 mdi mdi-send-clock"></span></span>';
                             } else if (estadoXml == 1) {
                                 html +=
-                                    '<span class="badge bg-success" title="XML Recibido"><span class="mdi mdi-24 mdi-send"></span></span>';
+                                    '<span class="badge bg-success me-1" title="XML Recibido"><span class="mdi mdi-24 mdi-send"></span></span>';
                             } else if (estadoXml == 2) {
                                 html +=
-                                    '<span class="badge bg-error" title="Error de Envio"><span class="mdi mdi-24 mdi-alert-circle-outline"></span></span>';
+                                    '<span class="badge bg-error me-1" title="Error de Envio"><span class="mdi mdi-24 mdi-alert-circle-outline"></span></span>';
+                            }
+
+                            if (estadoCesion == 1) {
+                                html +=
+                                    '<span class="badge bg-success" title="Cedida"><span class="mdi mdi-24 mdi-cash-multiple"></span></span>';
                             }
 
                             return html;

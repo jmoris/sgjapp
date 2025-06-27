@@ -6,20 +6,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Multitenancy\Models\Concerns\UsesTenantConnection;
 
-class Cliente extends Model
+class Factoring extends Model
 {
     use HasFactory, UsesTenantConnection;
 
-    public function comuna(){
+    public function comuna()
+    {
         return $this->hasOne(Comuna::class, 'id', 'comuna_id');
     }
-
-    public function productos(){
-        return $this->belongsToMany(Producto::class)->withPivot(['precio']);
-    }
-
     public function cesiones()
     {
-        return $this->hasMany(Cesion::class);
+        return $this->hasMany(Cesion::class, 'factoring_id', 'id');
     }
 }

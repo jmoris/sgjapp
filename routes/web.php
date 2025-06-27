@@ -17,6 +17,7 @@ use App\Helpers\Ajustes;
 use App\Http\Controllers\AjusteController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClienteController;
+use App\Http\Controllers\FactoringController;
 use App\Http\Controllers\FacturaCompraController;
 use App\Http\Controllers\FacturaController;
 use App\Http\Controllers\GuiaDespachoCompraController;
@@ -163,6 +164,12 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
         Route::get('/nuevo', [ClienteController::class, 'newCliente']);
     });
 
+    Route::prefix('factorings')->middleware('tag:ver-factoring')->group(function(){
+        Route::get('/', [FactoringController::class, 'index']);
+        Route::get('/editar/{id}', [FactoringController::class, 'editFactoring']);
+        Route::get('/nuevo', [FactoringController::class, 'newFactoring']);
+    });
+
     Route::prefix('productos')->middleware('tag:ver-producto')->group(function(){
         Route::get('/', [ProductoController::class, 'index']);
         Route::get('/editar/{id}', [ProductoController::class, 'editProducto']);
@@ -216,6 +223,11 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
             Route::get('/{id}', [ProyectoController::class, 'detailProyecto'])->where('id', '[0-9]+');
             Route::get('/editar/{id}', [ProyectoController::class, 'editProyecto']);
             Route::get('/nuevo', [ProyectoController::class, 'newProyecto']);
+        });
+        Route::prefix('cesiones')->middleware('tag:ver-cesion')->group(function(){
+            Route::get('/', [FactoringController::class, 'indexCesiones']);
+            Route::post('/selector', [FactoringController::class, 'showSelector']);
+            Route::get('/detalle/{id}', [FactoringController::class, 'detailCesion']);
         });
     });
 
