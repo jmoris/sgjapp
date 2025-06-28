@@ -112,6 +112,14 @@
                 return $(this).val();
             }).get();
 
+            if(documentos.length == 0) {
+                Swal.fire({
+                    title: 'No se han seleccionado documentos',
+                    icon: 'error',
+                });
+                return;
+            }
+
             var data = {
                 factoring_id:{{ $factoring->id }},
                 cliente_id:{{ $cliente->id }},
