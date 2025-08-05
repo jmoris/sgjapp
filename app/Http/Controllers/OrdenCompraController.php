@@ -125,9 +125,9 @@ class OrdenCompraController extends Controller
             $total = $neto + $iva;
 
             $oc = OrdenCompra::find($oc->id);
-            $oc->monto_neto = $neto;
-            $oc->monto_iva = $iva;
-            $oc->monto_total = $total;
+            $oc->monto_neto = intval($neto);
+            $oc->monto_iva = intval($iva);
+            $oc->monto_total = intval($total);
             $oc->save();
 
             return response()->json([
@@ -211,9 +211,9 @@ class OrdenCompraController extends Controller
                 Log::info($total);
 
                 $oc = OrdenCompra::find($oc->id);
-                $oc->monto_neto = $neto;
-                $oc->monto_iva = $iva;
-                $oc->monto_total = $total;
+                $oc->monto_neto = intval($neto);
+                $oc->monto_iva = intval($iva);
+                $oc->monto_total = intval($total);
                 $oc->save();
 
                 return response()->json([
