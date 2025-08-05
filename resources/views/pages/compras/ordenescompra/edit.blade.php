@@ -207,19 +207,19 @@
                                                                 <div class="col-sm-8 align-bottom">
                                                                     <div class="form-check form-check-inline">
                                                                         <input class="form-check-input" type="radio"
-                                                                            name="tipo_pago" id="tipo_pago"
-                                                                            value="1"
-                                                                            @if ($oc->tipo_pago == 1) checked @endif>
+                                                                            name="tipo_pago" id="tipo_pago_credito"
+                                                                            value="2"   
+                                                                            @if ($oc->tipo_pago == 2) checked @endif>
                                                                         <label class="form-check-label"
-                                                                            for="tipo_pago">Credito</label>
+                                                                            for="tipo_pago_credito">Credito</label>
                                                                     </div>
                                                                     <div class="form-check form-check-inline">
                                                                         <input class="form-check-input" type="radio"
-                                                                            name="tipo_pago" id="tipo_pago"
-                                                                            value="2"
-                                                                            @if ($oc->tipo_pago == 2) checked @endif>
+                                                                            name="tipo_pago" id="tipo_pago_contado"
+                                                                            value="1"
+                                                                            @if ($oc->tipo_pago == 1) checked @endif>
                                                                         <label class="form-check-label"
-                                                                            for="tipo_pago">Contado</label>
+                                                                            for="tipo_pago_contado">Contado</label>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -384,10 +384,9 @@
                                                                 </div>
                                                                 <div class="col-md-4 pl-0">
                                                                     <div class="input-group">
-                                                                        <input step="any" min="0"
-                                                                            max="100" value="0"
+                                                                        <input value="{{ $oc->descuento }}"
                                                                             class="form-control form-control-sm"
-                                                                            type="number" name="descuentoglobal"
+                                                                            type="text" name="descuentoglobal" onchange="calcularDescuentoGlobal()"
                                                                             id="descuentoglobal" />
                                                                         <span class="input-group-text">%</span>
                                                                     </div>
@@ -547,6 +546,15 @@
                 groupSeparator: '.',
                 rightAlign: false
             });
+            $("#descuentoglobal").inputmask('percentage', {
+                digits: 2,        // Decimales (0.01)
+                digitsOptional: false,
+                suffix: " %",
+                placeholder: "0.00",
+                autoUnmask: true,
+                removeMaskOnSubmit: true, // Útil si lo enviarás a backend como número
+                rightAlign: false         // Por estética, al gusto
+            });
 
             $('#razon_social').select2();
             $('#productosTable').on('click', 'tbody tr', function(event) {
@@ -559,6 +567,17 @@
             renderDetalles();
             seleccionarProveedor();
         });
+
+        function calcularDescuentoGlobal() {
+            var descuento = $('#descuentoglobal').inputmask('unmaskedvalue');
+            console.log(descuento);
+            var subtotal = $('#lblSubtotalDoc').text();
+            console.log(subtotal);
+            var descuentoGlobal = subtotal * descuento;
+            $('#lbldescuentoglobal').text(descuentoGlobal);
+            console.log(descuentoGlobal);
+            calcularTotales();
+        }
 
         function renderDetalles() {
             for (var i = 0; i < detalles.length; i++) {
@@ -706,13 +725,16 @@
                 });
                 return;
             }
+            let tipoPago = $("input[name='tipo_pago']:checked").val();
+            console.log("Tipo de pago seleccionado:", tipoPago);
             var doc = {
                 proveedor: $('#razon_social').val(),
                 fecha_emision: $('#fecha_emision').val(),
-                tipo_pago: $('#tipo_pago').val(),
+                tipo_pago: tipoPago,
                 items: detalles,
                 proyecto: idProyecto,
                 glosa: $('#glosaTxt').val(),
+                descuentoglobal: $('#descuentoglobal').inputmask('unmaskedvalue'),
                 _token: $('meta[name="_token"]').attr('content')
             };
             console.log(doc);
@@ -1038,10 +1060,14 @@
             detalles.forEach(element => {
                 subtotalDoc += element.precio * element.cantidad;
             });
-            var iva = subtotalDoc * 0.19;
-            var total = subtotalDoc + iva;
+            var descuentoGlobal = $('#descuentoglobal').inputmask('unmaskedvalue');
+            var descuento = subtotalDoc * descuentoGlobal / 100;
+            var neto = subtotalDoc - descuento;
+            var iva = neto * 0.19;
+            var total = neto + iva;
+            $('#lbldescuentoglobal').text('$ ' + descuento.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.'));
             $('#lblSubtotalDoc').text('$ ' + subtotalDoc.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.'));
-            $('#lblneto').text('$ ' + subtotalDoc.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.'));
+            $('#lblneto').text('$ ' + neto.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.'));
             $('#lbliva').text('$ ' + iva.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.'));
             $('#lbltotal').text('$ ' + total.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.'));
         }

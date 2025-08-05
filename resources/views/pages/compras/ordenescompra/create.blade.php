@@ -383,7 +383,7 @@
                                                         </div>
                                                         <div class="col-md-3 pl-0">
                                                             <input value="0" class="form-control form-control-sm"
-                                                                type="text" name="descuentoglobal"
+                                                                type="text" name="descuentoglobal" onchange="calcularDescuentoGlobal()"
                                                                 id="descuentoglobal" />
 
                                                         </div>
@@ -538,7 +538,15 @@
                 groupSeparator: '.',
                 rightAlign: false
             });
-            $("#descuentoglobal").inputmask('percentage', {});
+            $("#descuentoglobal").inputmask('percentage', {
+                digits: 2,        // Decimales (0.01)
+                digitsOptional: false,
+                suffix: " %",
+                placeholder: "0.00",
+                autoUnmask: true,
+                removeMaskOnSubmit: true, // Útil si lo enviarás a backend como número
+                rightAlign: false         // Por estética, al gusto
+            });
             $('#razon_social').select2();
             $('#productosTable').on('click', 'tbody tr', function(event) {
                 $(this).addClass('highlight').siblings().removeClass('highlight');
@@ -548,6 +556,17 @@
                 selectDetalle();
             });
         });
+
+        function calcularDescuentoGlobal() {
+            var descuento = $('#descuentoglobal').inputmask('unmaskedvalue');
+            console.log(descuento);
+            var subtotal = $('#lblSubtotalDoc').text();
+            console.log(subtotal);
+            var descuentoGlobal = subtotal * descuento;
+            $('#lbldescuentoglobal').text(descuentoGlobal);
+            console.log(descuentoGlobal);
+            calcularTotales();
+        }
 
         function selectDetalle() {
             var item = $('#productosTable tbody tr.highlight');
@@ -652,6 +671,7 @@
                 items: detalles,
                 proyecto: idProyecto,
                 glosa: $('#glosaTxt').val(),
+                descuentoglobal: $('#descuentoglobal').inputmask('unmaskedvalue'),
                 _token: $('meta[name="_token"]').attr('content')
             };
             console.log(doc);
@@ -885,10 +905,14 @@
             detalles.forEach(element => {
                 subtotalDoc += element.precio * element.cantidad;
             });
-            var iva = subtotalDoc * 0.19;
-            var total = subtotalDoc + iva;
+            var descuentoGlobal = $('#descuentoglobal').inputmask('unmaskedvalue');
+            var descuento = subtotalDoc * descuentoGlobal / 100;
+            var neto = subtotalDoc - descuento;
+            var iva = neto * 0.19;
+            var total = neto + iva;
+            $('#lbldescuentoglobal').text('$ ' + descuento.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.'));
             $('#lblSubtotalDoc').text('$ ' + subtotalDoc.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.'));
-            $('#lblneto').text('$ ' + subtotalDoc.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.'));
+            $('#lblneto').text('$ ' + neto.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.'));
             $('#lbliva').text('$ ' + iva.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.'));
             $('#lbltotal').text('$ ' + total.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.'));
         }

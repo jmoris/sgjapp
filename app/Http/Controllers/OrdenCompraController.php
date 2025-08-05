@@ -69,7 +69,7 @@ class OrdenCompraController extends Controller
                 'items' => 'required|array',
                 'proyecto' => 'required',
                 'glosa' => 'nullable',
-                'descuento' => 'nullable|numeric'
+                'descuentoglobal' => 'nullable|numeric'
             ]);
 
             if($validator->fails()){
@@ -95,14 +95,13 @@ class OrdenCompraController extends Controller
             $oc->proyecto_id = $request->proyecto;
             $oc->rev_activa = true;
             $oc->tipo_pago = $request->tipo_pago;
-            $oc->descuento = (isset($request->descuento))?$request->descuento:0;
+            $oc->descuento = (isset($request->descuentoglobal))?$request->descuentoglobal:0;
             $oc->monto_neto = 0;
             $oc->monto_iva = 0;
             $oc->monto_total = 0;
             if(isset($request->glosa)){
                 $oc->glosa = str_replace('///', '<br>', $request->glosa);
             }
-            $oc->tipo_pago = $request->tipo_pago;
             $oc->save();
             // Se recorre listado de productos OC y se almacenan
             $subtotal = 0;
@@ -119,15 +118,17 @@ class OrdenCompraController extends Controller
                 $linea->save();
                 $subtotal += intval($linea->precio_unitario * $linea->cantidad);
             }
+            $monto_descuento = $subtotal * $oc->descuento / 100;
+            $subtotal -= $monto_descuento;
             $neto = $subtotal;
             $iva = intval($neto * 0.19);
             $total = $neto + $iva;
 
-            OrdenCompra::where('id', $oc->id)->update([
-                'monto_neto' => $neto,
-                'monto_iva' => $iva,
-                'monto_total' => $total
-            ]);
+            $oc = OrdenCompra::find($oc->id);
+            $oc->monto_neto = $neto;
+            $oc->monto_iva = $iva;
+            $oc->monto_total = $total;
+            $oc->save();
 
             return response()->json([
                 'success' => true,
@@ -149,7 +150,7 @@ class OrdenCompraController extends Controller
                     'items' => 'required|array',
                     'proyecto' => 'required',
                     'glosa' => 'nullable',
-                    'descuento' => 'nullable|numeric'
+                    'descuentoglobal' => 'nullable|numeric'
                 ]);
 
                 if($validator->fails()){
@@ -173,14 +174,13 @@ class OrdenCompraController extends Controller
                 $oc->tipo_pago = $request->tipo_pago;
                 $oc->rev = (OrdenCompra::orderBy('rev', 'desc')->where('folio', $first_oc->folio)->first())->rev + 1;
                 $oc->rev_activa = true;
-                $oc->descuento = (isset($request->descuento))?$request->descuento:0;
+                $oc->descuento = (isset($request->descuentoglobal))?$request->descuentoglobal:0;
                 $oc->monto_neto = 0;
                 $oc->monto_iva = 0;
                 $oc->monto_total = 0;
                 if(isset($request->glosa)){
                     $oc->glosa = str_replace('///', '<br>', $request->glosa);
                 }
-                $oc->tipo_pago = $request->tipo_pago;
                 $oc->save();
                 // Se recorre listado de productos OC y se almacenan
                 $subtotal = 0;
@@ -197,21 +197,31 @@ class OrdenCompraController extends Controller
                     $linea->save();
                     $subtotal += intval($linea->precio_unitario * $linea->cantidad);
                 }
+
+                $monto_descuento = $subtotal * $oc->descuento / 100;
+                $subtotal -= $monto_descuento;
                 $neto = $subtotal;
                 $iva = intval(round($neto * 0.19));
                 $total = $neto + $iva;
 
-                OrdenCompra::where('id', $oc->id)->update([
-                    'monto_neto' => $neto,
-                    'monto_iva' => $iva,
-                    'monto_total' => $total
-                ]);
+                Log::info($monto_descuento);
+                Log::info($subtotal);
+                Log::info($neto);
+                Log::info($iva);
+                Log::info($total);
+
+                $oc = OrdenCompra::find($oc->id);
+                $oc->monto_neto = $neto;
+                $oc->monto_iva = $iva;
+                $oc->monto_total = $total;
+                $oc->save();
 
                 return response()->json([
                     'success' => true,
                     'msg' => 'Información guardada exitosamente',
                 ]);
         }catch(Exception $ex){
+            Log::error($ex);
             return $ex;
         }
     }
@@ -266,16 +276,18 @@ class OrdenCompraController extends Controller
                         'IVA' => $oc->monto_iva,
                         'MntTotal' => $oc->monto_total,
                     ],
-                    'DscRcgGlobal' => ($oc->descuento > 0.00) ? [
-                        'NroLinDR' => 1,
-                        'TpoMov' => 'D',
-                        'TpoValor' => '%',
-                        'ValorDR' => $oc->descuento,
-                    ] : false,
+                    'DscRcgGlobal' => [],
                 ],
                 'Detalle' => []
             ];
-            Log::info($dte);
+            if($oc->descuento > 0.00){
+                array_push($dte['Encabezado']['DscRcgGlobal'], [
+                    'NroLinDR' => 1,
+                    'TpoMov' => 'D',
+                    'TpoValor' => '%',
+                    'ValorDR' => floatval($oc->descuento),
+                ]);
+            }
             $subtotal = 0;
             $lineas = LineaOC::where('orden_compra_id', $oc->id)->get();
             foreach($lineas as $linea){
@@ -289,6 +301,8 @@ class OrdenCompraController extends Controller
                 ]);
                 $subtotal += $linea->precio_unitario * $linea->cantidad;
             }
+            Log::info($dte);
+
             $pdf = new \SolucionTotal\CorePDF\PDF($dte, 1, 'https://intranet.joremet.cl/logo_joremet.png', 2);
             $pdf->setCedible(false);
             //$pdf->setLeyendaImpresion('Sistema de facturacion por SoluciónTotal');
