@@ -266,7 +266,8 @@ class OrdenCompraController extends Controller
                         'IVA' => $oc->monto_iva,
                         'MntTotal' => $oc->monto_total,
                     ],
-                    'DscRcgGlobal' => ($oc->descuento > 0) ? [
+                    'DscRcgGlobal' => ($oc->descuento > 0.00) ? [
+                        'NroLinDR' => 1,
                         'TpoMov' => 'D',
                         'TpoValor' => '%',
                         'ValorDR' => $oc->descuento,
