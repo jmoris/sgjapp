@@ -68,7 +68,8 @@ class OrdenCompraController extends Controller
                 'tipo_pago' => 'required',
                 'items' => 'required|array',
                 'proyecto' => 'required',
-                'glosa' => 'nullable'
+                'glosa' => 'nullable',
+                'descuento' => 'nullable|numeric'
             ]);
 
             if($validator->fails()){
@@ -94,7 +95,7 @@ class OrdenCompraController extends Controller
             $oc->proyecto_id = $request->proyecto;
             $oc->rev_activa = true;
             $oc->tipo_pago = $request->tipo_pago;
-            $oc->descuento = 1;
+            $oc->descuento = (isset($request->descuento))?$request->descuento:0;
             $oc->monto_neto = 0;
             $oc->monto_iva = 0;
             $oc->monto_total = 0;
@@ -147,7 +148,8 @@ class OrdenCompraController extends Controller
                     'tipo_pago' => 'required',
                     'items' => 'required|array',
                     'proyecto' => 'required',
-                    'glosa' => 'nullable'
+                    'glosa' => 'nullable',
+                    'descuento' => 'nullable|numeric'
                 ]);
 
                 if($validator->fails()){
@@ -171,7 +173,7 @@ class OrdenCompraController extends Controller
                 $oc->tipo_pago = $request->tipo_pago;
                 $oc->rev = (OrdenCompra::orderBy('rev', 'desc')->where('folio', $first_oc->folio)->first())->rev + 1;
                 $oc->rev_activa = true;
-                $oc->descuento = 1;
+                $oc->descuento = (isset($request->descuento))?$request->descuento:0;
                 $oc->monto_neto = 0;
                 $oc->monto_iva = 0;
                 $oc->monto_total = 0;
@@ -263,7 +265,12 @@ class OrdenCompraController extends Controller
                         'MntNeto' => $oc->monto_neto,
                         'IVA' => $oc->monto_iva,
                         'MntTotal' => $oc->monto_total,
-                    ]
+                    ],
+                    'DscRcgGlobal' => ($oc->descuento > 0) ? [
+                        'TpoMov' => 'D',
+                        'TpoValor' => '%',
+                        'ValorDR' => $oc->descuento,
+                    ] : false,
                 ],
                 'Detalle' => []
             ];
