@@ -274,6 +274,7 @@ class OrdenCompraController extends Controller
                 ],
                 'Detalle' => []
             ];
+            Log::info($dte);
             $subtotal = 0;
             $lineas = LineaOC::where('orden_compra_id', $oc->id)->get();
             foreach($lineas as $linea){
