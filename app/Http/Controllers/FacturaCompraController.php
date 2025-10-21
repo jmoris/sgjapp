@@ -350,7 +350,8 @@ class FacturaCompraController extends Controller
                 'contribuyente' => $emisor['rut'],
                 'operacion' => 'COMPRA',
                 'periodo' => $periodo,
-                'tipo_doc' => 33
+                'tipo_doc' => 33,
+                'clavesii' => 5001
             ];
             $url = env('FACTURAPI_ENDPOINT').'rcv/detalle?'.http_build_query($data);
             $ch = curl_init( $url );
