@@ -62,6 +62,7 @@ class FacturaCompraController extends Controller
             ]);
             curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
             $result = curl_exec($ch);
+            Log::info("RESULTADO RCV DE COMPRA: ". $result);
             $response = json_decode($result);
             $data = [];
             if($response != null){
