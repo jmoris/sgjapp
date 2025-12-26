@@ -127,11 +127,98 @@
             proyecto: null
         };
 
+        // Función para guardar filtros en localStorage
+        function guardarFiltros() {
+            var filtrosGuardar = {
+                razon_social: $('#razonsocial').val(),
+                rut: $('#rut').val(),
+                folio: $('#folio').val(),
+                fecha_emision_min: fecha_em_inicial || '',
+                fecha_emision_max: fecha_em_final || '',
+                estado: $('#estado').val()
+            };
+            localStorage.setItem('facturas_compra_filtros', JSON.stringify(filtrosGuardar));
+        }
+
+        // Función para restaurar filtros desde localStorage
+        function restaurarFiltros() {
+            var filtrosGuardados = localStorage.getItem('facturas_compra_filtros');
+            if (filtrosGuardados) {
+                try {
+                    var filtros = JSON.parse(filtrosGuardados);
+                    
+                    // Restaurar valores de los campos
+                    if (filtros.razon_social) {
+                        $('#razonsocial').val(filtros.razon_social);
+                        filtro.razon_social = filtros.razon_social;
+                    }
+                    
+                    if (filtros.rut) {
+                        // El valor ya está formateado con inputmask, solo lo asignamos
+                        $('#rut').val(filtros.rut);
+                        // Procesar el RUT inmediatamente si es posible, o con un pequeño delay
+                        // Extraer el RUT sin formato para construir el filtro
+                        // Si el inputmask aún no está listo, intentamos parsear manualmente
+                        var rutValor = filtros.rut;
+                        // Remover puntos y guión del formato guardado (ej: 12.345.678-9)
+                        var rutSinFormato = rutValor.replace(/\./g, '').replace(/-/g, '');
+                        if (rutSinFormato != '') {
+                            var dv = rutSinFormato[rutSinFormato.length - 1];
+                            var rutCompleto = rutSinFormato.slice(0, -1) + '-' + dv;
+                            filtro.rut = rutCompleto;
+                        }
+                    }
+                    
+                    if (filtros.folio) {
+                        $('#folio').val(filtros.folio);
+                        filtro.folio = filtros.folio;
+                    }
+                    
+                    if (filtros.estado) {
+                        $('#estado').val(filtros.estado);
+                        filtro.proyecto = filtros.estado;
+                    }
+                    
+                    // Restaurar fecha de emisión si existe
+                    if (filtros.fecha_emision_min && filtros.fecha_emision_max) {
+                        fecha_em_inicial = filtros.fecha_emision_min;
+                        fecha_em_final = filtros.fecha_emision_max;
+                        filtro.fecha_emision.min = filtros.fecha_emision_min;
+                        filtro.fecha_emision.max = filtros.fecha_emision_max;
+                    }
+                    
+                    return true;
+                } catch (e) {
+                    console.error('Error al restaurar filtros:', e);
+                    return false;
+                }
+            }
+            return false;
+        }
+
+        // Función para restaurar fechas del daterangepicker después de su inicialización
+        function restaurarFechasDaterangepicker() {
+            var filtrosGuardados = localStorage.getItem('facturas_compra_filtros');
+            if (filtrosGuardados) {
+                try {
+                    var filtros = JSON.parse(filtrosGuardados);
+                    if (filtros.fecha_emision_min && filtros.fecha_emision_max) {
+                        var daterangepicker = $('#fecha_emision').data('daterangepicker');
+                        if (daterangepicker) {
+                            daterangepicker.setStartDate(moment(filtros.fecha_emision_min));
+                            daterangepicker.setEndDate(moment(filtros.fecha_emision_max));
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error al restaurar fechas:', e);
+                }
+            }
+        }
+
         $(document).ready(function() {
 
             moment.locale('es');
-            cargarDocumentos();
-
+            
             $('#rut').inputmask({
                 mask: '99.999.999-[9|K]',
                 definitions: {
@@ -141,6 +228,16 @@
                     }
                 }
             });
+            
+            // Restaurar filtros después de inicializar inputmask
+            var filtrosRestaurados = restaurarFiltros();
+            
+            // Cargar documentos con los filtros restaurados
+            if (filtrosRestaurados && fecha_em_inicial && fecha_em_final) {
+                cargarDocumentos(fecha_em_inicial, fecha_em_final, '', '');
+            } else {
+                cargarDocumentos();
+            }
 
             $('#fecha_emision').daterangepicker({
                 locale: {
@@ -152,7 +249,13 @@
                 fecha_em_final = moment(end).format('YYYY-MM-DD');
                 filtro.fecha_emision.min = moment(start).format('YYYY-MM-DD');
                 filtro.fecha_emision.max = moment(end).format('YYYY-MM-DD');
+                guardarFiltros();
             });
+            
+            // Restaurar fechas del daterangepicker después de su inicialización
+            setTimeout(function() {
+                restaurarFechasDaterangepicker();
+            }, 100);
 
             $('#fecha_vencimiento').daterangepicker({
                 locale: {
@@ -169,6 +272,9 @@
             $('#fecha_emision').on('cancel.daterangepicker', function(ev, picker) {
                 fecha_em_inicial = undefined;
                 fecha_em_final = undefined;
+                filtro.fecha_emision.min = '';
+                filtro.fecha_emision.max = '';
+                guardarFiltros();
                 $('#tabla').DataTable().destroy();
                 cargarDocumentos();
             });
@@ -183,16 +289,19 @@
 
             $('#folio').on('change', function() {
                 filtro.folio = this.value;
+                guardarFiltros();
                 $('#tabla').DataTable().column(0).search(filtro.folio).draw();
             });
 
             $('#razonsocial').on('change', function() {
                 filtro.razon_social = this.value;
+                guardarFiltros();
                 $('#tabla').DataTable().column(1).search(filtro.razon_social).draw();
             });
 
             $('#estado').on('change', function() {
                 filtro.proyecto = this.value;
+                guardarFiltros();
                 /*if(this.value == 2){
                     facturasTable.column(3).search('^$',false,true).draw()
                 }else if(this.value == 1){
@@ -213,10 +322,12 @@
                     var rutCompleto = rut.slice(0, -1) + '-' + dv;
                 }
                 filtro.rut = rutCompleto;
+                guardarFiltros();
                 $('#tabla').DataTable().column(2).search(filtro.rut).draw();
             });
 
             $('#fecha_emision').on('change', function() {
+                guardarFiltros();
                 $('#tabla').DataTable().destroy();
                 cargarDocumentos(fecha_em_inicial, fecha_em_final, '', '');
             });
@@ -275,7 +386,7 @@
                             d.fvMinDate = fvMin;
                             d.fvMaxDate = fvMax;
                         }
-                        d.proyecto = this.filtro.proyecto;
+                        d.proyecto = filtro.proyecto;
                     }
                 },
                 search: {
@@ -349,7 +460,21 @@
                     },
                 ],
                 processing: true,
-                serverSide: true
+                serverSide: true,
+                initComplete: function() {
+                    // Aplicar filtros restaurados después de que la tabla se inicializa
+                    if (filtro.folio) {
+                        facturasTable.column(0).search(filtro.folio);
+                    }
+                    if (filtro.razon_social) {
+                        facturasTable.column(1).search(filtro.razon_social);
+                    }
+                    if (filtro.rut) {
+                        facturasTable.column(2).search(filtro.rut);
+                    }
+                    // Redibujar la tabla con los filtros aplicados
+                    facturasTable.draw();
+                }
             });
         }
 
