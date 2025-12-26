@@ -129,15 +129,42 @@
 
         // Función para guardar filtros en localStorage
         function guardarFiltros() {
+            var paginaActual = 0;
+            if (facturasTable && facturasTable.page) {
+                paginaActual = facturasTable.page();
+            }
             var filtrosGuardar = {
                 razon_social: $('#razonsocial').val(),
                 rut: $('#rut').val(),
                 folio: $('#folio').val(),
                 fecha_emision_min: fecha_em_inicial || '',
                 fecha_emision_max: fecha_em_final || '',
-                estado: $('#estado').val()
+                estado: $('#estado').val(),
+                pagina: paginaActual
             };
             localStorage.setItem('facturas_compra_filtros', JSON.stringify(filtrosGuardar));
+        }
+
+        // Función para guardar solo la página actual
+        function guardarPagina() {
+            try {
+                var tabla = $('#tabla').DataTable();
+                if (tabla && tabla.page) {
+                    var paginaActual = tabla.page();
+                    var filtrosGuardados = localStorage.getItem('facturas_compra_filtros');
+                    if (filtrosGuardados) {
+                        var filtros = JSON.parse(filtrosGuardados);
+                        filtros.pagina = paginaActual;
+                        localStorage.setItem('facturas_compra_filtros', JSON.stringify(filtros));
+                    } else {
+                        // Si no hay filtros guardados, crear un objeto básico con la página
+                        var filtros = { pagina: paginaActual };
+                        localStorage.setItem('facturas_compra_filtros', JSON.stringify(filtros));
+                    }
+                }
+            } catch (e) {
+                console.error('Error al guardar página:', e);
+            }
         }
 
         // Función para restaurar filtros desde localStorage
@@ -361,6 +388,8 @@
         }
 
         function verDocumento(emisor, folio) {
+            // Guardar la página actual antes de navegar
+            guardarPagina();
             location.href = `/compras/facturas/detalle/${emisor}/${folio}`;
         }
 
@@ -472,9 +501,35 @@
                     if (filtro.rut) {
                         facturasTable.column(2).search(filtro.rut);
                     }
-                    // Redibujar la tabla con los filtros aplicados
-                    facturasTable.draw();
+                    
+                    // Restaurar la página guardada
+                    var filtrosGuardados = localStorage.getItem('facturas_compra_filtros');
+                    if (filtrosGuardados) {
+                        try {
+                            var filtros = JSON.parse(filtrosGuardados);
+                            if (filtros.pagina !== undefined && filtros.pagina !== null && filtros.pagina > 0) {
+                                // Esperar un momento para que la tabla termine de cargar y luego restaurar la página
+                                setTimeout(function() {
+                                    facturasTable.page(filtros.pagina).draw('page');
+                                }, 200);
+                            } else {
+                                // Si no hay página guardada, solo redibujar con los filtros
+                                facturasTable.draw();
+                            }
+                        } catch (e) {
+                            console.error('Error al restaurar página:', e);
+                            facturasTable.draw();
+                        }
+                    } else {
+                        // Si no hay filtros guardados, solo redibujar
+                        facturasTable.draw();
+                    }
                 }
+            });
+            
+            // Guardar la página cuando cambia (usando el evento de DataTables)
+            $('#tabla').on('page.dt', function() {
+                guardarPagina();
             });
         }
 
