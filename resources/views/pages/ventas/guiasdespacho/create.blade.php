@@ -487,10 +487,11 @@
                                                             <th>Tipo Documento</th>
                                                             <th>Folio</th>
                                                             <th>Fecha</th>
+                                                            <th>Razón</th>
                                                         </thead>
                                                         <tbody>
                                                             <tr id="rowReferencia">
-                                                                <td style="width: 40%">
+                                                                <td style="width: 30%">
                                                                     <select id="ref_tipo"
                                                                         class="form-control form-control-sm">
                                                                         <option></option>
@@ -567,14 +568,19 @@
                                                                         <option value="815">(815) Vale de Prenda Bolsa Prod. Chile</option>
                                                                     </select>
                                                                 </td>
-                                                                <td style="width: 30%">
+                                                                <td style="width: 15%">
                                                                     <input id="ref_folio"
                                                                         class="form-control form-control-sm"
                                                                         type="text" placeholder="Folio" />
                                                                 </td>
-                                                                <td style="width: 25%">
+                                                                <td style="width: 15%">
                                                                     <input id="ref_fecha" type="date"
                                                                         class="form-control form-control-sm" />
+                                                                </td>
+                                                                <td style="width: 35%">
+                                                                    <input id="ref_razon"
+                                                                        class="form-control form-control-sm"
+                                                                        type="text" placeholder="Razón" />
                                                                 </td>
                                                                 <td style="width: 5%">
                                                                     <button type="button" onclick="agregarReferencia()"
@@ -1014,9 +1020,10 @@
                 var tipo = $(`#ref_tipo option[value="${ref.tipo}"]`).text();
                 var row = `
                 <tr detIndex="${index}">
-                    <td style="width: 40%">${tipo}</td>
-                    <td style="width: 30%">${ref.folio}</td>
-                    <td style="width: 25%">${ref.fecha}</td>
+                    <td style="width: 30%">${tipo}</td>
+                    <td style="width: 15%">${ref.folio}</td>
+                    <td style="width: 15%">${ref.fecha}</td>
+                    <td style="width: 35%">${ref.razon ?? ''}</td>
                     <td style="width:5% min-width:80px; padding: .75em;">
                          <button type="button" onclick="agregarReferencia()"
                                                                         title="Agregar detalle a la lista"
@@ -1421,7 +1428,7 @@
                 'tipo': $('#ref_tipo').find(':selected').val(),
                 'folio': $('#ref_folio').val(),
                 'fecha': $('#ref_fecha').val(),
-                'razon': '',
+                'razon': $('#ref_razon').val(),
                 'codigo': false
             };
 
@@ -1431,6 +1438,7 @@
                     <td>${$('#ref_tipo').find(':selected').text()}</td>
                     <td>${referencia.folio}</td>
                     <td>${referencia.fecha}</td>
+                    <td>${referencia.razon}</td>
                     <td>
                         <button type="button" onclick="eliminarReferencia(${ref_index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em; float:right;">
                         <span class="mdi mdi-delete"></span></button>
@@ -1441,6 +1449,7 @@
             $('#ref_tipo').trigger('change');
             $('#ref_folio').val('');
             $('#ref_fecha').val('');
+            $('#ref_razon').val('');
 
 
             // Se inserta antes del rowDetalle que es nuestro formulario estatico

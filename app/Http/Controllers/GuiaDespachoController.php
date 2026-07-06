@@ -112,7 +112,7 @@ class GuiaDespachoController extends Controller
                     'tipo' => $ref['tipo'],
                     'folio' => $ref['folio'],
                     'fecha' => $ref['fecha'],
-                    'razon' => ' ',
+                    'razon' => (!empty($ref['razon'])) ? $ref['razon'] : ' ',
                     'codigo' => false
                 ]);
             }
