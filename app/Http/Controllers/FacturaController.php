@@ -149,7 +149,7 @@ class FacturaController extends Controller
                     'TpoDocRef' => $ref['tipo'],
                     'FolioRef' => $ref['folio'],
                     'FchRef' => $ref['fecha'],
-                    'RazonRef' => ' ',
+                    'RazonRef' => (!empty($ref['razon'])) ? $ref['razon'] : ' ',
                     'CodRef' => false
                 ]);
                 $linea++;
@@ -306,7 +306,7 @@ class FacturaController extends Controller
                     'tipo' => $ref['tipo'],
                     'folio' => $ref['folio'],
                     'fecha' => $ref['fecha'],
-                    'razon' => ' ',
+                    'razon' => (!empty($ref['razon'])) ? $ref['razon'] : ' ',
                     'codigo' => false
                 ]);
             }
