@@ -8,17 +8,23 @@ use App\Comuna;
 use App\Config;
 use App\DomicilioContribuyente;
 use App\ListaPrecio;
+use App\Services\FacturapiService;
 use App\Unidad;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
-use SolucionTotal\CoreDTE\Log as CoreDTELog;
-use SolucionTotal\CoreDTE\Sii;
 
 class MaestroController extends Controller
 {
+    protected FacturapiService $facturapi;
+
+    public function __construct(FacturapiService $facturapi)
+    {
+        $this->facturapi = $facturapi;
+    }
+
     public function getUnidades(){
         $unidades = Unidad::all();
         return response()->json($unidades);
@@ -275,28 +281,36 @@ class MaestroController extends Controller
     }
 
     public function getInfoContribuyente(Request $request, $rut){
-        $firma = \App\Helpers\SII::temporalPEM();
-        $cookies = \SolucionTotal\CoreDTE\Sii\Autenticacion::requestCookies($firma, $firma->getID());
-        if($cookies == null){
-            $errors = '';
-            foreach (CoreDTELog::readAll() as $log)
-                $errors.=$log."\n";
-            Log::error($errors);
+        $response = $this->facturapi->consultarCatalogoContribuyente($rut);
+        Log::info('MaestroController: respuesta catalogo/contribuyente rut='.$rut, ['respuesta' => $response]);
+
+        if(! ($response->success ?? false) || ! isset($response->data)){
+            return response()->json([
+                'success' => false,
+                'msg' => 'No se pudo obtener la información del contribuyente',
+            ], 404);
         }
-        Sii::setAmbiente(Sii::PRODUCCION);
-        $info = Sii::getInfoContribuyente($rut, $cookies);
-        //$info = Sii::getInfoCompletaContribuyente($rut, $cookies);
-        Log::info($info);
+        $info = $response->data;
+
+        $giro = '';
+        if(! empty($info->actecos)){
+            $giro = $info->actecos[0]->descripcion_actividad ?? '';
+        }
+
         $domicilio = DomicilioContribuyente::where('rut', $rut)->first();
         $data = ['DIRECCION' => '', 'COMUNA' => ''];
         if($domicilio != null){
             $comuna = Comuna::whereRaw('LOWER(comunas.nombre) = (?)', [strtolower($domicilio->comuna)])->first();
             $data = [
                 'DIRECCION' => $domicilio->direccion,
-                'COMUNA' => $comuna->id
+                'COMUNA' => $comuna->id ?? ''
             ];
         }
 
-        return response()->json(array_merge($info, $data));
+        return response()->json(array_merge([
+            'RAZONSOCIAL' => $info->razon_social ?? '',
+            'GIROS' => [['DESCRIPCION' => $giro]],
+            'CORREO' => '',
+        ], $data));
     }
 }

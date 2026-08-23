@@ -80,6 +80,7 @@
                                                 <th style="width: 15%;">Proyecto</th>
                                                 <th style="width: 10%;">Fecha</th>
                                                 <th style="width: 10%;">Monto Total</th>
+                                                <th style="width: 7%;">Estado</th>
                                                 <th style="width: 8%;"></th>
                                             </tr>
                                         </thead>
@@ -462,6 +463,19 @@
                         responsivePriority: 3,
                         render: function(data, type, row) {
                             return '$' + row.monto_total.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.');
+                        }
+                    },
+                    {
+                        data: null,
+                        orderable: false,
+                        render: function(data, type, row) {
+                            var pagado = parseFloat(row.pagos_sum_monto_pago) || 0;
+                            if (pagado >= row.monto_total) {
+                                return '<span class="badge bg-success" title="Factura Pagada"><span class="mdi mdi-24 mdi-cash-check"></span></span>';
+                            } else if (pagado > 0) {
+                                return '<span class="badge bg-warning" title="Pago Parcial"><span class="mdi mdi-24 mdi-cash-clock"></span></span>';
+                            }
+                            return '';
                         }
                     },
                     {

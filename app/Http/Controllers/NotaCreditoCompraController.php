@@ -7,6 +7,8 @@ use App\Helpers\Ajustes;
 use App\NotaCreditoCompra;
 use App\Notifications\DocumentoRecibido;
 use App\PagoNotaCreditoCompra;
+use App\Services\ComprasUnificadasSyncService;
+use App\Services\FacturapiService;
 use App\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -18,45 +20,28 @@ use Yajra\DataTables\Facades\DataTables;
 
 class NotaCreditoCompraController extends Controller
 {
-    public function index(Request $request){
-        $emisor = Ajustes::getEmisor();
+    protected FacturapiService $facturapi;
 
-        $endpoint =  env('FACTURAPI_ENDPOINT').'documentos/compras?contribuyente='.$emisor['rut'].'&tipo=61';
-        $ch = curl_init( $endpoint );
-            curl_setopt( $ch, CURLOPT_POST, false);
-            curl_setopt( $ch, CURLOPT_HTTPHEADER, [
-                'Content-Type:application/json',
-                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
-            ]);
-            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-            $result = curl_exec($ch);
-            $data = json_decode($result);
-            if(isset($data->success)){
-                $data = [];
-            }
-            curl_close($ch);
-            Log::info("ENDPOINT FACTURAS COMPRA: ". $endpoint);
-        return view('pages.compras.notascredito.index', ['documentos' => $data]);
+    public function __construct(FacturapiService $facturapi)
+    {
+        $this->facturapi = $facturapi;
+    }
+
+    public function index(Request $request){
+        return view('pages.compras.notascredito.index');
     }
 
     public function show($rutEmisor, $folio){
-        $emisor = Ajustes::getEmisor();
-        $endpoint =  env('FACTURAPI_ENDPOINT').'documentos/compras/generar/xml/'.$rutEmisor.'/61/'.$folio.'?contribuyente='.$emisor['rut'];
-        $ch = curl_init( $endpoint );
-            curl_setopt( $ch, CURLOPT_POST, false);
-            curl_setopt( $ch, CURLOPT_HTTPHEADER, [
-                'Content-Type:application/json',
-                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
-            ]);
-            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-            $result = curl_exec($ch);
-            curl_close($ch);
-            $EnvioDTE = new EnvioDte();
-            $EnvioDTE->loadXML($result);
-            $dte = $EnvioDTE->getDocumentos()[0];
-            $data = $dte->getDatos();
         $categorias = CategoriaDocumento::all();
         $fact = NotaCreditoCompra::where('rut_emisor', $rutEmisor)->where('folio', $folio)->first();
+        if($fact == null || $fact->facturapi_compra_id == null){
+            return back()->with('error', 'Este documento aún no tiene XML disponible (no ha sido sincronizado desde el correo de intercambio).');
+        }
+        $result = $this->facturapi->obtenerXmlCompraIntercambio($fact->facturapi_compra_id);
+        $EnvioDTE = new EnvioDte();
+        $EnvioDTE->loadXML($result);
+        $dte = $EnvioDTE->getDocumentos()[0];
+        $data = $dte->getDatos();
         return view('pages.compras.notascredito.detail', ['documento' => $data, 'factura' => $fact, 'categorias' => $categorias]);
     }
 
@@ -92,17 +77,14 @@ class NotaCreditoCompraController extends Controller
     }
 
     public function vistaPreviaNC(Request $request, $rutEmisor, $tipo, $folio){
-        $emisor = Ajustes::getEmisor();
-        $endpoint =  env('FACTURAPI_ENDPOINT').'documentos/compras/generar/xml/'.$rutEmisor.'/'.$tipo.'/'.$folio.'?contribuyente='.$emisor['rut'];
-        $ch = curl_init( $endpoint );
-            curl_setopt( $ch, CURLOPT_POST, false);
-            curl_setopt( $ch, CURLOPT_HTTPHEADER, [
-                'Content-Type:application/json',
-                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
-            ]);
-            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-            $result = curl_exec($ch);
-            curl_close($ch);
+        $fact = NotaCreditoCompra::where('rut_emisor', $rutEmisor)->where('folio', $folio)->first();
+        if($fact == null || $fact->facturapi_compra_id == null){
+            return response()->json([
+                'status' => 500,
+                'msg' => 'Este documento aún no tiene XML disponible (no ha sido sincronizado desde el correo de intercambio).'
+            ], 500);
+        }
+        $result = $this->facturapi->obtenerXmlCompraIntercambio($fact->facturapi_compra_id);
             $EnvioDTE = new EnvioDte();
             $EnvioDTE->loadXML($result);
             if(str_contains($result, '<EnvioDTE')){
@@ -129,24 +111,31 @@ class NotaCreditoCompraController extends Controller
 
     public function descargarPDF(Request $request, $emisor, $folio){
         try{
-            $emisor = Ajustes::getEmisor();
-            $ch = curl_init( env('FACTURAPI_ENDPOINT').'documentos/compras/generar/pdf/'.$emisor.'/61/'.$folio.'?visor=2&contribuyente='.$emisor['rut']);
-            curl_setopt( $ch, CURLOPT_POST, false);
-            curl_setopt( $ch, CURLOPT_HTTPHEADER, [
-                'Content-Type:application/json',
-                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
-            ]);
-            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-            $result = curl_exec($ch);
-            curl_close($ch);
+            $fact = NotaCreditoCompra::where('rut_emisor', $emisor)->where('folio', $folio)->first();
+            if($fact == null || $fact->facturapi_compra_id == null){
+                return response()->json([
+                    'success' => false,
+                    'msg' => 'Este documento aún no tiene XML disponible (no ha sido sincronizado desde el correo de intercambio).'
+                ]);
+            }
+            $result = $this->facturapi->obtenerXmlCompraIntercambio($fact->facturapi_compra_id);
+            $EnvioDTE = new EnvioDte();
+            $EnvioDTE->loadXML($result);
+            if(str_contains($result, '<EnvioDTE')){
+                $caratula = $EnvioDTE->getCaratula();
+            }else{
+                $caratula = [
+                    'FchResol' => date('Y'),
+                    'NroResol' => 0
+                ];
+            }
+            $dte = $EnvioDTE->getDocumentos()[0];
+            $data = $dte->getDatos();
 
-            $headers = [
-                'Content-Type'        => 'application/octet-stream',
-                'Content-Disposition' => 'attachment; filename="DTET61F'. $folio .'.pdf"',
-                'Content-Transfer-Encoding' => 'binary'
-            ];
-
-            return response()->make($result, 200, $headers);
+            $pdf = new \SolucionTotal\CorePDF\PDF($data, 1, url('/vacio.png'), 2, $dte->getTED());
+            $pdf->setResolucion(date('Y', strtotime($caratula['FchResol'])), $caratula['NroResol']);
+            $pdf->construir();
+            return $pdf->generar(0);
         }catch(Exception $ex){
             return $ex;
         }
@@ -160,69 +149,14 @@ class NotaCreditoCompraController extends Controller
                 $periodo = $request->periodo;
             $emisor = Ajustes::getEmisor();
             Log::info("[COMPRA] Se inicia revision de notas de credito en contribuyente ".$emisor['razon_social']);
-            // Obtener RCV de Compra, estos documentos son los recibidos en el SII
-            $data = [
-                'contribuyente' => $emisor['rut'],
-                'operacion' => 'COMPRA',
-                'periodo' => $periodo,
-                'tipo_doc' => 61
-            ];
-            $url = env('FACTURAPI_ENDPOINT').'rcv/detalle?'.http_build_query($data);
-            $ch = curl_init( $url );
-            curl_setopt( $ch, CURLOPT_POST, false);
-            curl_setopt( $ch, CURLOPT_HTTPHEADER, [
-                'Content-Type:application/json',
-                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
-            ]);
-            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-            $result = curl_exec($ch);
-            $response = json_decode($result);
-            if($response != null){
-                if($response->data != null){
-                    foreach($response->data as $doc){
-                        $fecha = str_replace('/', '-', $doc->detFchDoc);
-                        $rut_emisor = $doc->detRutDoc.'-'.$doc->detDvDoc;
-                        if(NotaCreditoCompra::where('rut_emisor', $rut_emisor)->where('folio', intval($doc->detNroDoc))->count() == 0){
 
-                            $factura = new NotaCreditoCompra();
-                            $factura->rut_emisor = $rut_emisor;
-                            $factura->razon_social_emisor = $doc->detRznSoc;
-                            $factura->folio = $doc->detNroDoc;
-                            $factura->fecha_emision = date('Y-m-d', strtotime($fecha));
-                            $factura->monto_neto = $doc->detMntNeto;
-                            $factura->monto_iva = $doc->detMntIVA;
-                            $factura->monto_total = $doc->detMntTotal;
-                            $factura->tiene_xml = false;
-                            $factura->save();
+            $sync = new ComprasUnificadasSyncService($this->facturapi);
+            $recienRecibidos = $sync->sincronizar(61, $periodo);
 
-                        }
-                    }
-                }
-            }
-            // Obtener los documentos recibidos en el correo
-            $endpoint =  env('FACTURAPI_ENDPOINT').'documentos/compras?contribuyente='.$emisor['rut'].'&tipo=61&periodo='.$periodo;
-            $ch = curl_init( $endpoint );
-            curl_setopt( $ch, CURLOPT_POST, false);
-            curl_setopt( $ch, CURLOPT_HTTPHEADER, [
-                'Content-Type:application/json',
-                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
-            ]);
-            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-            $result = curl_exec($ch);
-            curl_close($ch);
-            if($result != null){
-                $docData = json_decode($result);
-
-                foreach($docData as $data){
-                    $doc = NotaCreditoCompra::where('rut_emisor', $data->rut_emisor)->where('folio', $data->folio)->where('tiene_xml', false)->first();
-                    if($doc != null){
-                        $users = User::all();
-                        $doc->tiene_xml = true;
-                        $doc->save();
-                        Notification::sendNow($users, new DocumentoRecibido($data->rut_emisor, 61, $data->folio));
-                        Log::info("Se envia notificacion a usuarios por doc ". $data->rut_emisor." - ".$data->folio);
-                    }
-                }
+            $users = User::all();
+            foreach($recienRecibidos as $doc){
+                Notification::sendNow($users, new DocumentoRecibido($doc->rut_emisor, 61, $doc->folio));
+                Log::info("Se envia notificacion a usuarios por doc ". $doc->rut_emisor." - ".$doc->folio);
             }
             return response()->json([
                 'success' => true,

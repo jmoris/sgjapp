@@ -6,9 +6,10 @@ use App\CategoriaDocumento;
 use App\FacturaCompra;
 use App\Helpers\Ajustes;
 use App\Notifications\DocumentoRecibido;
-use App\OrdenCompra;
 use App\PagoFacturaCompra;
 use App\Proyecto;
+use App\Services\ComprasUnificadasSyncService;
+use App\Services\FacturapiService;
 use App\User;
 use Exception;
 use Illuminate\Http\Request;
@@ -21,56 +22,24 @@ use Yajra\DataTables\Facades\DataTables;
 
 class FacturaCompraController extends Controller
 {
-    public function index(Request $request){
-        $emisor = Ajustes::getEmisor();
+    protected FacturapiService $facturapi;
 
-        $endpoint =  env('FACTURAPI_ENDPOINT').'documentos/compras?contribuyente='.$emisor['rut'].'&tipo=33';
-        $ch = curl_init( $endpoint );
-            curl_setopt( $ch, CURLOPT_POST, false);
-            curl_setopt( $ch, CURLOPT_HTTPHEADER, [
-                'Content-Type:application/json',
-                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
-            ]);
-            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-            $result = curl_exec($ch);
-            $data = json_decode($result);
-            if(isset($data->success)){
-                $data = [];
-            }
-            curl_close($ch);
-            Log::info("ENDPOINT FACTURAS COMPRA: ". $endpoint);
-        return view('pages.compras.facturas.index', ['documentos' => $data]);
+    public function __construct(FacturapiService $facturapi)
+    {
+        $this->facturapi = $facturapi;
+    }
+
+    public function index(Request $request){
+        return view('pages.compras.facturas.index');
     }
 
     public function indexPendientes(Request $request){
             $emisor = Ajustes::getEmisor();
             Log::info("[COMPRA] Revision de documentos pendientes en contribuyente ".$emisor['razon_social']);
             // Obtener RCV de Compra, estos documentos son los recibidos en el SII
-            $dataPost = [
-                'contribuyente' => $emisor['rut'],
-                'operacion' => 'COMPRA',
-                'periodo' => date('Ym'),
-                'detalle' => 'PENDIENTE',
-                'tipo_doc' => 33,
-                'clavesii' => 5001
-            ];
-            $url = env('FACTURAPI_ENDPOINT').'rcv/detalle?'.http_build_query($dataPost);
-            $ch = curl_init( $url );
-            curl_setopt( $ch, CURLOPT_POST, false);
-            curl_setopt( $ch, CURLOPT_HTTPHEADER, [
-                'Content-Type:application/json',
-                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
-            ]);
-            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-            $result = curl_exec($ch);
-            Log::info("RESULTADO RCV DE COMPRA: ". $result);
-            $response = json_decode($result);
-            $data = [];
-            if($response != null){
-                if($response->data != null){
-                    $data = $response->data;
-                }
-            }
+            $response = $this->facturapi->rcvDetalle(33, date('Ym'), 'PENDIENTE');
+            Log::info("RESULTADO RCV DE COMPRA: ". json_encode($response));
+            $data = $response->data ?? [];
         return view('pages.compras.facturas.pendientes.index', ['emisor' => $emisor, 'documentos' => $data]);
     }
 
@@ -78,53 +47,58 @@ class FacturaCompraController extends Controller
         $emisor = Ajustes::getEmisor();
         Log::info("[COMPRA] Revision de documentos pendientes en contribuyente ".$emisor['razon_social']);
         // Obtener RCV de Compra, estos documentos son los recibidos en el SII
-        $dataPost = [
-            'contribuyente' => $emisor['rut'],
-            'operacion' => 'COMPRA',
-            'periodo' => date('Ym'),
-            'detalle' => 'RECLAMADO',
-            'tipo_doc' => 33
-        ];
-        $url = env('FACTURAPI_ENDPOINT').'rcv/detalle?'.http_build_query($dataPost);
-        $ch = curl_init( $url );
-        curl_setopt( $ch, CURLOPT_POST, false);
-        curl_setopt( $ch, CURLOPT_HTTPHEADER, [
-            'Content-Type:application/json',
-            'Authorization: Bearer '.env('FACTURAPI_TOKEN')
-        ]);
-        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-        $result = curl_exec($ch);
-        $response = json_decode($result);
-        $data = [];
-        if($response != null){
-            if($response->data != null){
-                $data = $response->data;
-            }
-        }
+        $response = $this->facturapi->rcvDetalle(33, date('Ym'), 'RECLAMADO');
+        $data = $response->data ?? [];
     return view('pages.compras.facturas.reclamadas.index', ['emisor' => $emisor, 'documentos' => $data]);
     }
 
     public function show($rutEmisor, $folio){
-        $emisor = Ajustes::getEmisor();
-        $endpoint =  env('FACTURAPI_ENDPOINT').'documentos/compras/generar/xml/'.$rutEmisor.'/33/'.$folio.'?contribuyente='.$emisor['rut'];
-        $ch = curl_init( $endpoint );
-            curl_setopt( $ch, CURLOPT_POST, false);
-            curl_setopt( $ch, CURLOPT_HTTPHEADER, [
-                'Content-Type:application/json',
-                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
-            ]);
-            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-            $result = curl_exec($ch);
-            curl_close($ch);
-            $EnvioDTE = new EnvioDte();
-            $EnvioDTE->loadXML($result);
-            $dte = $EnvioDTE->getDocumentos()[0];
-            $data = $dte->getDatos();
         $categorias = CategoriaDocumento::all();
         $fact = FacturaCompra::where('rut_emisor', $rutEmisor)->where('folio', $folio)->first();
         $pagos = PagoFacturaCompra::where('factura_compra_id', $fact->id)->get();
         $proyectos = Proyecto::orderBy('nombre', 'asc')->get();
-        return view('pages.compras.facturas.detail', ['documento' => $data, 'factura' => $fact, 'categorias' => $categorias, 'pagos' => $pagos, 'proyectos' => $proyectos]);
+        if($fact->facturapi_compra_id == null){
+            return back()->with('error', 'Este documento aún no tiene XML disponible (no ha sido sincronizado desde el correo de intercambio).');
+        }
+        $doc = $this->obtenerDocumentoCompra($fact);
+        if($doc == null){
+            return back()->with('error', 'No se pudo obtener el XML de este documento desde FacturAPI.');
+        }
+        return view('pages.compras.facturas.detail', ['documento' => $doc['data'], 'factura' => $fact, 'categorias' => $categorias, 'pagos' => $pagos, 'proyectos' => $proyectos]);
+    }
+
+    /**
+     * Obtiene y parsea el XML de un documento de compra recibido, vía el endpoint unificado
+     * `/compras-unificadas/intercambio/{tipoDoc}/{folio}/xml` (reemplaza a
+     * `/compras-intercambio/{id}/xml`, que dejó de existir en v3 — confirmado con 404 real).
+     *
+     * @return array{data: array, ted: mixed, caratula: array}|null
+     */
+    protected function obtenerDocumentoCompra(FacturaCompra $fact): ?array
+    {
+        $result = $this->facturapi->obtenerXmlCompraUnificadaIntercambio(33, $fact->folio);
+        if (empty($result)) {
+            return null;
+        }
+
+        $EnvioDTE = new EnvioDte();
+        $EnvioDTE->loadXML($result);
+        $documentos = $EnvioDTE->getDocumentos();
+        if (empty($documentos)) {
+            Log::warning('FacturaCompraController: el XML de compra unificada no contiene documentos DTE', ['folio' => $fact->folio]);
+            return null;
+        }
+
+        $dte = $documentos[0];
+        $caratula = str_contains($result, '<EnvioDTE')
+            ? $EnvioDTE->getCaratula()
+            : ['FchResol' => date('Y'), 'NroResol' => 0];
+
+        return [
+            'data' => $dte->getDatos(),
+            'ted' => $dte->getTED(),
+            'caratula' => $caratula,
+        ];
     }
 
     /*
@@ -146,7 +120,7 @@ class FacturaCompraController extends Controller
             Log::info("ENDPOINT FACTURAS COMPRA: ". $endpoint);
 
             return $result;*/
-            $data = FacturaCompra::with('proyecto')->whereRaw('1=1');
+            $data = FacturaCompra::with('proyecto')->withSum('pagos', 'monto_pago')->whereRaw('1=1');
 
             if($request->has('feMinDate') and $request->has('feMaxDate')){
                 $data->where('fecha_emision', '>=', $request->feMinDate);
@@ -214,61 +188,52 @@ class FacturaCompraController extends Controller
 
 
     public function vistaPreviaFactura(Request $request, $rutEmisor, $tipo, $folio){
-        $emisor = Ajustes::getEmisor();
-        $endpoint =  env('FACTURAPI_ENDPOINT').'documentos/compras/generar/xml/'.$rutEmisor.'/'.$tipo.'/'.$folio.'?contribuyente='.$emisor['rut'];
-        $ch = curl_init( $endpoint );
-            curl_setopt( $ch, CURLOPT_POST, false);
-            curl_setopt( $ch, CURLOPT_HTTPHEADER, [
-                'Content-Type:application/json',
-                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
-            ]);
-            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-            $result = curl_exec($ch);
-            curl_close($ch);
-            $EnvioDTE = new EnvioDte();
-            $EnvioDTE->loadXML($result);
-            if(str_contains($result, '<EnvioDTE')){
-                $caratula = $EnvioDTE->getCaratula();
-            }else{
-                $caratula = [
-                    'FchResol' => date('Y'),
-                    'NroResol' => 0
-                ];
-            }
-            $dte = $EnvioDTE->getDocumentos()[0];
-            $data = $dte->getDatos();
-
-            $pdf = new \SolucionTotal\CorePDF\PDF($data, 1, url('/vacio.png'), 2, $dte->getTED());
-            //$pdf->setLeyendaImpresion('Sistema de facturacion por SoluciónTotal');
-            $pdf->setResolucion(date('Y', strtotime($caratula['FchResol'])), $caratula['NroResol']);
-            $pdf->construir();
-            if($request->descargar==1){
-                $pdf->generar(0);
-            }else{
-                $pdf->generar(1);
-            }
+        $fact = FacturaCompra::where('rut_emisor', $rutEmisor)->where('folio', $folio)->first();
+        if($fact == null || $fact->facturapi_compra_id == null){
+            return response()->json([
+                'status' => 500,
+                'msg' => 'Este documento aún no tiene XML disponible (no ha sido sincronizado desde el correo de intercambio).'
+            ], 500);
         }
+        $doc = $this->obtenerDocumentoCompra($fact);
+        if($doc == null){
+            return response()->json([
+                'status' => 500,
+                'msg' => 'No se pudo obtener el XML de este documento desde FacturAPI.'
+            ], 500);
+        }
+
+        $pdf = new \SolucionTotal\CorePDF\PDF($doc['data'], 1, url('/vacio.png'), 2, $doc['ted']);
+        $pdf->setResolucion(date('Y', strtotime($doc['caratula']['FchResol'])), $doc['caratula']['NroResol']);
+        $pdf->construir();
+        if($request->descargar==1){
+            $pdf->generar(0);
+        }else{
+            $pdf->generar(1);
+        }
+    }
 
     public function descargarPDF(Request $request, $emisor, $folio){
         try{
-            $emisor = Ajustes::getEmisor();
-            $ch = curl_init( env('FACTURAPI_ENDPOINT').'documentos/compras/generar/pdf/'.$emisor.'/33/'.$folio.'?visor=2&contribuyente='.$emisor['rut']);
-            curl_setopt( $ch, CURLOPT_POST, false);
-            curl_setopt( $ch, CURLOPT_HTTPHEADER, [
-                'Content-Type:application/json',
-                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
-            ]);
-            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-            $result = curl_exec($ch);
-            curl_close($ch);
+            $fact = FacturaCompra::where('rut_emisor', $emisor)->where('folio', $folio)->first();
+            if($fact == null || $fact->facturapi_compra_id == null){
+                return response()->json([
+                    'success' => false,
+                    'msg' => 'Este documento aún no tiene XML disponible (no ha sido sincronizado desde el correo de intercambio).'
+                ]);
+            }
+            $doc = $this->obtenerDocumentoCompra($fact);
+            if($doc == null){
+                return response()->json([
+                    'success' => false,
+                    'msg' => 'No se pudo obtener el XML de este documento desde FacturAPI.'
+                ]);
+            }
 
-            $headers = [
-                'Content-Type'        => 'application/octet-stream',
-                'Content-Disposition' => 'attachment; filename="DTET33F'. $folio .'.pdf"',
-                'Content-Transfer-Encoding' => 'binary'
-            ];
-
-            return response()->make($result, 200, $headers);
+            $pdf = new \SolucionTotal\CorePDF\PDF($doc['data'], 1, url('/vacio.png'), 2, $doc['ted']);
+            $pdf->setResolucion(date('Y', strtotime($doc['caratula']['FchResol'])), $doc['caratula']['NroResol']);
+            $pdf->construir();
+            return $pdf->generar(0);
         }catch(Exception $ex){
             return $ex;
         }
@@ -345,76 +310,13 @@ class FacturaCompraController extends Controller
 
             Log::info("[COMPRA] Se inicia revision de facturas en contribuyente ".$emisor['razon_social']);
 
-            // Obtener RCV de Compra, estos documentos son los recibidos en el SII
-            $data = [
-                'contribuyente' => $emisor['rut'],
-                'operacion' => 'COMPRA',
-                'periodo' => $periodo,
-                'tipo_doc' => 33,
-                'clavesii' => 5001
-            ];
-            $url = env('FACTURAPI_ENDPOINT').'rcv/detalle?'.http_build_query($data);
-            $ch = curl_init( $url );
-            curl_setopt( $ch, CURLOPT_POST, false);
-            curl_setopt( $ch, CURLOPT_HTTPHEADER, [
-                'Content-Type:application/json',
-                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
-            ]);
-            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-            $result = curl_exec($ch);
-            $response = json_decode($result);
-            if($response != null){
-                if($response->data != null){
-                    foreach($response->data as $doc){
-                        $fecha = str_replace('/', '-', $doc->detFchDoc);
-                        $rut_emisor = $doc->detRutDoc.'-'.$doc->detDvDoc;
-                        if(FacturaCompra::where('rut_emisor', $rut_emisor)->where('folio', intval($doc->detNroDoc))->count() == 0){
+            $sync = new ComprasUnificadasSyncService($this->facturapi);
+            $recienRecibidos = $sync->sincronizar(33, $periodo);
 
-                            $factura = new FacturaCompra();
-                            $factura->rut_emisor = $rut_emisor;
-                            $factura->razon_social_emisor = $doc->detRznSoc;
-                            $factura->folio = $doc->detNroDoc;
-                            $factura->fecha_emision = date('Y-m-d', strtotime($fecha));
-                            $factura->monto_neto = $doc->detMntNeto;
-                            $factura->monto_iva = $doc->detMntIVA;
-                            $factura->monto_total = $doc->detMntTotal;
-                            $factura->tiene_xml = false;
-                            $factura->save();
-
-                        }
-                    }
-                }
-            }
-            // Obtener los documentos recibidos en el correo
-            $endpoint =  env('FACTURAPI_ENDPOINT').'documentos/compras?contribuyente='.$emisor['rut'].'&tipo=33&periodo='.$periodo;
-            $ch = curl_init( $endpoint );
-            curl_setopt( $ch, CURLOPT_POST, false);
-            curl_setopt( $ch, CURLOPT_HTTPHEADER, [
-                'Content-Type:application/json',
-                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
-            ]);
-            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-            $result = curl_exec($ch);
-            curl_close($ch);
-            if($result != null){
-                $docData = json_decode($result);
-
-                foreach($docData as $data){
-                    $doc = FacturaCompra::where('rut_emisor', $data->rut_emisor)->where('folio', $data->folio)->where('tiene_xml', false)->first();
-                    if($doc != null){
-                        $users = User::all();
-                        $doc->oc_id = $data->oc_id;
-                        $ocdoc = OrdenCompra::where('folio', $data->oc_id)->first();
-                        if($ocdoc != null){
-                            $doc->proyecto_id = $ocdoc->proyecto_id;
-                        }
-                        $doc->fecha_vencimiento = date('Y-m-d', strtotime($data->fecha_vencimiento));
-                        $doc->tiene_xml = true;
-                        $doc->save();
-                        Notification::sendNow($users, new DocumentoRecibido($data->rut_emisor, 33, $data->folio));
-                        Log::info("Se envia notificacion a usuarios por doc ". $data->rut_emisor." - ".$data->folio);
-                    }
-                }
+            $users = User::all();
+            foreach($recienRecibidos as $doc){
+                Notification::sendNow($users, new DocumentoRecibido($doc->rut_emisor, 33, $doc->folio));
+                Log::info("Se envia notificacion a usuarios por doc ". $doc->rut_emisor." - ".$doc->folio);
             }
             return response()->json([
                 'success' => true,
@@ -434,29 +336,25 @@ class FacturaCompraController extends Controller
 
     public function agregarEventoDTE(Request $request){
         try{
-            $url = env('FACTURAPI_ENDPOINT').'rcv/agregarevento';
-            $emisor = Ajustes::getEmisor();
-            $dataPost = [
-                'contribuyente' => $emisor['rut'],
-                'rut_receptor' => $request->rut,
-                'tipo' => '33',
-                'folio' => $request->folio,
-                'evento' => $request->evento
-            ];
-            $ch = curl_init($url );
-            curl_setopt( $ch, CURLOPT_POST, true);
-            curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode($dataPost) );
-            curl_setopt( $ch, CURLOPT_HTTPHEADER, [
-                'Content-Type:application/json',
-                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
+            $validator = Validator::make($request->all(), [
+                'rut' => 'required',
+                'folio' => 'required|integer|min:1',
+                'evento' => 'required|in:ERM,ACD,RCD,RFP,RFT',
             ]);
-            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-            $result = curl_exec($ch);
-            Log::info($result);
-            curl_close($ch);
-            return $result;
+
+            if($validator->fails()){
+                return response()->json([
+                    'success' => false,
+                    'msg' => 'La información ingresada no es suficiente para completar el registro',
+                    'error' => $validator->errors()
+                ]);
+            }
+
+            $result = $this->facturapi->rcvAgregarEvento(33, $request->rut, (int) $request->folio, $request->evento);
+            Log::info('Respuesta agregarEventoDTE: '.json_encode($result));
+            return response()->json($result);
         }catch(Exception $ex){
-            Log::info($ex);
+            Log::error($ex);
             return response()->json([
                 'success' => false,
                 'msg' => 'Hubo un error al agregar el evento al DTE',

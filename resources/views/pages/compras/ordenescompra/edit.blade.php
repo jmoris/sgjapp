@@ -742,6 +742,16 @@
                 .done(function(data) {
                     console.log(data);
                     location.href = '/compras/ordenescompra';
+                })
+                .fail(function(xhr) {
+                    $.toast({
+                        type: 'error',
+                        title: 'No se pudo guardar',
+                        subtitle: 'ahora',
+                        position: 'top-right',
+                        content: (xhr.responseJSON && xhr.responseJSON.msg) || 'No se pudo guardar la orden de compra.',
+                        delay: 15000
+                    });
                 });
         }
 

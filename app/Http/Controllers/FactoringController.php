@@ -9,6 +9,7 @@ use App\Comuna;
 use App\Factoring;
 use App\Factura;
 use App\Helpers\Herramientas;
+use App\Services\FacturapiService;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -17,6 +18,13 @@ use Yajra\DataTables\Facades\DataTables;
 
 class FactoringController extends Controller
 {
+    protected FacturapiService $facturapi;
+
+    public function __construct(FacturapiService $facturapi)
+    {
+        $this->facturapi = $facturapi;
+    }
+
     public function index()
     {
         return view('pages.factorings.index');
@@ -228,5 +236,34 @@ class FactoringController extends Controller
 
 
         return response()->json($cesion);
+    }
+
+    public function vistaPreviaCesion($id){
+        try{
+            $cesion = Cesion::with('factoring', 'cliente', 'aecs.factura')->find($id);
+            if($cesion == null){
+                return response()->json([
+                    'success' => false,
+                    'msg' => 'La cesión no existe',
+                ]);
+            }
+
+            $estadoRemoto = null;
+            if($cesion->facturapi_cesion_id != null){
+                $estadoRemoto = $this->facturapi->consultarCesion((string) $cesion->facturapi_cesion_id);
+            }
+
+            return response()->json([
+                'success' => true,
+                'cesion' => $cesion,
+                'estado_facturapi' => $estadoRemoto,
+            ]);
+        }catch(Exception $ex){
+            return response()->json([
+                'success' => false,
+                'msg' => 'No se pudo obtener el detalle de la cesión',
+                'error' => $ex->getMessage(),
+            ]);
+        }
     }
 }

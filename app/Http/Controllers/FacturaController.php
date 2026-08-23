@@ -15,6 +15,7 @@ use App\ListaPrecio;
 use App\PagoFactura;
 use App\PagoFacturaCompra;
 use App\Proyecto;
+use App\Services\FacturapiService;
 use App\Unidad;
 use Exception;
 use Illuminate\Http\Request;
@@ -27,25 +28,21 @@ use Yajra\DataTables\Facades\DataTables;
 
 class FacturaController extends Controller
 {
+    protected FacturapiService $facturapi;
+
+    public function __construct(FacturapiService $facturapi)
+    {
+        $this->facturapi = $facturapi;
+    }
+
     public function index(){
         return view('pages.ventas.facturas.index');
     }
 
     public function show($folio){
-        $emisor = Ajustes::getEmisor();
-        $endpoint =  env('FACTURAPI_ENDPOINT').'documentos/generar/xml/33/'.$folio.'?contribuyente='.$emisor['rut'];
-        Log::info($endpoint);
-        $ch = curl_init( $endpoint );
-            curl_setopt( $ch, CURLOPT_POST, false);
-            curl_setopt( $ch, CURLOPT_HTTPHEADER, [
-                'Content-Type:application/json',
-                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
-            ]);
-            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-            $result = curl_exec($ch);
-            curl_close($ch);
+        $result = $this->facturapi->obtenerXmlDocumentoPropio(33, $folio);
             if($result == null){
-                return response()->back();
+                return redirect()->back();
             }
             $EnvioDTE = new EnvioDte();
             $EnvioDTE->loadXML($result);
@@ -72,7 +69,7 @@ class FacturaController extends Controller
         DESDE AQUI HACIA ABAJO ESTARAN LAS FUNCIONES DE LA API
     */
     public function getAll(Request $request){
-        $data = Factura::with('cliente');
+        $data = Factura::with('cliente')->withSum('pagos', 'monto_pago');
 
         if($request->has('feMinDate') and $request->has('feMaxDate')){
             $data->where('fecha_emision', '>=', $request->feMinDate);
@@ -311,8 +308,11 @@ class FacturaController extends Controller
                 ]);
             }
             $vencimiento = date('Y-m-d', strtotime(str_replace('/', '-', $request->fecha_vencimiento)));
+            $detalleApi = array_map(function($item){
+                unset($item['descripcion']);
+                return $item;
+            }, $detalle);
             $data = [
-                'contribuyente' => $emisor['rut'],
                 'acteco' => $emisor['acteco'],
                 'tipo' => 33,
                 'fecha' => $str,
@@ -324,8 +324,8 @@ class FacturaController extends Controller
                     'direccion'=> $cliente->direccion,
                     'comuna'=> Herramientas::sanitizarString($cliente->comuna->nombre),
                 ],
-                'tipo_pago' => $request->tipo_pago,
-                'detalles' => $detalle,
+                'forma_pago' => $request->tipo_pago,
+                'detalles' => $detalleApi,
                 'referencias' => $referencias,
                 'correo_dte' => $cliente->email_dte
             ];
@@ -333,24 +333,14 @@ class FacturaController extends Controller
             Log::info("Datos enviados Factura:");
             Log::info($data);
 
-            $ch = curl_init( env('FACTURAPI_ENDPOINT').'documentos' );
-            curl_setopt( $ch, CURLOPT_POST, true);
-            curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode($data) );
-            curl_setopt( $ch, CURLOPT_HTTPHEADER, [
-                'Content-Type:application/json',
-                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
-            ]);
-            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-            $result = curl_exec($ch);
+            $docData = $this->facturapi->emitirDocumento($data);
             Log::info("Datos recibidos Factura:");
-            Log::info($result);
-            curl_close($ch);
-            $docData = json_decode($result);
-            if(!$docData->success){
+            Log::info(json_encode($docData));
+            if(!($docData->success ?? false)){
                 return response()->json([
                     'success' => 'false',
                     'msg' => 'No se pudo generar el documento en la API',
-                    'error' => $docData->error
+                    'error' => $docData->error ?? ($docData->msg ?? null)
                 ]);
             }
 
@@ -396,10 +386,21 @@ class FacturaController extends Controller
             $pendiente->track_id = $docData->trackid;
             $pendiente->save();
 
+            // Modalidad de pago Contado: se asocia automáticamente el pago por el total de la factura
+            if($request->tipo_pago == 1){
+                $pago = new PagoFactura();
+                $pago->tipo_pago = 4; // Otro
+                $pago->fecha_pago = date('Y-m-d', strtotime($str));
+                $pago->monto_pago = $fact->monto_total;
+                $pago->factura_id = $fact->id;
+                $pago->glosa = 'Pago generado automáticamente por venta al contado';
+                $pago->save();
+            }
+
             return response()->json([
                 'success' => true,
                 'msg' => 'Información guardada exitosamente',
-                'result' => $result
+                'result' => $docData
             ]);
         }catch(Exception $ex){
             Log::error('Usuario conectado: '.auth()->user());
@@ -413,19 +414,9 @@ class FacturaController extends Controller
             set_time_limit(300);
             $emisor = Ajustes::getEmisor();
             $fact = Factura::with('cliente', 'cliente.comuna')->where('folio', $folio)->first();
-            $endpoint = env('FACTURAPI_ENDPOINT').'documentos/generar/xml/33/'.$folio.'?contribuyente='.$emisor['rut'];
-            Log::info("Endpoint Vista Previa : ". $endpoint);
-            $ch = curl_init( $endpoint );
-            curl_setopt( $ch, CURLOPT_POST, false);
-            curl_setopt( $ch, CURLOPT_HTTPHEADER, [
-                'Content-Type:application/json',
-                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
-            ]);
-            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-            $result = curl_exec($ch);
-            curl_close($ch);
+            $result = $this->facturapi->obtenerXmlDocumentoPropio(33, $folio);
             if($result == null){
-                return response()->back();
+                return redirect()->back();
             }
 
             $EnvioDTE = new EnvioDte();
@@ -462,16 +453,7 @@ class FacturaController extends Controller
 
     public function descargarXML(Request $request, $folio){
         try{
-            $emisor = Ajustes::getEmisor();
-            $ch = curl_init( env('FACTURAPI_ENDPOINT').'documentos/generar/xml/33/'.$folio.'?contribuyente='.$emisor['rut']);
-            curl_setopt( $ch, CURLOPT_POST, false);
-            curl_setopt( $ch, CURLOPT_HTTPHEADER, [
-                'Content-Type:application/json',
-                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
-            ]);
-            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-            $result = curl_exec($ch);
-            curl_close($ch);
+            $result = $this->facturapi->obtenerXmlDocumentoPropio(33, $folio);
 
             $headers = [
                 'Content-Type'        => 'application/octet-stream',

@@ -40,6 +40,9 @@
                                                 <div class="col-md-6 col-sm-12">
                                                     <div class="d-flex justify-content-between align-items-baseline">
                                                         <h6 class="card-title mb-3">Información del contribuyente</h6>
+                                                        <button type="button" id="btnSincronizarSii" class="btn btn-outline-primary btn-sm">
+                                                            <i class="mdi mdi-sync"></i> Sincronizar SII
+                                                        </button>
                                                     </div>
                                                     <div class="row">
                                                         <div class="col-sm-12">
@@ -413,6 +416,42 @@
                 }
             });
         }
+
+        $("#btnSincronizarSii").on("click", function() {
+            var $btn = $(this);
+            $btn.prop("disabled", true).html('<i class="mdi mdi-loading mdi-spin"></i> Sincronizando...');
+            $.ajax({
+                type: "POST",
+                url: '/api/ajustes/sincronizar-sii',
+                success: function(data) {
+                    if (data.success) {
+                        Swal.fire({
+                            title: "Información sincronizada",
+                            text: data.msg,
+                            icon: "success"
+                        }).then(function() {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "No se pudo sincronizar",
+                            text: data.msg,
+                            icon: "warning"
+                        });
+                    }
+                },
+                error: function() {
+                    Swal.fire({
+                        title: "Error al sincronizar",
+                        text: "Ocurrió un error al consultar el SII, intente nuevamente.",
+                        icon: "error"
+                    });
+                },
+                complete: function() {
+                    $btn.prop("disabled", false).html('<i class="mdi mdi-sync"></i> Sincronizar SII');
+                }
+            });
+        });
 
         $(document).ready(function() {
             console.log("Documento cargado");

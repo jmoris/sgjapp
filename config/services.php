@@ -30,4 +30,13 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'facturapi' => [
+        /**
+         * URL base de la API (misma para todos los tenants).
+         * Token Bearer y X-Tenant se configuran por tenant en la tabla landlord `tenants`.
+         */
+        'endpoint' => env('FACTURAPI_ENDPOINT', ''),
+        'timeout' => (int) env('FACTURAPI_TIMEOUT', 60),
+    ],
+
 ];

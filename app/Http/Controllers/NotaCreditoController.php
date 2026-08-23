@@ -10,6 +10,7 @@ use App\Helpers\Ajustes;
 use App\LineaNC;
 use App\ListaPrecio;
 use App\NotaCredito;
+use App\Services\FacturapiService;
 use App\Unidad;
 use Exception;
 use Illuminate\Http\Request;
@@ -20,6 +21,13 @@ use Yajra\DataTables\Facades\DataTables;
 
 class NotaCreditoController extends Controller
 {
+    protected FacturapiService $facturapi;
+
+    public function __construct(FacturapiService $facturapi)
+    {
+        $this->facturapi = $facturapi;
+    }
+
     public function index(){
         return view('pages.ventas.notascredito.index');
     }
@@ -91,8 +99,11 @@ class NotaCreditoController extends Controller
                 ]);
             }
             $detalle = array_filter($detalle);
+            $detalleApi = array_map(function($item){
+                unset($item['descripcion']);
+                return $item;
+            }, $detalle);
             $data = [
-                'contribuyente' => $emisor['rut'],
                 'acteco' => $emisor['acteco'],
                 'tipo' => 61,
                 'fecha' => $str,
@@ -103,8 +114,8 @@ class NotaCreditoController extends Controller
                     'direccion'=> $cliente->direccion,
                     'comuna'=> $cliente->comuna->nombre,
                 ],
-                'tipo_pago' => $doc->tipo_pago,
-                'detalles' => $detalle,
+                'forma_pago' => $doc->tipo_pago,
+                'detalles' => $detalleApi,
                 'referencias' => [
                     [
                     'tipo' => 33,
@@ -117,23 +128,12 @@ class NotaCreditoController extends Controller
                 'correo_dte' => $cliente->email_dte
             ];
 
-            $ch = curl_init( env('FACTURAPI_ENDPOINT').'documentos' );
-            curl_setopt( $ch, CURLOPT_POST, true);
-            curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode($data) );
-            curl_setopt( $ch, CURLOPT_HTTPHEADER, [
-                'Content-Type:application/json',
-                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
-            ]);
-            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-            $result = curl_exec($ch);
-            curl_close($ch);
-
-            $docData = json_decode($result);
-            if($docData->success == false){
+            $docData = $this->facturapi->emitirDocumento($data);
+            if(!($docData->success ?? false)){
                 return response()->json([
                     'success' => 'false',
                     'msg' => 'No se pudo generar el documento en la API',
-                    'error' => $docData->error
+                    'error' => $docData->error ?? ($docData->msg ?? null)
                 ]);
             }
 
@@ -184,7 +184,7 @@ class NotaCreditoController extends Controller
             return response()->json([
                 'success' => true,
                 'msg' => 'Información guardada exitosamente',
-                'result' => $result
+                'result' => $docData
             ]);
         }catch(Exception $ex){
             Log::error('Usuario conectado: '.auth()->user());
@@ -197,15 +197,7 @@ class NotaCreditoController extends Controller
         try{
             $emisor = Ajustes::getEmisor();
             $nc = NotaCredito::with('cliente', 'cliente.comuna')->where('folio', $folio)->first();
-            $ch = curl_init( env('FACTURAPI_ENDPOINT').'documentos/generar/xml/61/'.$folio.'?contribuyente='.$emisor['rut']);
-            curl_setopt( $ch, CURLOPT_POST, false);
-            curl_setopt( $ch, CURLOPT_HTTPHEADER, [
-                'Content-Type:application/json',
-                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
-            ]);
-            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-            $result = curl_exec($ch);
-            curl_close($ch);
+            $result = $this->facturapi->obtenerXmlDocumentoPropio(61, $folio);
 
             $EnvioDTE = new EnvioDte();
             $EnvioDTE->loadXML($result);
@@ -237,16 +229,7 @@ class NotaCreditoController extends Controller
 
     public function descargarXML(Request $request, $folio){
         try{
-            $emisor = Ajustes::getEmisor();
-            $ch = curl_init( env('FACTURAPI_ENDPOINT').'documentos/generar/xml/61/'.$folio.'?contribuyente='.$emisor['rut']);
-            curl_setopt( $ch, CURLOPT_POST, false);
-            curl_setopt( $ch, CURLOPT_HTTPHEADER, [
-                'Content-Type:application/json',
-                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
-            ]);
-            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-            $result = curl_exec($ch);
-            curl_close($ch);
+            $result = $this->facturapi->obtenerXmlDocumentoPropio(61, $folio);
 
             $headers = [
                 'Content-Type'        => 'application/octet-stream',

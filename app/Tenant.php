@@ -12,7 +12,12 @@ class Tenant extends \Spatie\Multitenancy\Models\Tenant
 {
     use HasFactory, UsesLandlordConnection;
 
-    protected $fillable = ['rut', 'name', 'domain', 'database'];
+    protected $fillable = ['rut', 'name', 'domain', 'database', 'facturapi_token', 'facturapi_tenant_id', 'facturapi_webhook_secret'];
+
+    protected $casts = [
+        'facturapi_token' => 'encrypted',
+        'facturapi_webhook_secret' => 'encrypted',
+    ];
 
     protected static function booted(){
         static::creating(function(Tenant $tenant){

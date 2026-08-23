@@ -37,7 +37,7 @@
                                                 <th>Fecha</th>
                                                 <th>Monto Total</th>
                                                 <th>Estado</th>
-                                                <th></th>
+                                                <th style="width: 10%;"></th>
                                             </tr>
                                         </thead>
                                     </table>
@@ -117,6 +117,8 @@
                             html = '<span class="badge bg-warning">ENVIADA</span>';
                         }else if(row.estado == 2){
                             html = '<span class="badge bg-warning">ACEPTADA</span>';
+                        }else if(row.estado == 3){
+                            html = '<span class="badge bg-success">FACTURADA</span>';
                         }
                         return html;
                     }
@@ -127,9 +129,11 @@
                     render: function(data, type, row) {
                         var html = '';
                         if(row.estado != -1){
-                            html = '<div>';
+                            html = '<div style="white-space: nowrap;">';
                             @if(has_permission('editar-orden-compra'))
-                            html += '<button type="button" title="Editar Orden de Compra" onclick="editarOC('+row.id+')" class="btn btn-outline-primary btnxs px-1 py-0"><i class="mdi mdi-18 mdi-pencil"></i></button>';
+                            if(row.estado != 3){
+                                html += '<button type="button" title="Editar Orden de Compra" onclick="editarOC('+row.id+')" class="btn btn-outline-primary btnxs px-1 py-0"><i class="mdi mdi-18 mdi-pencil"></i></button>';
+                            }
                             @endif
                             html += '<button type="button" title="Ver Orden de Compra" onclick="vistaPreviaOC('+row.folio+', '+row.rev+')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-magnify"></i></button>';
                             html += '</div>';

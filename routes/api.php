@@ -5,6 +5,8 @@ use App\Comuna;
 use App\DomicilioContribuyente;
 use App\Factura;
 use App\Helpers\Herramientas;
+use App\Http\Controllers\AjusteController;
+use App\Http\Controllers\Api\FacturapiWebhookController;
 use App\Http\Controllers\BorradorController;
 use App\Http\Controllers\ClienteController;
 use App\Http\Controllers\FactoringController;
@@ -40,6 +42,12 @@ use SolucionTotal\CoreDTE\Sii;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+/**
+ * FacturAPI: POST JSON firmado (HMAC por tenant); sin auth ni middleware de tenant
+ * (el servicio resuelve el tenant desde el payload/cabeceras, ver FacturapiWebhookService).
+ */
+Route::post('/webhooks', FacturapiWebhookController::class);
 
 Route::middleware(['auth:web', 'tenant'])->group(function () {
     Route::get('/user', function (Request $request) {
@@ -283,6 +291,8 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
 
 
     Route::post('/config/certificado', [MaestroController::class, 'storeCertificado']);
+
+    Route::post('/ajustes/sincronizar-sii', [AjusteController::class, 'sincronizarSii']);
 
 
     Route::get('/listaprecios', [MaestroController::class, 'getListasPrecios']);

@@ -12,6 +12,10 @@
                 <i class="mdi mdi-magnify"></i>
                 Visualizar PDF
             </button>
+            <button type="button" class="btn btn-info" onclick="window.open('/api/ventas/facturas/descargar/{{ intval($documento['Encabezado']['IdDoc']['Folio'])}}', '_blank')">
+                <i class="mdi mdi-file-xml-box"></i>
+                Descargar XML
+            </button>
             <button type="button" class="btn btn-danger" onclick="location.href = '/ventas/facturas'">
                 <i class="mdi mdi-arrow-left"></i>
                 Volver

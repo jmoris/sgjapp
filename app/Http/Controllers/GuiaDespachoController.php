@@ -14,6 +14,7 @@ use App\LineaBorrador;
 use App\LineaGuia;
 use App\ListaPrecio;
 use App\Proyecto;
+use App\Services\FacturapiService;
 use App\Unidad;
 use Exception;
 use Illuminate\Http\Request;
@@ -25,6 +26,13 @@ use Yajra\DataTables\Facades\DataTables;
 
 class GuiaDespachoController extends Controller
 {
+    protected FacturapiService $facturapi;
+
+    public function __construct(FacturapiService $facturapi)
+    {
+        $this->facturapi = $facturapi;
+    }
+
     public function index(){
         return view('pages.ventas.guiasdespacho.index');
     }
@@ -97,7 +105,6 @@ class GuiaDespachoController extends Controller
             foreach($detArray as $item){
                 array_push($detalle, [
                     'nombre' => $item['nombre'],
-                    'descripcion' => ((!array_key_exists('descripcion', $item))?false:$item['descripcion']),
                     'unidad' => Unidad::find($item['unidad'])->abreviacion,
                     'precio' => $item['precio'],
                     'cantidad' => $item['cantidad']
@@ -118,7 +125,6 @@ class GuiaDespachoController extends Controller
             }
 
             $data = [
-                'contribuyente' => $emisor['rut'],
                 'acteco' => $emisor['acteco'],
                 'tipo' => 52,
                 'fecha' => $str,
@@ -137,6 +143,7 @@ class GuiaDespachoController extends Controller
                     'comuna'=> $cliente->comuna->nombre,
                 ],
                 'tipo_pago' => $request->tipo_pago,
+                'forma_pago' => $request->tipo_pago,
                 'detalles' => $detalle,
                 'referencias' => $referencias
             ];
@@ -144,24 +151,14 @@ class GuiaDespachoController extends Controller
             Log::info("Estructura Guia de Despacho:");
             Log::info(json_encode($data));
 
-            $ch = curl_init( env('FACTURAPI_ENDPOINT').'documentos' );
-            curl_setopt( $ch, CURLOPT_POST, true);
-            curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode($data) );
-            curl_setopt( $ch, CURLOPT_HTTPHEADER, [
-                'Content-Type:application/json',
-                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
-            ]);
-            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-            $result = curl_exec($ch);
-            Log::info($result);
-            curl_close($ch);
-            $docData = json_decode($result);
-            if(!$docData->success){
+            $docData = $this->facturapi->emitirDocumento($data);
+            Log::info(json_encode($docData));
+            if(!($docData->success ?? false)){
                 Log::info(json_encode($docData));
                 return response()->json([
                     'success' => 'false',
                     'msg' => 'No se pudo generar el documento en la API',
-                    'error' => $docData->msg
+                    'error' => $docData->msg ?? ($docData->error ?? null)
                 ]);
             }
 
@@ -211,7 +208,7 @@ class GuiaDespachoController extends Controller
             return response()->json([
                 'success' => true,
                 'msg' => 'Información guardada exitosamente',
-                'result' => $result
+                'result' => $docData
             ]);
         }catch(Exception $ex){
             Log::error($ex);
@@ -241,17 +238,9 @@ class GuiaDespachoController extends Controller
             $emisor = Ajustes::getEmisor();
             $guia = GuiaDespacho::with('cliente', 'cliente.comuna')->where('folio', $folio)->first();
 
-            $ch = curl_init( env('FACTURAPI_ENDPOINT').'documentos/generar/xml/52/'.$folio.'?contribuyente='.$emisor['rut']);
-            curl_setopt( $ch, CURLOPT_POST, false);
-            curl_setopt( $ch, CURLOPT_HTTPHEADER, [
-                'Content-Type:application/json',
-                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
-            ]);
-            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-            $result = curl_exec($ch);
+            $result = $this->facturapi->obtenerXmlDocumentoPropio(52, $folio);
             Log::info("Respuesta XML:");
             Log::info($result);
-            curl_close($ch);
 
             $EnvioDTE = new EnvioDte();
             $EnvioDTE->loadXML($result);

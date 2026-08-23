@@ -14,8 +14,9 @@ use App\Mail\ReporteDiarioPendientes;
 use App\NotaCredito;
 use App\NotaCreditoCompra;
 use App\Notifications\DocumentoRecibido;
-use App\OrdenCompra;
 use App\Permiso;
+use App\Services\ComprasUnificadasSyncService;
+use App\Services\FacturapiService;
 use App\User;
 use Exception;
 use Illuminate\Console\Scheduling\Schedule;
@@ -23,7 +24,7 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
-use Spatie\Multitenancy\Models\Tenant;
+use App\Tenant;
 
 class Kernel extends ConsoleKernel
 {
@@ -50,30 +51,27 @@ class Kernel extends ConsoleKernel
             Log::info("Contexto Tenant : ".$tenant->name);
             $tenant->makeCurrent();
             if (Tenant::checkCurrent()) {
+                if (empty($tenant->facturapi_token)) {
+                    Log::warning("Tenant sin credenciales de FacturAPI v3 asignadas, las tareas que dependan de la API fallarán con warning: ".$tenant->name);
+                }
                 /**
                  * Tarea que revisa el estado de los documentos pendientes
                  */
                 $schedule->call($tenant->callback(function() {
                     try{
-                        $emisor = Ajustes::getEmisor();
+                        $facturapi = new FacturapiService();
                         $pendientes = DocumentoPendiente::all();
                         foreach ($pendientes as $doc) {
-                            $ch = curl_init(env('FACTURAPI_ENDPOINT').'documentos/consulta?contribuyente=' . $emisor['rut'] . '&trackid=' . $doc->track_id);
-                            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                                'Content-Type:application/json',
-                                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
-                            ]);
-                            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                            $result = curl_exec($ch);
-                            curl_close($ch);
-
-                            $docData = json_decode($result);
-                            if($docData->estadistica != null){
+                            Log::info("Consultando estado SII: tipo_doc={$doc->tipo_doc} folio={$doc->folio} track_id={$doc->track_id}");
+                            $docData = $facturapi->consultarEstadoSii((string) $doc->track_id);
+                            Log::info("Respuesta consulta-estado: ".json_encode($docData));
+                            $respData = $docData->data ?? null;
+                            if(($docData->success ?? false) && $respData != null){
                                 $estado = '0';
-                                if($docData->estadistica[0]->aceptados == 1||$docData->estadistica[0]->reparos == 1){
-                                    // documentoa ceptado
+                                if(($respData->aceptados ?? 0) == 1||($respData->reparos ?? 0) == 1){
+                                    // documento aceptado
                                     $estado = '1';
-                                }else if($docData->estadistica[0]->rechazados == 1){
+                                }else if(($respData->rechazados ?? 0) == 1){
                                     $estado = '2';
                                 }
                                 if($doc->tipo_doc == 33){
@@ -91,10 +89,14 @@ class Kernel extends ConsoleKernel
                                     DocumentoPendiente::find($doc->id)->delete();
                                 }
                                 if($doc->tipo_doc == 52){
-                                    GuiaDespacho::where('folio', $doc->folio)->update([
+                                    Log::info("Actualizando guia de despacho folio={$doc->folio} estado={$estado}");
+                                    $filasActualizadas = GuiaDespacho::where('folio', $doc->folio)->update([
                                         'track_id' => $doc->track_id,
                                         'estado' => $estado
                                     ]);
+                                    if($filasActualizadas === 0){
+                                        Log::warning("No se encontro guia de despacho con folio={$doc->folio} para actualizar estado");
+                                    }
                                     DocumentoPendiente::find($doc->id)->delete();
                                 }
 
@@ -113,32 +115,23 @@ class Kernel extends ConsoleKernel
 
                         }
                     }catch(Exception $ex){
-                        Log::info("Error revisando el estado en el SII de los documentos generados");
+                        Log::error("Error revisando el estado en el SII de los documentos generados: ".$ex->getMessage());
                     }
-                }))->everyMinute();
+                }))->everyFifteenMinutes();
 
                 /**
                  * Tarea que revisa el estado del correo de los documentos generados
                  */
                 $schedule->call($tenant->callback(function() {
                     try{
-                        $emisor = Ajustes::getEmisor();
+                        $facturapi = new FacturapiService();
                         // Facturas
                         $pendientes = Factura::where('estado', 'regexp', '[0-3]0[0|1]')->get();
                         foreach ($pendientes as $doc) {
-                            $endpoint = env('FACTURAPI_ENDPOINT').'documentos/33/'.$doc->folio.'?contribuyente='. $emisor['rut'];
-                            $ch = curl_init($endpoint);
-                            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                                'Content-Type:application/json',
-                                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
-                            ]);
-                            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                            $result = curl_exec($ch);
-                            curl_close($ch);
-                            $docData = json_decode($result, true);
+                            $docData = $facturapi->consultarEstadoCorreo(33, $doc->folio);
                             $estado = strval($doc->estado);
                             $estadoSii = substr($estado, 0, 1);
-                            $estadoXml = strval($docData['email_recibido']);
+                            $estadoXml = strval($docData->email_recibido ?? '');
                             $estadoPago = substr($estado, 2, 1);
                             $factEstado = $estadoSii.$estadoXml.$estadoPago;
                             Factura::where('id', $doc->id)->update(['estado' => $factEstado]);
@@ -146,86 +139,114 @@ class Kernel extends ConsoleKernel
                         // Notas de credito
                         $pendientes = NotaCredito::where('estado', 'regexp', '[0-3]0')->get();
                         foreach ($pendientes as $doc) {
-                            $endpoint = env('FACTURAPI_ENDPOINT').'documentos/61/'.$doc->folio.'?contribuyente='. $emisor['rut'];
-                            $ch = curl_init($endpoint);
-                            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                                'Content-Type:application/json',
-                                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
-                            ]);
-                            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                            $result = curl_exec($ch);
-                            curl_close($ch);
-                            $docData = json_decode($result, true);
+                            $docData = $facturapi->consultarEstadoCorreo(61, $doc->folio);
                             $estado = strval($doc->estado);
                             $estadoSii = substr($estado, 0, 1);
-                            $estadoXml = strval($docData['email_recibido']);
+                            $estadoXml = strval($docData->email_recibido ?? '');
                             $ncEstado = $estadoSii.$estadoXml;
                             NotaCredito::where('id', $doc->id)->update(['estado' => $ncEstado]);
                         }
                     }catch(Exception $ex){
                         Log::info("Error revisando estado de correo intercambio documentos generados");
                     }
+                }))->everyFifteenMinutes();
+
+                /**
+                 * Tarea que envía a FacturAPI las cesiones nuevas (estado 0, aún no enviadas).
+                 * El envío exitoso NO significa aceptada: solo confirma que FacturAPI recibió y
+                 * armó el AEC. El estado real (aceptada/rechazada) lo resuelve el bloque de
+                 * polling siguiente contra GET /cesiones/{id}, igual que hacía v2 originalmente
+                 * al esperar la revisión del SII antes de marcar 'estado' => 1.
+                 */
+                $schedule->call($tenant->callback(function() {
+                    $facturapi = new FacturapiService();
+                    $cesiones = Cesion::where('estado', 0)->whereNull('facturapi_cesion_id')->get();
+
+                    foreach($cesiones as $cesion){
+                        $aecs = AEC::where('cesion_id', $cesion->id)->get();
+                        if($aecs->isEmpty()){
+                            continue;
+                        }
+                        // v3 acepta ceder varios documentos en un solo call, a diferencia de v2 (uno por request)
+                        $documentos = [];
+                        foreach($aecs as $aec){
+                            $factura = Factura::where('id', $aec->factura_id)->first();
+                            if($factura != null){
+                                $documentos[] = ['tipo' => 33, 'folio' => $factura->folio];
+                            }
+                        }
+                        $docData = $facturapi->cederDocumentos($documentos, [
+                            'rut_factoring' => $cesion->factoring->rut,
+                            'razon_social_factoring' => $cesion->factoring->razon_social,
+                            'direccion_factoring' => $cesion->factoring->direccion,
+                            'email_cesion' => $cesion->factoring->email_cesion,
+                            'email' => $cesion->factoring->email_cesion,
+                        ]);
+                        Log::info("Datos recibidos cesión:");
+                        Log::info($docData);
+                        if($docData->success ?? false){
+                            // @unverified-response-shape: no está confirmado si el id de la cesión creada
+                            // viene como 'id' o 'trackid' en la respuesta de POST /documentos/cesionar.
+                            $facturapiCesionId = $docData->id ?? ($docData->trackid ?? null);
+                            foreach($aecs as $aec){
+                                $factura = Factura::where('id', $aec->factura_id)->first();
+                                if($factura != null){
+                                    $estado = $factura->estado;
+                                    $estadoEnvio = substr($estado, 0, 1);
+                                    $estadoXML = substr($estado, 1, 1);
+                                    $estadoCesion = 1;
+                                    $factura->estado = $estadoEnvio.$estadoXML.$estadoCesion;
+                                    $factura->save();
+                                }
+                                $aec->track_id = $facturapiCesionId;
+                                $aec->save();
+                            }
+                            $cesion->facturapi_cesion_id = $facturapiCesionId;
+                            // estado se mantiene en 0 (en proceso): el polling siguiente confirma aceptada/rechazada
+                        }else{
+                            $cesion->estado = 2;
+                        }
+                        $cesion->save();
+                    }
                 }))->everyMinute();
 
                 /**
-                 * Tarea que revisa el estado de las cesión de documentos
+                 * Tarea que consulta el estado real de las cesiones ya enviadas (GET /cesiones/{id}).
+                 * @unverified-response-shape: el shape exacto de la respuesta no está confirmado (qué
+                 * campo/valores indican aceptada vs rechazada). Se loguea la respuesta cruda de cada
+                 * consulta para poder ajustar el mapeo una vez confirmado en el primer test real; si
+                 * no se reconoce el estado, la cesión se deja sin tocar (sigue "en proceso").
                  */
                 $schedule->call($tenant->callback(function() {
-                    $cesiones = Cesion::where('estado', 0)->get();
+                    $facturapi = new FacturapiService();
+                    $cesiones = Cesion::where('estado', 0)->whereNotNull('facturapi_cesion_id')->get();
 
                     foreach($cesiones as $cesion){
-                        $emisor = Ajustes::getEmisor();
-                        $aecs = AEC::where('cesion_id', $cesion->id)->get();
-                        $error = 0;
-                        foreach($aecs as $aec){
-                            $factura = Factura::where('id', $aec->factura_id)->first();
-                            $data = [
-                                'contribuyente' => $emisor['rut'],
-                                'folio' => $factura->folio,
-                                'rut_factoring' => $cesion->factoring->rut,
-                                'razon_social_factoring' => $cesion->factoring->razon_social,
-                                'direccion_factoring' => $cesion->factoring->direccion,
-                                'email_cesion' => $cesion->factoring->email_cesion,
-                                'email' => $cesion->factoring->email_cesion
-                            ];
+                        $docData = $facturapi->consultarCesion((string) $cesion->facturapi_cesion_id);
+                        Log::info("Estado consultado cesión {$cesion->id} (facturapi_cesion_id={$cesion->facturapi_cesion_id}):");
+                        Log::info($docData);
 
-                            $ch = curl_init( env('FACTURAPI_ENDPOINT').'documentos/cesion' );
-                            curl_setopt( $ch, CURLOPT_POST, true);
-                            curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode($data) );
-                            curl_setopt( $ch, CURLOPT_HTTPHEADER, [
-                                'Content-Type:application/json',
-                                'Authorization: Bearer '.env('FACTURAPI_TOKEN')
-                            ]);
-                            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-                            $result = curl_exec($ch);
-                            Log::info("Datos recibidos cesión:");
-                            Log::info($result);
-                            curl_close($ch);
-                            $docData = json_decode($result);
-                            if($docData->success){
-                                $factura = Factura::where('id', $aec->factura_id)->first();
-                                $estado = $factura->estado;
-                                $estadoEnvio = substr($estado, 0, 1);
-                                $estadoXML = substr($estado, 1, 1);
-                                $estadoCesion = 1;
-                                $factura->estado = $estadoEnvio.$estadoXML.$estadoCesion;
-                                $factura->save();
-                                $aec->track_id = $docData->trackid;
-                                $aec->estado = 1;
-                                $aec->save();
-                            }else{
-                                $error+=1;
-                            }
+                        $estadoTexto = strtolower((string) ($docData->estado ?? ''));
+                        $nuevoEstado = null;
+                        if(str_contains($estadoTexto, 'rechaz')){
+                            $nuevoEstado = 2;
+                        }elseif(str_contains($estadoTexto, 'acept')){
+                            $nuevoEstado = 1;
                         }
-                        if($error == 0){
-                            $cesion->estado = 1;
-                            $cesion->save();
-                        }else{
-                            $cesion->estado = 2;
-                            $cesion->save();
+
+                        if($nuevoEstado === null){
+                            continue;
                         }
+
+                        $aecs = AEC::where('cesion_id', $cesion->id)->get();
+                        foreach($aecs as $aec){
+                            $aec->estado = $nuevoEstado;
+                            $aec->save();
+                        }
+                        $cesion->estado = $nuevoEstado;
+                        $cesion->save();
                     }
-                }))->everyMinute();
+                }))->everyFiveMinutes();
 
                 /**
                  * Tarea que revisa cada 15 min las facturas de compra recibidas
@@ -238,82 +259,18 @@ class Kernel extends ConsoleKernel
 
                         Log::info("[COMPRA] Se inicia revision de facturas en contribuyente ".$emisor['razon_social']);
 
-                        // Obtener RCV de Compra, estos documentos son los recibidos en el SII
-                        $data = [
-                            'contribuyente' => $emisor['rut'],
-                            'operacion' => 'COMPRA',
-                            'periodo' => $periodo,
-                            'tipo_doc' => 33
-                        ];
-                        $url = env('FACTURAPI_ENDPOINT').'rcv/detalle?'.http_build_query($data);
-                        $ch = curl_init( $url );
-                        curl_setopt( $ch, CURLOPT_POST, false);
-                        curl_setopt( $ch, CURLOPT_HTTPHEADER, [
-                            'Content-Type:application/json',
-                            'Authorization: Bearer '.env('FACTURAPI_TOKEN')
-                        ]);
-                        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-                        $result = curl_exec($ch);
-                        $response = json_decode($result);
-                        if($response != null){
-                            if($response->data != null){
-                                foreach($response->data as $doc){
-                                    $fecha = str_replace('/', '-', $doc->detFchDoc);
-                                    $rut_emisor = $doc->detRutDoc.'-'.$doc->detDvDoc;
-                                    if(FacturaCompra::where('rut_emisor', $rut_emisor)->where('folio', intval($doc->detNroDoc))->count() == 0){
+                        $sync = new ComprasUnificadasSyncService(new FacturapiService());
+                        $recienRecibidos = $sync->sincronizar(33, $periodo);
 
-                                        $factura = new FacturaCompra();
-                                        $factura->rut_emisor = $rut_emisor;
-                                        $factura->razon_social_emisor = $doc->detRznSoc;
-                                        $factura->folio = $doc->detNroDoc;
-                                        $factura->fecha_emision = date('Y-m-d', strtotime($fecha));
-                                        $factura->monto_neto = $doc->detMntNeto;
-                                        $factura->monto_iva = $doc->detMntIVA;
-                                        $factura->monto_total = $doc->detMntTotal;
-                                        $factura->tiene_xml = false;
-                                        $factura->save();
-
-                                    }
-                                }
-                            }
-                        }
-                        // Obtener los documentos recibidos en el correo
-                        $endpoint =  env('FACTURAPI_ENDPOINT').'documentos/compras?contribuyente='.$emisor['rut'].'&tipo=33&periodo='.$periodo;
-                        $ch = curl_init( $endpoint );
-                        curl_setopt( $ch, CURLOPT_POST, false);
-                        curl_setopt( $ch, CURLOPT_HTTPHEADER, [
-                            'Content-Type:application/json',
-                            'Authorization: Bearer '.env('FACTURAPI_TOKEN')
-                        ]);
-                        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-                        $result = curl_exec($ch);
-                        curl_close($ch);
-                        if($result != null){
-                            $docData = json_decode($result);
-
-                            foreach($docData as $data){
-                                $doc = FacturaCompra::where('rut_emisor', $data->rut_emisor)->where('folio', $data->folio)->where('tiene_xml', false)->first();
-                                if($doc != null){
-                                    $users = User::all();
-                                    $doc->oc_id = $data->oc_id;
-                                    $ocdoc = OrdenCompra::where('folio', $data->oc_id)->first();
-                                    if($ocdoc != null){
-                                        $doc->proyecto_id = $ocdoc->proyecto_id;
-                                    }
-                                    $doc->fecha_vencimiento = date('Y-m-d', strtotime($data->fecha_vencimiento));
-                                    $doc->tiene_xml = true;
-                                    $doc->save();
-                                    Notification::sendNow($users, new DocumentoRecibido($data->rut_emisor, 33, $data->folio));
-                                    Log::info("Se envia notificacion a usuarios por doc ". $data->rut_emisor." - ".$data->folio);
-                                }
-                            }
+                        $users = User::all();
+                        foreach($recienRecibidos as $doc){
+                            Notification::sendNow($users, new DocumentoRecibido($doc->rut_emisor, 33, $doc->folio));
+                            Log::info("Se envia notificacion a usuarios por doc ". $doc->rut_emisor." - ".$doc->folio);
                         }
                     }catch(Exception $ex){
                         Log::info("Error sincronizado las facturas de compra");
+                        Log::error($ex);
                     }
-                    // Opcion 1: Hacer un merge de arrays e ingresar masivamente
-                    // Opcion 2: Insertar todos los docs del RCV y luego hacer un update masivo
-                    // con los docs recibidos en el correo (tiene_xml = si)
                 }))->everyFifteenMinutes();
 
                 /**
@@ -325,76 +282,19 @@ class Kernel extends ConsoleKernel
                         $periodo = date('Ym');
                         $emisor = Ajustes::getEmisor();
                         Log::info("[COMPRA] Se inicia revision de notas de credito en contribuyente ".$emisor['razon_social']);
-                        // Obtener RCV de Compra, estos documentos son los recibidos en el SII
-                        $data = [
-                            'contribuyente' => $emisor['rut'],
-                            'operacion' => 'COMPRA',
-                            'periodo' => $periodo,
-                            'tipo_doc' => 61
-                        ];
-                        $url = env('FACTURAPI_ENDPOINT').'rcv/detalle?'.http_build_query($data);
-                        $ch = curl_init( $url );
-                        curl_setopt( $ch, CURLOPT_POST, false);
-                        curl_setopt( $ch, CURLOPT_HTTPHEADER, [
-                            'Content-Type:application/json',
-                            'Authorization: Bearer '.env('FACTURAPI_TOKEN')
-                        ]);
-                        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-                        $result = curl_exec($ch);
-                        $response = json_decode($result);
-                        if($response != null){
-                            if($response->data != null){
-                                foreach($response->data as $doc){
-                                    $fecha = str_replace('/', '-', $doc->detFchDoc);
-                                    $rut_emisor = $doc->detRutDoc.'-'.$doc->detDvDoc;
-                                    if(NotaCreditoCompra::where('rut_emisor', $rut_emisor)->where('folio', intval($doc->detNroDoc))->count() == 0){
 
-                                        $factura = new NotaCreditoCompra();
-                                        $factura->rut_emisor = $rut_emisor;
-                                        $factura->razon_social_emisor = $doc->detRznSoc;
-                                        $factura->folio = $doc->detNroDoc;
-                                        $factura->fecha_emision = date('Y-m-d', strtotime($fecha));
-                                        $factura->monto_neto = $doc->detMntNeto;
-                                        $factura->monto_iva = $doc->detMntIVA;
-                                        $factura->monto_total = $doc->detMntTotal;
-                                        $factura->tiene_xml = false;
-                                        $factura->save();
+                        $sync = new ComprasUnificadasSyncService(new FacturapiService());
+                        $recienRecibidos = $sync->sincronizar(61, $periodo);
 
-                                    }
-                                }
-                            }
-                        }
-                        // Obtener los documentos recibidos en el correo
-                        $endpoint =  env('FACTURAPI_ENDPOINT').'documentos/compras?contribuyente='.$emisor['rut'].'&tipo=61&periodo='.$periodo;
-                        $ch = curl_init( $endpoint );
-                        curl_setopt( $ch, CURLOPT_POST, false);
-                        curl_setopt( $ch, CURLOPT_HTTPHEADER, [
-                            'Content-Type:application/json',
-                            'Authorization: Bearer '.env('FACTURAPI_TOKEN')
-                        ]);
-                        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-                        $result = curl_exec($ch);
-                        curl_close($ch);
-                        if($result != null){
-                            $docData = json_decode($result);
-
-                            foreach($docData as $data){
-                                $doc = NotaCreditoCompra::where('rut_emisor', $data->rut_emisor)->where('folio', $data->folio)->where('tiene_xml', false)->first();
-                                if($doc != null){
-                                    $users = User::all();
-                                    $doc->tiene_xml = true;
-                                    $doc->save();
-                                    Notification::sendNow($users, new DocumentoRecibido($data->rut_emisor, 61, $data->folio));
-                                    Log::info("Se envia notificacion a usuarios por doc ". $data->rut_emisor." - ".$data->folio);
-                                }
-                            }
+                        $users = User::all();
+                        foreach($recienRecibidos as $doc){
+                            Notification::sendNow($users, new DocumentoRecibido($doc->rut_emisor, 61, $doc->folio));
+                            Log::info("Se envia notificacion a usuarios por doc ". $doc->rut_emisor." - ".$doc->folio);
                         }
                     }catch(Exception $ex){
                         Log::info("Error sincronizando las notas de credito de compra");
+                        Log::error($ex);
                     }
-                    // Opcion 1: Hacer un merge de arrays e ingresar masivamente
-                    // Opcion 2: Insertar todos los docs del RCV y luego hacer un update masivo
-                    // con los docs recibidos en el correo (tiene_xml = si)
                 }))->everyFifteenMinutes();
 
                 /**

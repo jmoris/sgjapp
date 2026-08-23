@@ -317,7 +317,16 @@
 
                             if (estadoCesion == 1) {
                                 html +=
-                                    '<span class="badge bg-success" title="Cedida"><span class="mdi mdi-24 mdi-cash-multiple"></span></span>';
+                                    '<span class="badge bg-success me-1" title="Cedida"><span class="mdi mdi-24 mdi-cash-multiple"></span></span>';
+                            }
+
+                            var pagado = parseFloat(row.pagos_sum_monto_pago) || 0;
+                            if (pagado >= row.monto_total) {
+                                html +=
+                                    '<span class="badge bg-success" title="Factura Pagada"><span class="mdi mdi-24 mdi-cash-check"></span></span>';
+                            } else if (pagado > 0) {
+                                html +=
+                                    '<span class="badge bg-warning" title="Pago Parcial"><span class="mdi mdi-24 mdi-cash-clock"></span></span>';
                             }
 
                             return html;

@@ -21,4 +21,8 @@ class Factura extends Model
     public function lineas(){
         return $this->hasMany(LineaFactura::class);
     }
+
+    public function pagos(){
+        return $this->hasMany(PagoFactura::class, 'factura_id');
+    }
 }

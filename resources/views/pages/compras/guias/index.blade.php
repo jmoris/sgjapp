@@ -38,7 +38,7 @@
                                             @foreach ($documentos as $doc)
                                                 <tr>
                                                     <td>{{ $doc->folio }}</td>
-                                                    <td>{{ $doc->razonsocial_emisor }}</td>
+                                                    <td>{{ $doc->razon_social_emisor }}</td>
                                                     <td>{{ $doc->rut_emisor }}</td>
                                                     <td>{{ $doc->fecha_emision }}</td>
                                                     <td>$ {{ number_format($doc->monto_total, 0, ',', '.') }}</td>

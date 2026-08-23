@@ -13,4 +13,8 @@ class FacturaCompra extends Model
     public function proyecto(){
         return $this->hasOne(Proyecto::class, 'id', 'proyecto_id');
     }
+
+    public function pagos(){
+        return $this->hasMany(PagoFacturaCompra::class, 'factura_compra_id');
+    }
 }

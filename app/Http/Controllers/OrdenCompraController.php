@@ -36,6 +36,9 @@ class OrdenCompraController extends Controller
 
     public function editOC($id){
         $oc = OrdenCompra::with('proveedor')->find($id);
+        if($oc->estado == 3){
+            return redirect('/compras/ordenescompra')->with('error', 'Esta orden de compra ya fue facturada y no puede editarse.');
+        }
         $emisor = Ajustes::getEmisor();
         $comunas = Comuna::all();
         $proveedores = Proveedor::all();
@@ -161,6 +164,13 @@ class OrdenCompraController extends Controller
                     ]);
                 }
                 $first_oc = OrdenCompra::findOrFail($id);
+
+                if($first_oc->estado == 3){
+                    return response()->json([
+                        'success' => false,
+                        'msg' => 'Esta orden de compra ya fue facturada y no puede editarse.',
+                    ], 403);
+                }
 
                 OrdenCompra::where('folio', $first_oc->folio)->update(['rev_activa' => false]);
 
