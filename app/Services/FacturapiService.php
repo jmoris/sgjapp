@@ -69,21 +69,29 @@ class FacturapiService
         try {
             $response = $this->client()->get($path, $query);
         } catch (Throwable $e) {
-            Log::error("FacturapiService: error de conexion en GET {$path}", ['error' => $e->getMessage()]);
+            Log::error("FacturapiService: error de conexion en GET {$path}", ['query' => $query, 'error' => $e->getMessage()]);
 
             return null;
         }
 
         if (! $response->successful()) {
             Log::warning("FacturapiService: respuesta no exitosa en GET {$path}", [
+                'query' => $query,
                 'status' => $response->status(),
-                'body' => $response->body(),
+                'body' => mb_substr($response->body(), 0, 2000),
             ]);
 
             return null;
         }
 
-        return $response->body();
+        $body = $response->body();
+        if (trim((string) $body) === '') {
+            Log::warning("FacturapiService: respuesta vacia (200) en GET {$path}", ['query' => $query]);
+
+            return null;
+        }
+
+        return $body;
     }
 
     protected function normalizarRespuesta($response, string $path): object
