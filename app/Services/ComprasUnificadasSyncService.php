@@ -33,14 +33,44 @@ class ComprasUnificadasSyncService
     }
 
     /**
+     * Periodos (YYYYMM) que se sincronizan por defecto: el mes actual y el anterior.
+     * El SII deja los documentos como PENDIENTE de acuse hasta 8 días corridos, por lo que
+     * a comienzos de mes siguen apareciendo pendientes del mes anterior que hay que traer.
+     *
+     * @return list<string>
+     */
+    public static function periodosPorDefecto(): array
+    {
+        return [
+            date('Ym'),
+            date('Ym', strtotime('first day of previous month')),
+        ];
+    }
+
+    /**
+     * @param  string|list<string>  $periodos  uno o varios periodos YYYYMM
      * @return Collection<int, \Illuminate\Database\Eloquent\Model> documentos que recibieron su XML en esta corrida (para notificar)
      */
-    public function sincronizar(int $tipoDoc, string $periodoYyyyMm): Collection
+    public function sincronizar(int $tipoDoc, string|array $periodos): Collection
     {
         $modelClass = $this->modelClass($tipoDoc);
+        $periodos = array_values(array_unique((array) $periodos));
 
-        $response = $this->facturapi->listarComprasUnificadas($periodoYyyyMm, ['tipo_doc' => $tipoDoc]);
-        $filas = $response->data ?? [];
+        // Folios que el SII aún tiene como PENDIENTE de acuse de recibo (clave "RUT-DV|folio").
+        // Se sincronizan igual pero se marcan para no mostrarlos en el listado principal.
+        $pendientesAcuse = $this->foliosPendientesAcuse($tipoDoc, $periodos);
+
+        // Un documento puede venir en ambos periodos (ej. emitido a fin de mes): se deja una sola fila.
+        $filas = [];
+        foreach ($periodos as $periodo) {
+            $response = $this->facturapi->listarComprasUnificadas($periodo, ['tipo_doc' => $tipoDoc]);
+            foreach ($response->data ?? [] as $fila) {
+                if (($fila->rut_proveedor ?? null) === null || ($fila->folio ?? null) === null) {
+                    continue;
+                }
+                $filas[$this->claveDocumento($fila->rut_proveedor, $fila->folio)] = $fila;
+            }
+        }
 
         $recienRecibidos = collect();
 
@@ -53,6 +83,8 @@ class ComprasUnificadasSyncService
 
             $doc = $modelClass::where('rut_emisor', $rutEmisor)->where('folio', intval($folio))->first();
             $esNuevo = $doc === null;
+
+            $pendienteAcuse = isset($pendientesAcuse[$this->claveDocumento($rutEmisor, $folio)]);
 
             if ($esNuevo) {
                 $doc = new $modelClass();
@@ -114,18 +146,61 @@ class ComprasUnificadasSyncService
                 }
             }
 
+            $doc->pendiente_acuse = $pendienteAcuse;
+
             $doc->save();
 
             if ($modelClass === FacturaCompra::class && ($fila->forma_pago_contado ?? false) === true) {
                 $this->asegurarPagoContado($doc);
             }
 
-            if ($eraSinXml && $doc->tiene_xml) {
+            // Solo se notifica cuando el documento ya tiene acuse de recibo: mientras siga
+            // PENDIENTE en el SII no aparece en el listado, así que no tiene sentido avisar.
+            if ($eraSinXml && $doc->tiene_xml && ! $pendienteAcuse) {
                 $recienRecibidos->push($doc);
             }
         }
 
         return $recienRecibidos;
+    }
+
+    /**
+     * Consulta el RCV de compra en estado PENDIENTE para los periodos dados y devuelve un
+     * mapa "RUT-DV|folio" => true con los documentos a los que aún no se les da acuse.
+     *
+     * @param  list<string>  $periodos
+     * @return array<string, true>
+     */
+    protected function foliosPendientesAcuse(int $tipoDoc, array $periodos): array
+    {
+        $pendientes = [];
+
+        foreach ($periodos as $periodo) {
+            $response = $this->facturapi->rcvDetalle($tipoDoc, $periodo, 'PENDIENTE');
+            foreach ($response->data ?? [] as $fila) {
+                $rut = $fila->detRutDoc ?? null;
+                $dv = $fila->detDvDoc ?? null;
+                $folio = $fila->detNroDoc ?? null;
+                if ($rut === null || $folio === null) {
+                    continue;
+                }
+                $rutCompleto = $dv !== null ? "{$rut}-{$dv}" : (string) $rut;
+                $pendientes[$this->claveDocumento($rutCompleto, $folio)] = true;
+            }
+        }
+
+        return $pendientes;
+    }
+
+    /**
+     * Clave normalizada para cruzar filas de compras-unificadas con el RCV: RUT en mayúsculas
+     * y sin espacios + folio como entero.
+     */
+    protected function claveDocumento(string $rut, int|string $folio): string
+    {
+        $rut = mb_strtoupper(str_replace([' ', '.'], '', trim($rut)));
+
+        return $rut.'|'.intval($folio);
     }
 
     /**

@@ -64,7 +64,8 @@ class NotaCreditoCompraController extends Controller
             Log::info("ENDPOINT FACTURAS COMPRA: ". $endpoint);
 
             return $result;*/
-            $data = NotaCreditoCompra::whereRaw('1=1');
+            // Se excluyen las notas de crédito que el SII todavía tiene PENDIENTE de acuse de recibo.
+            $data = NotaCreditoCompra::where('pendiente_acuse', false);
 
             if($request->has('feMinDate') and $request->has('feMaxDate')){
                 $data->where('fecha_emision', '>=', $request->feMinDate);
@@ -143,15 +144,15 @@ class NotaCreditoCompraController extends Controller
 
     public function sincronizarDocumentos(Request $request){
         try{
-            // Periodo es el mes actual
-            $periodo = date('Ym');
+            // Por defecto mes actual + anterior; se puede forzar un periodo puntual con ?periodo=YYYYMM
+            $periodos = ComprasUnificadasSyncService::periodosPorDefecto();
             if(isset($request->periodo))
-                $periodo = $request->periodo;
+                $periodos = [$request->periodo];
             $emisor = Ajustes::getEmisor();
             Log::info("[COMPRA] Se inicia revision de notas de credito en contribuyente ".$emisor['razon_social']);
 
             $sync = new ComprasUnificadasSyncService($this->facturapi);
-            $recienRecibidos = $sync->sincronizar(61, $periodo);
+            $recienRecibidos = $sync->sincronizar(61, $periodos);
 
             $users = User::all();
             foreach($recienRecibidos as $doc){

@@ -253,14 +253,15 @@ class Kernel extends ConsoleKernel
                  */
                 $schedule->call($tenant->callback(function() {
                     try{
-                        // Periodo es el mes actual
-                        $periodo = date('Ym');
+                        // Mes actual + mes anterior: el SII deja los documentos PENDIENTE de acuse
+                        // hasta 8 días, por lo que a inicios de mes siguen llegando del mes previo.
+                        $periodos = ComprasUnificadasSyncService::periodosPorDefecto();
                         $emisor = Ajustes::getEmisor();
 
                         Log::info("[COMPRA] Se inicia revision de facturas en contribuyente ".$emisor['razon_social']);
 
                         $sync = new ComprasUnificadasSyncService(new FacturapiService());
-                        $recienRecibidos = $sync->sincronizar(33, $periodo);
+                        $recienRecibidos = $sync->sincronizar(33, $periodos);
 
                         $users = User::all();
                         foreach($recienRecibidos as $doc){
@@ -278,13 +279,12 @@ class Kernel extends ConsoleKernel
                  */
                 $schedule->call($tenant->callback(function() {
                     try{
-                        // Periodo es el mes actual
-                        $periodo = date('Ym');
+                        $periodos = ComprasUnificadasSyncService::periodosPorDefecto();
                         $emisor = Ajustes::getEmisor();
                         Log::info("[COMPRA] Se inicia revision de notas de credito en contribuyente ".$emisor['razon_social']);
 
                         $sync = new ComprasUnificadasSyncService(new FacturapiService());
-                        $recienRecibidos = $sync->sincronizar(61, $periodo);
+                        $recienRecibidos = $sync->sincronizar(61, $periodos);
 
                         $users = User::all();
                         foreach($recienRecibidos as $doc){

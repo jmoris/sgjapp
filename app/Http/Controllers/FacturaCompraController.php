@@ -34,22 +34,39 @@ class FacturaCompraController extends Controller
     }
 
     public function indexPendientes(Request $request){
-            $emisor = Ajustes::getEmisor();
-            Log::info("[COMPRA] Revision de documentos pendientes en contribuyente ".$emisor['razon_social']);
-            // Obtener RCV de Compra, estos documentos son los recibidos en el SII
-            $response = $this->facturapi->rcvDetalle(33, date('Ym'), 'PENDIENTE');
-            Log::info("RESULTADO RCV DE COMPRA: ". json_encode($response));
-            $data = $response->data ?? [];
+        $emisor = Ajustes::getEmisor();
+        Log::info("[COMPRA] Revision de documentos pendientes en contribuyente ".$emisor['razon_social']);
+        // RCV de Compra del mes actual + el anterior: el SII mantiene los documentos como
+        // PENDIENTE de acuse hasta 8 días, así que a inicios de mes siguen quedando del mes previo.
+        $data = $this->rcvDetalleMultiPeriodo(33, 'PENDIENTE');
         return view('pages.compras.facturas.pendientes.index', ['emisor' => $emisor, 'documentos' => $data]);
     }
 
     public function indexReclamadas(Request $request){
         $emisor = Ajustes::getEmisor();
-        Log::info("[COMPRA] Revision de documentos pendientes en contribuyente ".$emisor['razon_social']);
-        // Obtener RCV de Compra, estos documentos son los recibidos en el SII
-        $response = $this->facturapi->rcvDetalle(33, date('Ym'), 'RECLAMADO');
-        $data = $response->data ?? [];
-    return view('pages.compras.facturas.reclamadas.index', ['emisor' => $emisor, 'documentos' => $data]);
+        Log::info("[COMPRA] Revision de documentos reclamados en contribuyente ".$emisor['razon_social']);
+        $data = $this->rcvDetalleMultiPeriodo(33, 'RECLAMADO');
+        return view('pages.compras.facturas.reclamadas.index', ['emisor' => $emisor, 'documentos' => $data]);
+    }
+
+    /**
+     * Junta el RCV de compra de varios periodos (por defecto mes actual + anterior) en un solo
+     * arreglo, sin duplicar documentos que aparezcan en ambos periodos.
+     *
+     * @return array<int, object>
+     */
+    protected function rcvDetalleMultiPeriodo(int $tipoDoc, string $estado): array
+    {
+        $documentos = [];
+        foreach (ComprasUnificadasSyncService::periodosPorDefecto() as $periodo) {
+            $response = $this->facturapi->rcvDetalle($tipoDoc, $periodo, $estado);
+            foreach ($response->data ?? [] as $fila) {
+                $clave = ($fila->detRutDoc ?? '').'-'.($fila->detDvDoc ?? '').'|'.($fila->detNroDoc ?? '');
+                $documentos[$clave] = $fila;
+            }
+        }
+
+        return array_values($documentos);
     }
 
     public function show($rutEmisor, $folio){
@@ -120,7 +137,11 @@ class FacturaCompraController extends Controller
             Log::info("ENDPOINT FACTURAS COMPRA: ". $endpoint);
 
             return $result;*/
-            $data = FacturaCompra::with('proyecto')->withSum('pagos', 'monto_pago')->whereRaw('1=1');
+            // Se excluyen los documentos que el SII todavía tiene PENDIENTE de acuse de recibo:
+            // se sincronizan (para tener sus datos) pero no corresponde mostrarlos como recibidos
+            // hasta que se les dé acuse. El sync los desmarca en la siguiente corrida.
+            $data = FacturaCompra::with('proyecto')->withSum('pagos', 'monto_pago')
+                ->where('pendiente_acuse', false);
 
             if($request->has('feMinDate') and $request->has('feMaxDate')){
                 $data->where('fecha_emision', '>=', $request->feMinDate);
@@ -302,16 +323,16 @@ class FacturaCompraController extends Controller
 
     public function sincronizarDocumentos(Request $request){
         try{
-            // Periodo es el mes actual
-            $periodo = date('Ym');
+            // Por defecto mes actual + anterior; se puede forzar un periodo puntual con ?periodo=YYYYMM
+            $periodos = ComprasUnificadasSyncService::periodosPorDefecto();
             if(isset($request->periodo))
-                $periodo = $request->periodo;
+                $periodos = [$request->periodo];
             $emisor = Ajustes::getEmisor();
 
             Log::info("[COMPRA] Se inicia revision de facturas en contribuyente ".$emisor['razon_social']);
 
             $sync = new ComprasUnificadasSyncService($this->facturapi);
-            $recienRecibidos = $sync->sincronizar(33, $periodo);
+            $recienRecibidos = $sync->sincronizar(33, $periodos);
 
             $users = User::all();
             foreach($recienRecibidos as $doc){
