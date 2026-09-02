@@ -72,11 +72,11 @@ class FacturaCompraController extends Controller
     public function show($rutEmisor, $folio){
         $categorias = CategoriaDocumento::all();
         $fact = FacturaCompra::where('rut_emisor', $rutEmisor)->where('folio', $folio)->first();
+        if($fact == null){
+            return back()->with('error', 'No se encontró la factura de compra solicitada.');
+        }
         $pagos = PagoFacturaCompra::where('factura_compra_id', $fact->id)->get();
         $proyectos = Proyecto::orderBy('nombre', 'asc')->get();
-        if($fact->facturapi_compra_id == null){
-            return back()->with('error', 'Este documento aún no tiene XML disponible (no ha sido sincronizado desde el correo de intercambio).');
-        }
         $doc = $this->obtenerDocumentoCompra($fact);
         if($doc == null){
             return back()->with('error', 'No se pudo obtener el XML de este documento desde FacturAPI.');
@@ -89,13 +89,22 @@ class FacturaCompraController extends Controller
      * `/compras-unificadas/intercambio/{tipoDoc}/{folio}/xml` (reemplaza a
      * `/compras-intercambio/{id}/xml`, que dejó de existir en v3 — confirmado con 404 real).
      *
+     * No depende de `tiene_xml` / `facturapi_compra_id` locales (que el listado unificado no
+     * siempre reporta, p. ej. documentos migrados sin `origen_message_id`): pregunta directo a
+     * FacturAPI y, si el XML existe, deja el registro local marcado para futuras consultas.
+     *
      * @return array{data: array, ted: mixed, caratula: array}|null
      */
     protected function obtenerDocumentoCompra(FacturaCompra $fact): ?array
     {
-        $result = $this->facturapi->obtenerXmlCompraUnificadaIntercambio(33, $fact->folio);
+        $result = $this->facturapi->obtenerXmlCompraUnificadaIntercambio(33, $fact->folio, $fact->rut_emisor);
         if (empty($result)) {
             return null;
+        }
+
+        if (! $fact->tiene_xml) {
+            $fact->tiene_xml = true;
+            $fact->save();
         }
 
         $EnvioDTE = new EnvioDte();
@@ -210,10 +219,10 @@ class FacturaCompraController extends Controller
 
     public function vistaPreviaFactura(Request $request, $rutEmisor, $tipo, $folio){
         $fact = FacturaCompra::where('rut_emisor', $rutEmisor)->where('folio', $folio)->first();
-        if($fact == null || $fact->facturapi_compra_id == null){
+        if($fact == null){
             return response()->json([
                 'status' => 500,
-                'msg' => 'Este documento aún no tiene XML disponible (no ha sido sincronizado desde el correo de intercambio).'
+                'msg' => 'No se encontró la factura de compra solicitada.'
             ], 500);
         }
         $doc = $this->obtenerDocumentoCompra($fact);
@@ -237,10 +246,10 @@ class FacturaCompraController extends Controller
     public function descargarPDF(Request $request, $emisor, $folio){
         try{
             $fact = FacturaCompra::where('rut_emisor', $emisor)->where('folio', $folio)->first();
-            if($fact == null || $fact->facturapi_compra_id == null){
+            if($fact == null){
                 return response()->json([
                     'success' => false,
-                    'msg' => 'Este documento aún no tiene XML disponible (no ha sido sincronizado desde el correo de intercambio).'
+                    'msg' => 'No se encontró la factura de compra solicitada.'
                 ]);
             }
             $doc = $this->obtenerDocumentoCompra($fact);

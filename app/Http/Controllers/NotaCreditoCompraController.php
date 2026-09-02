@@ -34,15 +34,54 @@ class NotaCreditoCompraController extends Controller
     public function show($rutEmisor, $folio){
         $categorias = CategoriaDocumento::all();
         $fact = NotaCreditoCompra::where('rut_emisor', $rutEmisor)->where('folio', $folio)->first();
-        if($fact == null || $fact->facturapi_compra_id == null){
-            return back()->with('error', 'Este documento aún no tiene XML disponible (no ha sido sincronizado desde el correo de intercambio).');
+        if($fact == null){
+            return back()->with('error', 'No se encontró la nota de crédito de compra solicitada.');
         }
-        $result = $this->facturapi->obtenerXmlCompraIntercambio($fact->facturapi_compra_id);
+        $doc = $this->obtenerDocumentoCompra($fact);
+        if($doc == null){
+            return back()->with('error', 'No se pudo obtener el XML de este documento desde FacturAPI.');
+        }
+        return view('pages.compras.notascredito.detail', ['documento' => $doc['data'], 'factura' => $fact, 'categorias' => $categorias]);
+    }
+
+    /**
+     * Obtiene y parsea el XML de una nota de crédito de compra recibida, vía el endpoint
+     * unificado `/compras-unificadas/intercambio/61/{folio}/xml`. No depende de
+     * `tiene_xml` / `facturapi_compra_id` locales: pregunta directo a FacturAPI y, si el XML
+     * existe, deja el registro local marcado.
+     *
+     * @return array{data: array, ted: mixed, caratula: array}|null
+     */
+    protected function obtenerDocumentoCompra(NotaCreditoCompra $fact): ?array
+    {
+        $result = $this->facturapi->obtenerXmlCompraUnificadaIntercambio(61, $fact->folio, $fact->rut_emisor);
+        if (empty($result)) {
+            return null;
+        }
+
+        if (! $fact->tiene_xml) {
+            $fact->tiene_xml = true;
+            $fact->save();
+        }
+
         $EnvioDTE = new EnvioDte();
         $EnvioDTE->loadXML($result);
-        $dte = $EnvioDTE->getDocumentos()[0];
-        $data = $dte->getDatos();
-        return view('pages.compras.notascredito.detail', ['documento' => $data, 'factura' => $fact, 'categorias' => $categorias]);
+        $documentos = $EnvioDTE->getDocumentos();
+        if (empty($documentos)) {
+            Log::warning('NotaCreditoCompraController: el XML de compra unificada no contiene documentos DTE', ['folio' => $fact->folio]);
+            return null;
+        }
+
+        $dte = $documentos[0];
+        $caratula = str_contains($result, '<EnvioDTE')
+            ? $EnvioDTE->getCaratula()
+            : ['FchResol' => date('Y'), 'NroResol' => 0];
+
+        return [
+            'data' => $dte->getDatos(),
+            'ted' => $dte->getTED(),
+            'caratula' => $caratula,
+        ];
     }
 
     /*
@@ -79,62 +118,49 @@ class NotaCreditoCompraController extends Controller
 
     public function vistaPreviaNC(Request $request, $rutEmisor, $tipo, $folio){
         $fact = NotaCreditoCompra::where('rut_emisor', $rutEmisor)->where('folio', $folio)->first();
-        if($fact == null || $fact->facturapi_compra_id == null){
+        if($fact == null){
             return response()->json([
                 'status' => 500,
-                'msg' => 'Este documento aún no tiene XML disponible (no ha sido sincronizado desde el correo de intercambio).'
+                'msg' => 'No se encontró la nota de crédito de compra solicitada.'
             ], 500);
         }
-        $result = $this->facturapi->obtenerXmlCompraIntercambio($fact->facturapi_compra_id);
-            $EnvioDTE = new EnvioDte();
-            $EnvioDTE->loadXML($result);
-            if(str_contains($result, '<EnvioDTE')){
-                $caratula = $EnvioDTE->getCaratula();
-            }else{
-                $caratula = [
-                    'FchResol' => date('Y'),
-                    'NroResol' => 0
-                ];
-            }
-            $dte = $EnvioDTE->getDocumentos()[0];
-            $data = $dte->getDatos();
-
-            $pdf = new \SolucionTotal\CorePDF\PDF($data, 1, url('/vacio.png'), 2, $dte->getTED());
-            //$pdf->setLeyendaImpresion('Sistema de facturacion por SoluciónTotal');
-            $pdf->setResolucion(date('Y', strtotime($caratula['FchResol'])), $caratula['NroResol']);
-            $pdf->construir();
-            if($request->descargar==1){
-                $pdf->generar(0);
-            }else{
-                $pdf->generar(1);
-            }
+        $doc = $this->obtenerDocumentoCompra($fact);
+        if($doc == null){
+            return response()->json([
+                'status' => 500,
+                'msg' => 'No se pudo obtener el XML de este documento desde FacturAPI.'
+            ], 500);
         }
+
+        $pdf = new \SolucionTotal\CorePDF\PDF($doc['data'], 1, url('/vacio.png'), 2, $doc['ted']);
+        $pdf->setResolucion(date('Y', strtotime($doc['caratula']['FchResol'])), $doc['caratula']['NroResol']);
+        $pdf->construir();
+        if($request->descargar==1){
+            $pdf->generar(0);
+        }else{
+            $pdf->generar(1);
+        }
+    }
 
     public function descargarPDF(Request $request, $emisor, $folio){
         try{
             $fact = NotaCreditoCompra::where('rut_emisor', $emisor)->where('folio', $folio)->first();
-            if($fact == null || $fact->facturapi_compra_id == null){
+            if($fact == null){
                 return response()->json([
                     'success' => false,
-                    'msg' => 'Este documento aún no tiene XML disponible (no ha sido sincronizado desde el correo de intercambio).'
+                    'msg' => 'No se encontró la nota de crédito de compra solicitada.'
                 ]);
             }
-            $result = $this->facturapi->obtenerXmlCompraIntercambio($fact->facturapi_compra_id);
-            $EnvioDTE = new EnvioDte();
-            $EnvioDTE->loadXML($result);
-            if(str_contains($result, '<EnvioDTE')){
-                $caratula = $EnvioDTE->getCaratula();
-            }else{
-                $caratula = [
-                    'FchResol' => date('Y'),
-                    'NroResol' => 0
-                ];
+            $doc = $this->obtenerDocumentoCompra($fact);
+            if($doc == null){
+                return response()->json([
+                    'success' => false,
+                    'msg' => 'No se pudo obtener el XML de este documento desde FacturAPI.'
+                ]);
             }
-            $dte = $EnvioDTE->getDocumentos()[0];
-            $data = $dte->getDatos();
 
-            $pdf = new \SolucionTotal\CorePDF\PDF($data, 1, url('/vacio.png'), 2, $dte->getTED());
-            $pdf->setResolucion(date('Y', strtotime($caratula['FchResol'])), $caratula['NroResol']);
+            $pdf = new \SolucionTotal\CorePDF\PDF($doc['data'], 1, url('/vacio.png'), 2, $doc['ted']);
+            $pdf->setResolucion(date('Y', strtotime($doc['caratula']['FchResol'])), $doc['caratula']['NroResol']);
             $pdf->construir();
             return $pdf->generar(0);
         }catch(Exception $ex){

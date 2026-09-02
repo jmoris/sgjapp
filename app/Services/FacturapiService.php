@@ -185,9 +185,12 @@ class FacturapiService
      * unificado (reemplaza a obtenerXmlCompraIntercambio()/`/compras-intercambio/{id}/xml`,
      * que dejó de existir en v3 — confirmado con 404 real).
      */
-    public function obtenerXmlCompraUnificadaIntercambio(int $tipoDoc, $folio): ?string
+    public function obtenerXmlCompraUnificadaIntercambio(int $tipoDoc, $folio, ?string $rutEmisor = null): ?string
     {
-        return $this->getRaw("/compras-unificadas/intercambio/{$tipoDoc}/{$folio}/xml");
+        // rut_emisor se envía como filtro para desambiguar cuando dos emisores usan el mismo folio.
+        $query = $rutEmisor !== null ? ['rut_emisor' => $rutEmisor] : [];
+
+        return $this->getRaw("/compras-unificadas/intercambio/{$tipoDoc}/{$folio}/xml", $query);
     }
 
     public function consultarDatosTributarios(): object

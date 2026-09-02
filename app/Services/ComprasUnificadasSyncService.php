@@ -62,9 +62,17 @@ class ComprasUnificadasSyncService
 
         // Un documento puede venir en ambos periodos (ej. emitido a fin de mes): se deja una sola fila.
         $filas = [];
+        $shapeLogueado = false;
         foreach ($periodos as $periodo) {
             $response = $this->facturapi->listarComprasUnificadas($periodo, ['tipo_doc' => $tipoDoc]);
             foreach ($response->data ?? [] as $fila) {
+                if (! $shapeLogueado) {
+                    Log::info('ComprasUnificadasSyncService: shape de fila /compras-unificadas', [
+                        'campos' => array_keys((array) $fila),
+                        'muestra' => $fila,
+                    ]);
+                    $shapeLogueado = true;
+                }
                 if (($fila->rut_proveedor ?? null) === null || ($fila->folio ?? null) === null) {
                     continue;
                 }
@@ -99,10 +107,22 @@ class ComprasUnificadasSyncService
             }
 
             $eraSinXml = ! $doc->tiene_xml;
-            $tieneXmlAhora = (bool) ($fila->tiene_xml ?? false);
+
+            // El listado unificado no siempre expone el mismo nombre de campo para el id del
+            // intercambio ni para la disponibilidad del XML (además, documentos migrados pueden
+            // llegar sin marca aunque su XML exista). Se aceptan varios alias y la presencia de
+            // cualquier identificador de intercambio o de un xml_path como señal de "tiene XML".
+            $intercambioId = $fila->intercambio_id
+                ?? $fila->documento_compra_intercambio_id
+                ?? (isset($fila->intercambio->id) ? $fila->intercambio->id : null);
+            $tieneXmlAhora = (bool) ($fila->tiene_xml ?? $fila->tiene_intercambio ?? false)
+                || ! empty($fila->xml_path)
+                || $intercambioId !== null;
 
             if ($tieneXmlAhora && $eraSinXml) {
-                $doc->facturapi_compra_id = $fila->intercambio_id ?? null;
+                if ($intercambioId !== null) {
+                    $doc->facturapi_compra_id = $intercambioId;
+                }
                 if (! empty($fila->fecha_vencimiento)) {
                     $doc->fecha_vencimiento = date('Y-m-d', strtotime($fila->fecha_vencimiento));
                 }

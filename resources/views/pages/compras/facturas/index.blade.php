@@ -482,21 +482,17 @@
                         data: null,
                         orderable: false,
                         render: function(data, type, row) {
-                            var html = '';
-                            html = '<div>';
-                            if (row.tiene_xml) {
-                                html +=
-                                    '<button type="button" title="Ver Factura" onclick="verDocumento(\'' +
-                                    row.rut_emisor + '\',' + row.folio +
-                                    ')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-text-box-search-outline"></i></button>';
-                                html +=
-                                    '<button type="button" title="Descargar PDF Factura" onclick="vistaPreviaDocumento(\'' +
-                                    row.rut_emisor + '\',' + row.folio +
-                                    ')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-download"></i></button>';
-                            } else {
-                                html +=
-                                    '<button type="button" title="Documento XML no disponible" class="btn btn-outline-secondary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-text-box-search-outline"></i></button>';
-                            }
+                            // El XML se resuelve contra FacturAPI al abrir el documento (no dependemos
+                            // de tiene_xml local, que no siempre queda marcado en documentos migrados).
+                            var html = '<div>';
+                            html +=
+                                '<button type="button" title="Ver Factura" onclick="verDocumento(\'' +
+                                row.rut_emisor + '\',' + row.folio +
+                                ')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-text-box-search-outline"></i></button>';
+                            html +=
+                                '<button type="button" title="Descargar PDF Factura" onclick="vistaPreviaDocumento(\'' +
+                                row.rut_emisor + '\',' + row.folio +
+                                ')" class="btn btn-outline-primary btnxs px-1 py-0 ms-1"><i class="mdi mdi-18 mdi-download"></i></button>';
                             html += '</div>';
                             return html;
                         }
