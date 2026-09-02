@@ -24,320 +24,200 @@
                 <div class="col-md-8 grid-margin">
                     <div class="card">
                         <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-baseline">
-                                <h4 class="card-title mb-0">VISOR DE FACTURAS ELECTRÓNICAS - COMPRA</h4>
+                            <h4 class="card-title mb-4">VISOR DE FACTURAS ELECTRÓNICAS - COMPRA</h4>
+
+                            {{-- Información del emisor --}}
+                            <div class="mb-4">
+                                <h5 class="pb-2 mb-3 border-bottom">Información del emisor</h5>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label form-label-sm text-muted mb-1">Razón Social</label>
+                                        <input type="text" class="form-control form-control-sm"
+                                            value="{{ $documento['Encabezado']['Emisor']['RznSoc'] }}" disabled>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label form-label-sm text-muted mb-1">Dirección</label>
+                                        <input type="text" class="form-control form-control-sm"
+                                            value="{{ $documento['Encabezado']['Emisor']['DirOrigen'] }}" disabled>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label form-label-sm text-muted mb-1">R.U.T.</label>
+                                        <input type="text" class="form-control form-control-sm"
+                                            value="{{ $documento['Encabezado']['Emisor']['RUTEmisor'] }}" disabled>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label form-label-sm text-muted mb-1">Comuna</label>
+                                        <input type="text" class="form-control form-control-sm"
+                                            value="{{ $documento['Encabezado']['Emisor']['CmnaOrigen'] }}" disabled>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label form-label-sm text-muted mb-1">Actividad Económica</label>
+                                        <input type="text" class="form-control form-control-sm"
+                                            value="{{ $documento['Encabezado']['Emisor']['GiroEmis'] }}" disabled>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="row mx-3">
-                                <div style="width:100%; margin-top:24px;"></div>
-                                <div class="col-md-12">
-                                    <div class="row">
-                                        <div class="col-md-12 mb-3">
-                                            <div class="mb-2 border-bottom">
-                                                <h5>Información del emisor</h5>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="row mx-1">
-                                                        <div class="row mb-2">
-                                                            <label class="col-sm-4 col-form-label col-form-label-sm">Razón
-                                                                Social</label>
-                                                            <div class="col-sm-8">
-                                                                <input type="text" name="razon_social_emisor"
-                                                                    id="razon_social_emisor"
-                                                                    class="form-control form-control-sm"
-                                                                    value="{{ $documento['Encabezado']['Emisor']['RznSoc'] }}"
-                                                                    disabled>
-                                                            </div>
-                                                        </div>
-                                                        <div class="row mb-2">
-                                                            <label
-                                                                class="col-sm-4 col-form-label col-form-label-sm">R.U.T.</label>
-                                                            <div class="col-sm-8">
-                                                                <input type="text" name="rut_emisor" id="rut_emisor"
-                                                                    class="form-control form-control-sm"
-                                                                    value="{{ $documento['Encabezado']['Emisor']['RUTEmisor'] }}"
-                                                                    disabled>
-                                                            </div>
-                                                        </div>
-                                                        <div class="row mb-2">
-                                                            <label
-                                                                class="col-sm-4 col-form-label col-form-label-sm">Actividad
-                                                                Económica</label>
-                                                            <div class="col-sm-8">
-                                                                <input type="text" name="giro_emisor" id="giro_emisor"
-                                                                    class="form-control form-control-sm"
-                                                                    value="{{ $documento['Encabezado']['Emisor']['GiroEmis'] }}"
-                                                                    disabled>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="row mx-1">
-                                                        <div class="row mb-2">
-                                                            <label
-                                                                class="col-sm-4 col-form-label col-form-label-sm">Dirección</label>
-                                                            <div class="col-sm-8">
-                                                                <input type="text" name="direccion_emisor"
-                                                                    id="direccion_emisor"
-                                                                    class="form-control form-control-sm" disabled
-                                                                    value="{{ $documento['Encabezado']['Emisor']['DirOrigen'] }}">
-                                                            </div>
-                                                        </div>
-                                                        <div class="row mb-2">
-                                                            <label
-                                                                class="col-sm-4 col-form-label col-form-label-sm">Comuna</label>
-                                                            <div class="col-sm-8">
-                                                                <input type="text" name="comuna_emisor"
-                                                                    id="communa_emisor" class="form-control form-control-sm"
-                                                                    value="{{ $documento['Encabezado']['Emisor']['CmnaOrigen'] }}"
-                                                                    disabled>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+
+                            {{-- Información del cliente --}}
+                            <div class="mb-4">
+                                <h5 class="pb-2 mb-3 border-bottom">Información del cliente</h5>
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label form-label-sm text-muted mb-1">Razón Social</label>
+                                        <input type="text" class="form-control form-control-sm"
+                                            value="{{ $documento['Encabezado']['Receptor']['RznSocRecep'] }}" disabled>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label form-label-sm text-muted mb-1">Dirección</label>
+                                        <input type="text" class="form-control form-control-sm"
+                                            value="{{ $documento['Encabezado']['Receptor']['DirRecep'] }}" disabled>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label form-label-sm text-muted mb-1">R.U.T.</label>
+                                        <input type="text" class="form-control form-control-sm"
+                                            value="{{ $documento['Encabezado']['Receptor']['RUTRecep'] }}" disabled>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label form-label-sm text-muted mb-1">Comuna</label>
+                                        <input type="text" class="form-control form-control-sm"
+                                            value="{{ $documento['Encabezado']['Receptor']['CmnaRecep'] }}" disabled>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label form-label-sm text-muted mb-1">Actividad Económica</label>
+                                        <input type="text" class="form-control form-control-sm"
+                                            value="{{ $documento['Encabezado']['Receptor']['GiroRecep'] }}" disabled>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Información del documento / comercial --}}
+                            <div class="row g-4 mb-4">
+                                <div class="col-md-6">
+                                    <h5 class="pb-2 mb-3 border-bottom">Información del documento</h5>
+                                    <div class="row g-3">
+                                        <div class="col-12">
+                                            <label class="form-label form-label-sm text-muted mb-1">Tipo documento</label>
+                                            <input type="text" class="form-control form-control-sm"
+                                                value="Factura Electrónica (33)" disabled>
                                         </div>
-                                        <div class="col-md-12 mb-3">
-                                            <div class="row">
-                                                <div class="col-md-12 mb-3">
-                                                    <div class="mb-2 border-bottom">
-                                                        <h5>Información del cliente</h5>
-                                                    </div>
-                                                    <div class="row">
-                                                        <div class="col-md-6">
-                                                            <div class="row mx-1">
-                                                                <div class="row mb-2">
-                                                                    <label
-                                                                        class="col-sm-4 col-form-label col-form-label-sm">Razón
-                                                                        Social</label>
-                                                                    <div class="col-sm-8">
-                                                                        <input type="text" name="razon_social_emisor"
-                                                                            id="razon_social_emisor"
-                                                                            class="form-control form-control-sm"
-                                                                            value="{{ $documento['Encabezado']['Receptor']['RznSocRecep'] }}"
-                                                                            disabled>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="row mb-2">
-                                                                    <label
-                                                                        class="col-sm-4 col-form-label col-form-label-sm">R.U.T.</label>
-                                                                    <div class="col-sm-8">
-                                                                        <input type="text" name="rut" id="rut"
-                                                                            class="form-control form-control-sm"
-                                                                            value="{{ $documento['Encabezado']['Receptor']['RUTRecep'] }}"
-                                                                            disabled>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="row mb-2">
-                                                                    <label
-                                                                        class="col-sm-4 col-form-label col-form-label-sm">Actividad
-                                                                        Económica</label>
-                                                                    <div class="col-sm-8">
-                                                                        <input type="text" name="giro" id="giro"
-                                                                            class="form-control form-control-sm"
-                                                                            value="{{ $documento['Encabezado']['Receptor']['GiroRecep'] }}"
-                                                                            disabled>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="row mx-1">
-                                                                <div class="row mb-2">
-                                                                    <label
-                                                                        class="col-sm-4 col-form-label col-form-label-sm">Dirección</label>
-                                                                    <div class="col-sm-8">
-                                                                        <input type="text" name="direccion"
-                                                                            id="direccion"
-                                                                            class="form-control form-control-sm"
-                                                                            value="{{ $documento['Encabezado']['Receptor']['DirRecep'] }}"
-                                                                            disabled>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="row mb-2">
-                                                                    <label
-                                                                        class="col-sm-4 col-form-label col-form-label-sm">Comuna</label>
-                                                                    <div class="col-sm-8">
-                                                                        <input type="text" name="comuna"
-                                                                            id="comuna"
-                                                                            class="form-control form-control-sm"
-                                                                            value="{{ $documento['Encabezado']['Receptor']['CmnaRecep'] }}"
-                                                                            disabled>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6 ">
-                                                    <div class="mb-2 border-bottom">
-                                                        <h5>Información del documento</h5>
-                                                    </div>
-                                                    <div class="row mx-1">
-
-                                                        <div class="row mb-2">
-                                                            <label class="col-sm-4 col-form-label col-form-label-sm">Tipo
-                                                                documento</label>
-                                                            <div class="col-sm-8">
-                                                                <input type="text" name="tipo_doc" id="tipo_doc"
-                                                                    value="Factura Electrónica (33)"
-                                                                    class="form-control form-control-sm" disabled>
-                                                            </div>
-                                                        </div>
-                                                        <div class="row mb-2">
-                                                            <label class="col-sm-4 col-form-label col-form-label-sm">Fecha
-                                                                emisión</label>
-                                                            <div class="col-sm-8">
-                                                                <input type="date" name="fecha_emision"
-                                                                    id="fecha_emision"
-                                                                    class="form-control form-control-sm"
-                                                                    value="{{ $documento['Encabezado']['IdDoc']['FchEmis'] }}"
-                                                                    disabled>
-                                                            </div>
-                                                        </div>
-
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="mb-2 border-bottom">
-                                                        <h5>Información Comercial</h5>
-                                                    </div>
-                                                    <div class="row mx-1">
-                                                        <div class="row mb-2">
-                                                            <label class="col-sm-4 col-form-label col-form-label-sm">Tipo
-                                                                de
-                                                                Pago</label>
-                                                            <div class="col-sm-8">
-                                                                <select name="tipo_pago" id="tipo_pago"
-                                                                    class="form-control form-control-sm" disabled>
-                                                                    @php
-                                                                        $fma_pago = isset(
-                                                                            $documento['Encabezado']['IdDoc'][
-                                                                                'FmaPago'
-                                                                            ],
-                                                                        )
-                                                                            ? $documento['Encabezado']['IdDoc'][
-                                                                                'FmaPago'
-                                                                            ]
-                                                                            : null;
-                                                                    @endphp
-                                                                    <option
-                                                                        @if ($fma_pago == 1) selected @endif
-                                                                        value="1">Contado</option>
-                                                                    <option
-                                                                        @if ($fma_pago == 2) selected @endif
-                                                                        value="2">Credito</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div class="row mb-2">
-                                                            <label class="col-sm-4 col-form-label col-form-label-sm">Fecha
-                                                                Vencimiento</label>
-                                                            <div class="col-sm-8">
-                                                                <input type="date" name="fecha_vencimiento"
-                                                                    id="fecha_vencimiento"
-                                                                    class="form-control form-control-sm"
-                                                                    value="{{ isset($documento['Encabezado']['IdDoc']['FchVenc']) ? $documento['Encabezado']['IdDoc']['FchVenc'] : $documento['Encabezado']['IdDoc']['FchEmis'] }}"
-                                                                    disabled>
-                                                            </div>
-                                                        </div>
-
-                                                    </div>
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-12 mb-3">
-                                            <div class="mb-2 border-bottom">
-                                                <h5>Referencias del documento</h5>
-                                            </div>
-                                            <div class="col-md-12">
-                                                <div class="row mx-1">
-                                                    <table id="tablaReferencia" class="table table-sm mb-3">
-                                                        <thead>
-                                                            <th>Tipo Documento</th>
-                                                            <th>Folio</th>
-                                                            <th>Fecha</th>
-                                                        </thead>
-                                                        <tbody>
-                                                            @php
-                                                                $referencias = array_key_exists('Referencia', $documento) ? $documento['Referencia']:null;
-                                                                if($referencias != null){
-                                                                    if (!isset($referencias[0])){
-                                                                        $referencias = [$referencias];
-                                                                    }
-                                                                }
-                                                            @endphp
-                                                            @if($referencias != null)
-                                                            @foreach ($referencias as $ref)
-                                                                <tr>
-                                                                    @php
-                                                                    $tipoDoc = isset($ref['TpoDocRef']) ? $ref['TpoDocRef'] : '-';
-                                                                    @endphp
-                                                                    <td>{{ \App\Helpers\Herramientas::getTipoDocumento($tipoDoc) }}</td>
-                                                                    <td>{{ $ref['FolioRef'] }}</td>
-                                                                    <td>{{ date('d/m/Y', strtotime($ref['FchRef'])) }}</td>
-                                                                </tr>
-                                                            @endforeach
-                                                            @endif
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-12 mb-3">
-                                            <div class="col-md-12 mb-2 border-bottom">
-                                                <h5 class="d-inline">Detalle del documento</h5>
-                                            </div>
-                                            <div class="row mx-1">
-                                                <div class="table-responsive">
-                                                    <table id="tablaDetalle" class="table mb-4">
-                                                        <thead>
-                                                            <th>SKU</th>
-                                                            <th>Item</th>
-                                                            <th>Cantidad</th>
-                                                            <th>Precio</th>
-                                                            <th>Subtotal</th>
-                                                        </thead>
-                                                        <tbody>
-                                                            @php
-                                                                $detalles = $documento['Detalle'];
-                                                                if (!isset($detalles[0])) {
-                                                                    $detalles = [$detalles];
-                                                                }
-                                                            @endphp
-                                                            @foreach ($detalles as $det)
-                                                                <tr>
-                                                                    <td>{{ isset($det['CdgItem']['VlrCodigo']) ? $det['CdgItem']['VlrCodigo'] : '-' }}
-                                                                    </td>
-                                                                    <td>{!! $det['NmbItem'] !!}</td>
-                                                                    <td>{{ isset($det['QtyItem']) ? $det['QtyItem'] : 1 }}</td>
-                                                                    @php
-                                                                        $precio = 0;
-                                                                        if (isset($det['PrcItem'])) {
-                                                                            $precio = $det['PrcItem'];
-                                                                        }
-                                                                    @endphp
-                                                                    <td>$ {{ number_format($precio, 0, ',', '.') }}
-                                                                    </td>
-                                                                    <td>$
-                                                                        {{ number_format($det['MontoItem'], 0, ',', '.') }}
-                                                                    </td>
-                                                                </tr>
-                                                                @if (isset($det['DscItem']))
-                                                                    <tr>
-                                                                        <td></td>
-                                                                        <td colspan="4">{!! chunk_split($det['DscItem'], 100, '<br>') !!}</td>
-                                                                    </tr>
-                                                                @endif
-                                                            @endforeach
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
+                                        <div class="col-12">
+                                            <label class="form-label form-label-sm text-muted mb-1">Fecha emisión</label>
+                                            <input type="date" class="form-control form-control-sm"
+                                                value="{{ $documento['Encabezado']['IdDoc']['FchEmis'] }}" disabled>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <h5 class="pb-2 mb-3 border-bottom">Información Comercial</h5>
+                                    <div class="row g-3">
+                                        <div class="col-12">
+                                            <label class="form-label form-label-sm text-muted mb-1">Tipo de Pago</label>
+                                            @php
+                                                $fma_pago = isset($documento['Encabezado']['IdDoc']['FmaPago'])
+                                                    ? $documento['Encabezado']['IdDoc']['FmaPago']
+                                                    : null;
+                                            @endphp
+                                            <select class="form-control form-control-sm" disabled>
+                                                <option @if ($fma_pago == 1) selected @endif value="1">Contado</option>
+                                                <option @if ($fma_pago == 2) selected @endif value="2">Credito</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-12">
+                                            <label class="form-label form-label-sm text-muted mb-1">Fecha Vencimiento</label>
+                                            <input type="date" class="form-control form-control-sm"
+                                                value="{{ isset($documento['Encabezado']['IdDoc']['FchVenc']) ? $documento['Encabezado']['IdDoc']['FchVenc'] : $documento['Encabezado']['IdDoc']['FchEmis'] }}"
+                                                disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Referencias del documento --}}
+                            <div class="mb-4">
+                                <h5 class="pb-2 mb-3 border-bottom">Referencias del documento</h5>
+                                <div class="table-responsive">
+                                    <table id="tablaReferencia" class="table table-sm mb-0">
+                                        <thead>
+                                            <th>Tipo Documento</th>
+                                            <th>Folio</th>
+                                            <th>Fecha</th>
+                                        </thead>
+                                        <tbody>
+                                            @php
+                                                $referencias = array_key_exists('Referencia', $documento) ? $documento['Referencia']:null;
+                                                if($referencias != null){
+                                                    if (!isset($referencias[0])){
+                                                        $referencias = [$referencias];
+                                                    }
+                                                }
+                                            @endphp
+                                            @if($referencias != null)
+                                            @foreach ($referencias as $ref)
+                                                <tr>
+                                                    @php
+                                                    $tipoDoc = isset($ref['TpoDocRef']) ? $ref['TpoDocRef'] : '-';
+                                                    @endphp
+                                                    <td>{{ \App\Helpers\Herramientas::getTipoDocumento($tipoDoc) }}</td>
+                                                    <td>{{ $ref['FolioRef'] }}</td>
+                                                    <td>{{ date('d/m/Y', strtotime($ref['FchRef'])) }}</td>
+                                                </tr>
+                                            @endforeach
+                                            @else
+                                                <tr>
+                                                    <td colspan="3" class="text-muted">Sin referencias</td>
+                                                </tr>
+                                            @endif
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            {{-- Detalle del documento --}}
+                            <div>
+                                <h5 class="pb-2 mb-3 border-bottom">Detalle del documento</h5>
+                                <div class="table-responsive">
+                                    <table id="tablaDetalle" class="table table-sm mb-0">
+                                        <thead>
+                                            <th>SKU</th>
+                                            <th>Item</th>
+                                            <th>Cantidad</th>
+                                            <th>Precio</th>
+                                            <th>Subtotal</th>
+                                        </thead>
+                                        <tbody>
+                                            @php
+                                                $detalles = $documento['Detalle'];
+                                                if (!isset($detalles[0])) {
+                                                    $detalles = [$detalles];
+                                                }
+                                            @endphp
+                                            @foreach ($detalles as $det)
+                                                <tr>
+                                                    <td>{{ isset($det['CdgItem']['VlrCodigo']) ? $det['CdgItem']['VlrCodigo'] : '-' }}
+                                                    </td>
+                                                    <td>{!! $det['NmbItem'] !!}</td>
+                                                    <td>{{ isset($det['QtyItem']) ? $det['QtyItem'] : 1 }}</td>
+                                                    @php
+                                                        $precio = 0;
+                                                        if (isset($det['PrcItem'])) {
+                                                            $precio = $det['PrcItem'];
+                                                        }
+                                                    @endphp
+                                                    <td>$ {{ number_format($precio, 0, ',', '.') }}
+                                                    </td>
+                                                    <td>$
+                                                        {{ number_format($det['MontoItem'], 0, ',', '.') }}
+                                                    </td>
+                                                </tr>
+                                                @if (isset($det['DscItem']))
+                                                    <tr>
+                                                        <td></td>
+                                                        <td colspan="4">{!! chunk_split($det['DscItem'], 100, '<br>') !!}</td>
+                                                    </tr>
+                                                @endif
+                                            @endforeach
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
@@ -348,143 +228,75 @@
                         <div class="col-md-12 mb-2">
                             <div class="card">
                                 <div class="card-body">
-                                    <div class="col-md-12">
-                                        <div class="d-flex justify-content-between align-items-baseline">
-                                            <h4 class="card-title mb-0">CATEGORIZACIÓN DE DOCUMENTO</h4>
-                                        </div>
-                                        <div class="row my-2">
-                                            <label class="col-sm-4 col-form-label col-form-label-sm">Categoria</label>
-                                            <div class="col-sm-8">
-                                                <select onchange="categorizarDocumento()" id="categoriaDoc" class="form-control form-control-sm">
-                                                    <option>Sin categorizar</option>
-                                                    @foreach($categorias as $cat)
-                                                    <option value="{{$cat->id}}" @if($factura->categoria_documento_id == $cat->id) selected @endif>{{$cat->nombre}}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
+                                    <h4 class="card-title mb-3">CATEGORIZACIÓN DE DOCUMENTO</h4>
+                                    <div class="mb-4">
+                                        <label class="form-label form-label-sm text-muted mb-1">Categoria</label>
+                                        <select onchange="categorizarDocumento()" id="categoriaDoc" class="form-control form-control-sm">
+                                            <option>Sin categorizar</option>
+                                            @foreach($categorias as $cat)
+                                            <option value="{{$cat->id}}" @if($factura->categoria_documento_id == $cat->id) selected @endif>{{$cat->nombre}}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
-                                    <div class="col-md-12">
-                                        <div class="d-flex justify-content-between align-items-baseline">
-                                            <h4 class="card-title mb-0">ASIGNACIÓN PROYECTO/OBRA DE DOCUMENTO</h4>
-                                        </div>
-                                        <div class="row my-2">
-                                            <label class="col-sm-4 col-form-label col-form-label-sm">Proyecto/Obra</label>
-                                            <div class="col-sm-8">
-                                                <select onchange="asignarProyectoDocumento()" id="proyectoDoc" class="form-control form-control-sm">
-                                                    <option>Sin proyecto</option>
-                                                    @foreach($proyectos as $proy)
-                                                    <option value="{{$proy->id}}" @if($factura->proyecto_id == $proy->id) selected @endif>{{$proy->nombre}}</option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
-                                        </div>
+                                    <h4 class="card-title mb-3">ASIGNACIÓN PROYECTO/OBRA DE DOCUMENTO</h4>
+                                    <div>
+                                        <label class="form-label form-label-sm text-muted mb-1">Proyecto/Obra</label>
+                                        <select onchange="asignarProyectoDocumento()" id="proyectoDoc" class="form-control form-control-sm">
+                                            <option>Sin proyecto</option>
+                                            @foreach($proyectos as $proy)
+                                            <option value="{{$proy->id}}" @if($factura->proyecto_id == $proy->id) selected @endif>{{$proy->nombre}}</option>
+                                            @endforeach
+                                        </select>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-12 mb-2">
                             <div class="card">
                                 <div class="card-body">
-                                    <div class="col-md-12">
-                                        <div class="d-flex justify-content-between align-items-baseline">
-                                            <h4 class="card-title mb-0">INFORMACIÓN DE MONTOS TOTALES</h4>
-                                        </div>
-                                        <div class="col-md-12 mx-2 my-2">
-                                            <div class="row">
-                                                <div class="col-md-7">
-                                                    <p>Subtotal </p>
-                                                </div>
-                                                <div class="col-md-5 text-end">
-                                                    <p id="lblSubtotalDoc">
-                                                        @php
-                                                            $neto = $documento['Encabezado']['Totales']['MntNeto'];
-                                                            $exento = isset(
-                                                                $documento['Encabezado']['Totales']['MntExe'],
-                                                            )
-                                                                ? $documento['Encabezado']['Totales']['MntExe']
-                                                                : 0;
-                                                        @endphp
-                                                        $ {{ number_format($neto + $exento, 0, ',', '.') }}</p>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-7">
-                                                    <p>Monto exento </p>
-                                                </div>
-                                                <div class="col-md-5 text-end">
-                                                    <p id="lblexento">$ {{ number_format($exento, 0, ',', '.') }}</p>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-7">
-                                                    <p>Monto neto </p>
-                                                </div>
-                                                <div class="col-md-5 text-end">
-                                                    <p id="lblneto">$
-                                                        @php
-                                                            $neto = (isset($documento['Encabezado']['Totales']['MntNeto'])?$documento['Encabezado']['Totales']['MntNeto']:0);
-                                                        @endphp
-                                                        {{ number_format($neto, 0, ',', '.') }}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-7">
-                                                    <p>IVA </p>
-                                                </div>
-                                                <div class="col-md-5 text-end">
-                                                    <p id="lbliva">$
-                                                        @php
-                                                            $iva = (isset($documento['Encabezado']['Totales']['IVA'])?$documento['Encabezado']['Totales']['IVA']:0);
-                                                        @endphp
-                                                        {{ number_format($iva, 0, ',', '.') }}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-7">
-                                                    <p>Impuestos adicionales </p>
-                                                </div>
-                                                <div class="col-md-5 text-end">
-                                                    @php
-                                                        $impadicional = 0;
-                                                        if (isset($documento['Encabezado']['Totales']['ImptoReten'])) {
-                                                            $impadicionales =
-                                                                $documento['Encabezado']['Totales']['ImptoReten'];
-                                                            if (!isset($impadicionales[0])) {
-                                                                $impadicionales = [$impadicionales];
-                                                            }
-                                                            foreach ($impadicionales as $impuesto) {
-                                                                if (isset($impuesto['MontoImp'])) {
-                                                                    if ($impuesto != false || $impuesto != null) {
-                                                                        if ($impuesto['MontoImp'] != false) {
-                                                                            $impadicional += $impuesto['MontoImp'];
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    @endphp
-                                                    <p id="lblimpad">$ {{ number_format($impadicional, 0, ',', '.') }}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-7">
-                                                    <p><b>Total </b></p>
-                                                </div>
-                                                <div class="col-md-5 text-end">
-                                                    <p id="lbltotal">$
-                                                        @php
-                                                            $total = (isset($documento['Encabezado']['Totales']['MntTotal'])?$documento['Encabezado']['Totales']['MntTotal']:0);
-                                                        @endphp
-                                                        {{ number_format($total, 0, ',', '.') }}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
+                                    <h4 class="card-title mb-3">INFORMACIÓN DE MONTOS TOTALES</h4>
+                                    @php
+                                        $neto = isset($documento['Encabezado']['Totales']['MntNeto']) ? $documento['Encabezado']['Totales']['MntNeto'] : 0;
+                                        $exento = isset($documento['Encabezado']['Totales']['MntExe']) ? $documento['Encabezado']['Totales']['MntExe'] : 0;
+                                        $iva = isset($documento['Encabezado']['Totales']['IVA']) ? $documento['Encabezado']['Totales']['IVA'] : 0;
+                                        $total = isset($documento['Encabezado']['Totales']['MntTotal']) ? $documento['Encabezado']['Totales']['MntTotal'] : 0;
+                                        $impadicional = 0;
+                                        if (isset($documento['Encabezado']['Totales']['ImptoReten'])) {
+                                            $impadicionales = $documento['Encabezado']['Totales']['ImptoReten'];
+                                            if (!isset($impadicionales[0])) {
+                                                $impadicionales = [$impadicionales];
+                                            }
+                                            foreach ($impadicionales as $impuesto) {
+                                                if (isset($impuesto['MontoImp']) && $impuesto['MontoImp'] != false) {
+                                                    $impadicional += $impuesto['MontoImp'];
+                                                }
+                                            }
+                                        }
+                                    @endphp
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Subtotal</span>
+                                        <span id="lblSubtotalDoc">$ {{ number_format($neto + $exento, 0, ',', '.') }}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Monto exento</span>
+                                        <span id="lblexento">$ {{ number_format($exento, 0, ',', '.') }}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Monto neto</span>
+                                        <span id="lblneto">$ {{ number_format($neto, 0, ',', '.') }}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>IVA</span>
+                                        <span id="lbliva">$ {{ number_format($iva, 0, ',', '.') }}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <span>Impuestos adicionales</span>
+                                        <span id="lblimpad">$ {{ number_format($impadicional, 0, ',', '.') }}</span>
+                                    </div>
+                                    <hr class="my-2">
+                                    <div class="d-flex justify-content-between fw-bold">
+                                        <span>Total</span>
+                                        <span id="lbltotal">$ {{ number_format($total, 0, ',', '.') }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -492,23 +304,24 @@
                         <div class="col-md-12">
                             <div class="card">
                                 <div class="card-body">
-                                    <div class="col-md-12">
-                                        <div class="d-flex justify-content-between align-items-baseline">
-                                            <h4 class="card-title mb-0">PAGOS ASOCIADOS AL DOCUMENTO</h4>
-                                            <button onclick="abrirModalPago()" class="btn btn-primary btn-small float-end" title="Agregar pago">
-                                                <i class="mdi mdi-plus"></i>
-                                            </button>
-                                        </div>
-                                        <table class="table">
+                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                        <h4 class="card-title mb-0">PAGOS ASOCIADOS AL DOCUMENTO</h4>
+                                        <button onclick="abrirModalPago()" class="btn btn-primary btn-sm" title="Agregar pago">
+                                            <i class="mdi mdi-plus"></i>
+                                        </button>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm mb-0">
                                             <thead>
                                                 <th>Tipo</th>
                                                 <th>Fecha</th>
                                                 <th>Monto</th>
+                                                <th></th>
                                             </thead>
                                             <tbody>
                                                 @if(count($pagos) == 0)
                                                 <tr>
-                                                    <td colspan="3">No existen pagos asociados</td>
+                                                    <td colspan="4" class="text-muted">No existen pagos asociados</td>
                                                 </tr>
                                                 @endif
                                                 @foreach($pagos as $pago)
@@ -524,18 +337,16 @@
                                                         }else if($pago->tipo_pago == 4){
                                                             $tipo_pago = 'Otro';
                                                         }
-
                                                     @endphp
                                                     <td>{{$tipo_pago}}</td>
                                                     <td>{{$pago->fecha_pago}}</td>
                                                     <td>$ {{ number_format($pago->monto_pago, 0, ',', '.') }}</td>
-                                                    <td><button class="btn btn-sm btn-outline-danger" style="padding:.25em .5em; float:left;" onclick="eliminarPago({{ $pago->id }})"><i class="mdi mdi-delete"></i></button></td>
+                                                    <td class="text-end"><button class="btn btn-sm btn-outline-danger" style="padding:.25em .5em;" onclick="eliminarPago({{ $pago->id }})"><i class="mdi mdi-delete"></i></button></td>
                                                 </tr>
                                                 @endforeach
                                             </tbody>
                                         </table>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
@@ -833,4 +644,3 @@
         $.toastDefaults.pauseDelayOnHover = true;
     </script>
 @endpush
-
