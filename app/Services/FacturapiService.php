@@ -149,6 +149,23 @@ class FacturapiService
         return $this->get("/rcv/detalle/recibidos/{$tipoDoc}", $query);
     }
 
+    /**
+     * Documentos del RCV cacheados en `rcv_documentos` (no le pega en vivo al SII, ya viene
+     * sincronizado por FacturAPI). Filtrando `estado_contab` en la URL nos ahorra traer y
+     * descartar filas: para "pendientes de acuse" siempre se pide estado_contab=PENDIENTE.
+     */
+    public function rcvPendientes(string $periodoYyyyMm, ?int $tipoDoc = null, ?string $operacion = null): object
+    {
+        $query = array_filter([
+            'periodo' => $periodoYyyyMm,
+            'estado_contab' => 'PENDIENTE',
+            'operacion' => $operacion,
+            'tipo_doc' => $tipoDoc,
+        ]);
+
+        return $this->get('/rcv/pendientes', $query);
+    }
+
     public function rcvAgregarEvento(int $tipoDoc, string $rutReceptor, int $folio, string $evento): object
     {
         return $this->post('/rcv/agregarevento', [
