@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\CategoriaDocumento;
+use App\CompraPendiente;
 use App\FacturaCompra;
 use App\Helpers\Ajustes;
 use App\Notifications\DocumentoRecibido;
@@ -36,9 +37,10 @@ class FacturaCompraController extends Controller
     public function indexPendientes(Request $request){
         $emisor = Ajustes::getEmisor();
         Log::info("[COMPRA] Revision de documentos pendientes en contribuyente ".$emisor['razon_social']);
-        // RCV de Compra del mes actual + el anterior: el SII mantiene los documentos como
-        // PENDIENTE de acuse hasta 8 días, así que a inicios de mes siguen quedando del mes previo.
-        $data = $this->rcvDetalleMultiPeriodo(33, 'PENDIENTE');
+        // Nada en vivo acá: FacturAPI es quien sincroniza contra el SII (cron cada 15 min /
+        // botón "sincronizar"), y esa sincronización mantiene `compra_pendientes` al día. Esta
+        // pantalla solo lee esa tabla local, siempre completa y estable entre recargas.
+        $data = CompraPendiente::where('tipo_doc', 33)->orderByDesc('fecha_emision')->get();
         return view('pages.compras.facturas.pendientes.index', ['emisor' => $emisor, 'documentos' => $data]);
     }
 
@@ -382,6 +384,19 @@ class FacturaCompraController extends Controller
 
             $result = $this->facturapi->rcvAgregarEvento(33, $request->rut, (int) $request->folio, $request->evento);
             Log::info('Respuesta agregarEventoDTE: '.json_encode($result));
+
+            if (($result->success ?? false) === true) {
+                // Ya se registró el acuse/reclamo: sale de la lista de pendientes y pasa a la
+                // sincronización normal como documento aceptado.
+                CompraPendiente::where('tipo_doc', 33)
+                    ->where('rut_emisor', $request->rut)
+                    ->where('folio', (int) $request->folio)
+                    ->delete();
+                FacturaCompra::where('rut_emisor', $request->rut)
+                    ->where('folio', (int) $request->folio)
+                    ->update(['pendiente_acuse' => false]);
+            }
+
             return response()->json($result);
         }catch(Exception $ex){
             Log::error($ex);

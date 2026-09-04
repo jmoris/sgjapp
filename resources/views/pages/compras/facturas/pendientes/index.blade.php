@@ -88,17 +88,16 @@
                                             @foreach ($documentos as $documento)
                                                 <tr>
                                                     <td><input class="ms-1 selectedId" name="selectedId" type="checkbox"
-                                                            emisor="{{ $documento->detRutDoc . '-' . $documento->detDvDoc }}"
-                                                            folio="{{ $documento->detNroDoc }}" /></td>
-                                                    <td class="text-start">{{ $documento->detNroDoc }}</td>
-                                                    <td class="text-start">{{ $documento->detRznSoc }}</td>
+                                                            emisor="{{ $documento->rut_emisor }}"
+                                                            folio="{{ $documento->folio }}" /></td>
+                                                    <td class="text-start">{{ $documento->folio }}</td>
+                                                    <td class="text-start">{{ $documento->razon_social }}</td>
+                                                    <td class="text-start">{{ $documento->rut_emisor }}</td>
                                                     <td class="text-start">
-                                                        {{ $documento->detRutDoc . '-' . $documento->detDvDoc }}</td>
-                                                    <td class="text-start">
-                                                        {{ date('d/m/Y', strtotime(str_replace('/', '-', $documento->detFchDoc))) }}
+                                                        {{ optional($documento->fecha_emision)->format('d/m/Y') }}
                                                     </td>
                                                     <td class="text-start">$
-                                                        {{ number_format($documento->detMntTotal, 0, ',', '.') }}</td>
+                                                        {{ number_format($documento->monto_total, 0, ',', '.') }}</td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
