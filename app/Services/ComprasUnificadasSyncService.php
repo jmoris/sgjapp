@@ -20,6 +20,13 @@ use InvalidArgumentException;
  */
 class ComprasUnificadasSyncService
 {
+    /**
+     * Días corridos que la Ley 19.983 le da al receptor para dar acuse/reclamar un documento
+     * desde su recepción; pasado ese plazo el SII lo da por aceptado automáticamente. Ninguna
+     * fila puede ser legítimamente pendiente más allá de esto.
+     */
+    protected const DIAS_LIMITE_ACUSE = 8;
+
     public function __construct(protected FacturapiService $facturapi)
     {
     }
@@ -195,11 +202,8 @@ class ComprasUnificadasSyncService
     /**
      * Trae los documentos PENDIENTE de acuse desde /rcv/pendientes (cacheado en rcv_documentos,
      * sin pegarle en vivo al SII), persiste/actualiza cada uno en la tabla local
-     * `compra_pendientes` y poda las filas que ya no aparecen pendientes. Devuelve el mapa
+     * `compra_pendientes` y poda las filas que ya no corresponden. Devuelve el mapa
      * "RUT-DV|folio" => true que usa sincronizar() para marcar `pendiente_acuse`.
-     *
-     * La poda solo aplica a periodos cuya llamada fue exitosa, para no perder pendientes locales
-     * por un vacío transitorio de la API en algún periodo.
      *
      * @param  list<string>  $periodos
      * @return array<string, true>
@@ -223,6 +227,18 @@ class ComprasUnificadasSyncService
                 if ($rut === null || $folio === null) {
                     continue;
                 }
+
+                // Filtro de sanidad: por ley nada puede seguir pendiente pasados los 8 días
+                // corridos desde la recepción. Si /rcv/pendientes igual trae una fila más vieja
+                // (dato inconsistente en el caché) se ignora en vez de mostrarla como pendiente.
+                $fechaReferencia = $fila->fecha_recepcion ?? $fila->fecha_emision ?? null;
+                if ($fechaReferencia !== null) {
+                    $dias = (time() - strtotime($fechaReferencia)) / 86400;
+                    if ($dias > self::DIAS_LIMITE_ACUSE) {
+                        continue;
+                    }
+                }
+
                 $rutCompleto = ! empty($dv) ? "{$rut}-{$dv}" : (string) $rut;
                 $pendientes[$this->claveDocumento($rutCompleto, $folio)] = true;
 
@@ -239,6 +255,19 @@ class ComprasUnificadasSyncService
             }
         }
 
+        // Poda dura: nada fuera de la ventana de periodos vigente (mes actual + anterior) puede
+        // ser legítimamente pendiente — si su periodo dejó de consultarse (o nunca tuvo uno
+        // asignado), la fila quedaría huérfana para siempre sin este corte incondicional. Es la
+        // causa raíz de que pendientes de meses viejos se acumularan sin límite.
+        CompraPendiente::where('tipo_doc', $tipoDoc)
+            ->where(function ($query) use ($periodos) {
+                $query->whereNotIn('periodo', $periodos)->orWhereNull('periodo');
+            })
+            ->delete();
+
+        // Poda suave: dentro de la ventana vigente, lo que ya no aparece pendiente en un periodo
+        // consultado con éxito esta corrida es porque recibió acuse/reclamo. Se limita a
+        // $periodosOk para no perder pendientes válidos por un vacío transitorio de la API.
         if (! empty($periodosOk)) {
             CompraPendiente::where('tipo_doc', $tipoDoc)
                 ->whereIn('periodo', $periodosOk)
