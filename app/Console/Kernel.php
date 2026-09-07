@@ -45,10 +45,18 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $tenants = Tenant::all();
+        try {
+            $tenants = Tenant::all();
+        } catch (Exception $ex) {
+            // Si no se puede resolver la lista de tenants (BD landlord caída, etc.) NO se debe
+            // dejar que la excepción aborte `schedule:run`: eso deja TODO el cron sin ejecutar
+            // (incluida la sincronización de compras) hasta que alguien lo note.
+            Log::error("No se pudo obtener la lista de tenants para el scheduler: ".$ex->getMessage());
+            return;
+        }
+
         foreach($tenants as $tenant){
-            // Verificamos que sea un tenant
-            Log::info("Contexto Tenant : ".$tenant->name);
+          try {
             $tenant->makeCurrent();
             if (Tenant::checkCurrent()) {
                 if (empty($tenant->facturapi_token)) {
@@ -249,7 +257,9 @@ class Kernel extends ConsoleKernel
                 }))->everyFiveMinutes();
 
                 /**
-                 * Tarea que revisa cada 15 min las facturas de compra recibidas
+                 * Tarea que revisa cada 30 min las facturas de compra recibidas.
+                 * FacturAPI refresca su cache contra el SII ~cada 1 hr, así que con 30 min
+                 * de intervalo nunca se pierde una corrida entre actualizaciones.
                  */
                 $schedule->call($tenant->callback(function() {
                     try{
@@ -272,10 +282,10 @@ class Kernel extends ConsoleKernel
                         Log::info("Error sincronizado las facturas de compra");
                         Log::error($ex);
                     }
-                }))->everyFifteenMinutes();
+                }))->everyThirtyMinutes()->withoutOverlapping();
 
                 /**
-                 * Tarea que revisa cada 15 min las notas de credito de compra recibidas
+                 * Tarea que revisa cada 30 min las notas de credito de compra recibidas
                  */
                 $schedule->call($tenant->callback(function() {
                     try{
@@ -295,7 +305,7 @@ class Kernel extends ConsoleKernel
                         Log::info("Error sincronizando las notas de credito de compra");
                         Log::error($ex);
                     }
-                }))->everyFifteenMinutes();
+                }))->everyThirtyMinutes()->withoutOverlapping();
 
                 /**
                  * Tarea que envia el reporte de facturas de compra por categorizar todos los dias a las 1/:00
@@ -313,7 +323,13 @@ class Kernel extends ConsoleKernel
 
                 }))->weekdays()->dailyAt('17:00');
             }
+          } catch (Exception $ex) {
+            // Un tenant con problemas (credenciales, BD, etc.) no debe impedir que se registren
+            // las tareas del resto de los tenants.
+            Log::error("Error registrando tareas programadas para el tenant ".($tenant->name ?? '?').": ".$ex->getMessage());
+          } finally {
             Tenant::forgetCurrent();
+          }
         }
     }
 
