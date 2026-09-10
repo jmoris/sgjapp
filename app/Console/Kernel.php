@@ -282,7 +282,7 @@ class Kernel extends ConsoleKernel
                         Log::info("Error sincronizado las facturas de compra");
                         Log::error($ex);
                     }
-                }))->everyThirtyMinutes()->withoutOverlapping();
+                }))->everyThirtyMinutes()->name("compras:facturas:{$tenant->id}")->withoutOverlapping(60);
 
                 /**
                  * Tarea que revisa cada 30 min las notas de credito de compra recibidas
@@ -305,7 +305,7 @@ class Kernel extends ConsoleKernel
                         Log::info("Error sincronizando las notas de credito de compra");
                         Log::error($ex);
                     }
-                }))->everyThirtyMinutes()->withoutOverlapping();
+                }))->everyThirtyMinutes()->name("compras:notascredito:{$tenant->id}")->withoutOverlapping(60);
 
                 /**
                  * Tarea que envia el reporte de facturas de compra por categorizar todos los dias a las 1/:00
