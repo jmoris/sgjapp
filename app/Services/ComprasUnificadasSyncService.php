@@ -243,8 +243,12 @@ class ComprasUnificadasSyncService
                 // Guardar el RUT sin DV lo deja inválido para el SII: rcvAgregarEvento() (acuse/
                 // reclamo) lo rechaza con "rut inválido" y el documento queda imposible de
                 // gestionar desde la pantalla de pendientes. Si falta, se calcula localmente.
+                // OJO: no usar empty($dv) — el dígito verificador "0" es válido y PHP considera
+                // empty("0") === true, lo que descartaba el DV real de la API y lo trataba como
+                // ausente.
                 $rutNumerico = preg_replace('/\D/', '', (string) $rut);
-                $rutCompleto = ! empty($dv) ? "{$rutNumerico}-{$dv}" : "{$rutNumerico}-".$this->calcularDv($rutNumerico);
+                $dvValido = $dv !== null && $dv !== '';
+                $rutCompleto = $dvValido ? "{$rutNumerico}-{$dv}" : "{$rutNumerico}-".$this->calcularDv($rutNumerico);
                 $pendientes[$this->claveDocumento($rutCompleto, $folio)] = true;
 
                 CompraPendiente::updateOrCreate(
