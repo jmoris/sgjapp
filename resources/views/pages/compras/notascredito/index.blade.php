@@ -200,14 +200,42 @@
         });
 
         function sincronizarDocumentos() {
+            Swal.fire({
+                title: 'Sincronizando notas de crédito de compra',
+                html: 'Estamos consultando el SII y el correo de intercambio.<br>Esto puede tardar hasta un minuto. No cierres ni recargues esta ventana.',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
             $.ajax({
                 type: "GET",
                 url: '/api/compras/notascredito/sincronizar',
                 success: function(data) {
                     if (data.success == true) {
-                        console.log(data);
-                        location.reload();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Documentos sincronizados',
+                            text: data.msg || 'La sincronización se completó correctamente.',
+                            timer: 1500,
+                            showConfirmButton: false
+                        }).then(() => location.reload());
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'No se pudo sincronizar',
+                            text: (data && data.msg) ? data.msg : 'Hubo un error al sincronizar los documentos con la API.'
+                        });
                     }
+                },
+                error: function() {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'No se pudo sincronizar',
+                        text: 'Ocurrió un problema de conexión. Intenta nuevamente en unos minutos.'
+                    });
                 }
             });
         }
