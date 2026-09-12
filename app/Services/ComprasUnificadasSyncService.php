@@ -239,7 +239,12 @@ class ComprasUnificadasSyncService
                     }
                 }
 
-                $rutCompleto = ! empty($dv) ? "{$rut}-{$dv}" : (string) $rut;
+                // /rcv/pendientes a veces trae dv_contraparte vacío para algunos proveedores.
+                // Guardar el RUT sin DV lo deja inválido para el SII: rcvAgregarEvento() (acuse/
+                // reclamo) lo rechaza con "rut inválido" y el documento queda imposible de
+                // gestionar desde la pantalla de pendientes. Si falta, se calcula localmente.
+                $rutNumerico = preg_replace('/\D/', '', (string) $rut);
+                $rutCompleto = ! empty($dv) ? "{$rutNumerico}-{$dv}" : "{$rutNumerico}-".$this->calcularDv($rutNumerico);
                 $pendientes[$this->claveDocumento($rutCompleto, $folio)] = true;
 
                 CompraPendiente::updateOrCreate(
@@ -276,6 +281,28 @@ class ComprasUnificadasSyncService
         }
 
         return $pendientes;
+    }
+
+    /**
+     * Dígito verificador de un RUT chileno (algoritmo módulo 11), usado cuando
+     * /rcv/pendientes no entrega dv_contraparte para poder guardar un RUT válido.
+     */
+    protected function calcularDv(string $rutNumerico): string
+    {
+        $suma = 0;
+        $multiplicador = 2;
+        foreach (array_reverse(str_split($rutNumerico)) as $digito) {
+            $suma += ((int) $digito) * $multiplicador;
+            $multiplicador = $multiplicador === 7 ? 2 : $multiplicador + 1;
+        }
+
+        $resto = 11 - ($suma % 11);
+
+        return match ($resto) {
+            11 => '0',
+            10 => 'K',
+            default => (string) $resto,
+        };
     }
 
     /**
