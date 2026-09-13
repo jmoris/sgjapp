@@ -10,6 +10,10 @@ class FacturaCompra extends Model
 {
     use HasFactory, UsesTenantConnection;
 
+    protected $casts = [
+        'oc_conciliacion_checked_at' => 'datetime',
+    ];
+
     public function proyecto(){
         return $this->hasOne(Proyecto::class, 'id', 'proyecto_id');
     }

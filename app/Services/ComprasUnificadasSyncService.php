@@ -160,6 +160,7 @@ class ComprasUnificadasSyncService
 
                     if ($montoCoincide && $razonCoincide) {
                         $doc->proyecto_id = $ocdoc->proyecto_id;
+                        $doc->oc_conciliacion_checked_at = null;
                         // 3 = FACTURADA: llegó una factura de compra referenciando esta OC.
                         // No se toca si ya está ANULADA (-1).
                         if ($ocdoc->estado != -1 && $ocdoc->estado != 3) {
@@ -167,16 +168,27 @@ class ComprasUnificadasSyncService
                             $ocdoc->save();
                         }
                     } else {
-                        Log::warning('ComprasUnificadasSyncService: el folio de OC referenciado coincide pero el monto o la razón social del emisor no calzan, no se concilia automáticamente', [
-                            'factura_compra_rut' => $doc->rut_emisor,
-                            'factura_compra_folio' => $doc->folio,
-                            'oc_id' => $ocdoc->id,
-                            'oc_folio' => $ocdoc->folio,
-                            'monto_oc' => $ocdoc->monto_total,
-                            'monto_factura' => $doc->monto_total,
-                            'razon_social_oc' => $ocdoc->proveedor->razon_social ?? null,
-                            'razon_social_factura' => $doc->razon_social_emisor,
-                        ]);
+                        // Se sigue evaluando en cada corrida (para backfillear si la OC se
+                        // corrige más adelante), pero solo se repite el warning si la OC cambió
+                        // desde el último chequeo — si no, es el mismo desajuste de siempre y no
+                        // aporta nada volver a inundar el log cada 30 min.
+                        $yaAvisado = $doc->oc_conciliacion_checked_at !== null
+                            && $doc->oc_conciliacion_checked_at->gte($ocdoc->updated_at);
+
+                        if (! $yaAvisado) {
+                            Log::warning('ComprasUnificadasSyncService: el folio de OC referenciado coincide pero el monto o la razón social del emisor no calzan, no se concilia automáticamente', [
+                                'factura_compra_rut' => $doc->rut_emisor,
+                                'factura_compra_folio' => $doc->folio,
+                                'oc_id' => $ocdoc->id,
+                                'oc_folio' => $ocdoc->folio,
+                                'monto_oc' => $ocdoc->monto_total,
+                                'monto_factura' => $doc->monto_total,
+                                'razon_social_oc' => $ocdoc->proveedor->razon_social ?? null,
+                                'razon_social_factura' => $doc->razon_social_emisor,
+                            ]);
+                        }
+
+                        $doc->oc_conciliacion_checked_at = now();
                     }
                 }
             }
