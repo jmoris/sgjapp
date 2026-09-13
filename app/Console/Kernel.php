@@ -261,7 +261,13 @@ class Kernel extends ConsoleKernel
                  * FacturAPI refresca su cache contra el SII ~cada 1 hr, así que con 30 min
                  * de intervalo nunca se pierde una corrida entre actualizaciones.
                  */
-                $schedule->call($tenant->callback(function() {
+                $schedule->call($tenant->callback(function() use ($tenant) {
+                    // Instrumentación temporal: si el proceso muere sin excepción (kill externo,
+                    // fatal no capturable) queda un "INICIO" sin su "FIN" correspondiente en el
+                    // log, lo que lo hace diagnosticable en vez de desaparecer sin rastro.
+                    $inicio = microtime(true);
+                    $pid = getmypid();
+                    Log::info("[COMPRA][TRACE] INICIO facturas tenant={$tenant->name} pid={$pid} mem=".round(memory_get_usage(true)/1048576, 1)."MB");
                     try{
                         // Mes actual + mes anterior: el SII deja los documentos PENDIENTE de acuse
                         // hasta 8 días, por lo que a inicios de mes siguen llegando del mes previo.
@@ -282,12 +288,17 @@ class Kernel extends ConsoleKernel
                         Log::info("Error sincronizado las facturas de compra");
                         Log::error($ex);
                     }
+                    $duracion = round(microtime(true) - $inicio, 2);
+                    Log::info("[COMPRA][TRACE] FIN facturas tenant={$tenant->name} pid={$pid} duracion={$duracion}s mem_pico=".round(memory_get_peak_usage(true)/1048576, 1)."MB");
                 }))->everyThirtyMinutes()->name("compras:facturas:{$tenant->id}")->withoutOverlapping(60);
 
                 /**
                  * Tarea que revisa cada 30 min las notas de credito de compra recibidas
                  */
-                $schedule->call($tenant->callback(function() {
+                $schedule->call($tenant->callback(function() use ($tenant) {
+                    $inicio = microtime(true);
+                    $pid = getmypid();
+                    Log::info("[COMPRA][TRACE] INICIO notascredito tenant={$tenant->name} pid={$pid} mem=".round(memory_get_usage(true)/1048576, 1)."MB");
                     try{
                         $periodos = ComprasUnificadasSyncService::periodosPorDefecto();
                         $emisor = Ajustes::getEmisor();
@@ -305,6 +316,8 @@ class Kernel extends ConsoleKernel
                         Log::info("Error sincronizando las notas de credito de compra");
                         Log::error($ex);
                     }
+                    $duracion = round(microtime(true) - $inicio, 2);
+                    Log::info("[COMPRA][TRACE] FIN notascredito tenant={$tenant->name} pid={$pid} duracion={$duracion}s mem_pico=".round(memory_get_peak_usage(true)/1048576, 1)."MB");
                 }))->everyThirtyMinutes()->name("compras:notascredito:{$tenant->id}")->withoutOverlapping(60);
 
                 /**
