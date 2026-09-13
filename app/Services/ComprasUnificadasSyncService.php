@@ -138,7 +138,10 @@ class ComprasUnificadasSyncService
                 if ($intercambioId !== null) {
                     $doc->facturapi_compra_id = $intercambioId;
                 }
-                if (! empty($fila->fecha_vencimiento)) {
+                // fecha_vencimiento solo existe en factura_compras (las notas de crédito no
+                // manejan vencimiento) — asignarlo también para NotaCreditoCompra revienta el
+                // INSERT con "Unknown column 'fecha_vencimiento'".
+                if ($modelClass === FacturaCompra::class && ! empty($fila->fecha_vencimiento)) {
                     $doc->fecha_vencimiento = date('Y-m-d', strtotime($fila->fecha_vencimiento));
                 }
                 $doc->tiene_xml = true;
