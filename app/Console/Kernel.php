@@ -86,7 +86,7 @@ class Kernel extends ConsoleKernel
                                     $fact = Factura::where('folio', $doc->folio)->first();
                                     $factEstado = $fact->estado;
                                     $factEstado = substr($factEstado, 1);
-                                    $newEstado = $estado.$factEstado;
+                                    $newEstado = str_pad($estado.$factEstado, 3, '0', STR_PAD_RIGHT);
 
                                     Log::info($newEstado);
 
@@ -112,7 +112,7 @@ class Kernel extends ConsoleKernel
                                     $nc = NotaCredito::where('folio', $doc->folio)->first();
                                     $ncEstado = $nc->estado;
                                     $ncEstado = substr($ncEstado, 1);
-                                    $newEstado = $estado.$ncEstado;
+                                    $newEstado = str_pad($estado.$ncEstado, 2, '0', STR_PAD_RIGHT);
                                     NotaCredito::where('folio', $doc->folio)->update([
                                         'track_id' => $doc->track_id,
                                         'estado' => $newEstado
@@ -139,8 +139,12 @@ class Kernel extends ConsoleKernel
                             $docData = $facturapi->consultarEstadoCorreo(33, $doc->folio);
                             $estado = strval($doc->estado);
                             $estadoSii = substr($estado, 0, 1);
+                            // Sin email_recibido en la respuesta se conserva el dígito actual: un vacío acortaba el estado ("10").
                             $estadoXml = strval($docData->email_recibido ?? '');
-                            $estadoPago = substr($estado, 2, 1);
+                            if($estadoXml === ''){
+                                $estadoXml = substr($estado, 1, 1) ?: '0';
+                            }
+                            $estadoPago = substr($estado, 2, 1) ?: '0';
                             $factEstado = $estadoSii.$estadoXml.$estadoPago;
                             Factura::where('id', $doc->id)->update(['estado' => $factEstado]);
                         }
@@ -151,6 +155,9 @@ class Kernel extends ConsoleKernel
                             $estado = strval($doc->estado);
                             $estadoSii = substr($estado, 0, 1);
                             $estadoXml = strval($docData->email_recibido ?? '');
+                            if($estadoXml === ''){
+                                $estadoXml = substr($estado, 1, 1) ?: '0';
+                            }
                             $ncEstado = $estadoSii.$estadoXml;
                             NotaCredito::where('id', $doc->id)->update(['estado' => $ncEstado]);
                         }

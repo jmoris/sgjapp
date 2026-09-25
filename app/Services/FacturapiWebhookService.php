@@ -281,7 +281,7 @@ class FacturapiWebhookService
             return;
         }
 
-        $estado = str_pad((string) $documento->estado, $longitud, '0', STR_PAD_LEFT);
+        $estado = str_pad((string) $documento->estado, $longitud, '0', STR_PAD_RIGHT);
         if ((int) $estado[0] === 3) {
             return;
         }
@@ -295,7 +295,7 @@ class FacturapiWebhookService
      */
     private function actualizarDigitoXml($documento, int $longitud, int $nuevoDigito): void
     {
-        $estado = str_pad((string) $documento->estado, $longitud, '0', STR_PAD_LEFT);
+        $estado = str_pad((string) $documento->estado, $longitud, '0', STR_PAD_RIGHT);
         $estado[1] = (string) $nuevoDigito;
         $documento->estado = $estado;
     }

@@ -16,7 +16,7 @@
                 <i class="mdi mdi-file-xml-box"></i>
                 Descargar XML
             </button>
-            @if(substr(str_pad((string) $factura->estado, 3, '0', STR_PAD_LEFT), 1, 1) === '0')
+            @if(substr((string) $factura->estado, 1, 1) === '0')
                 <button type="button" class="btn btn-warning" onclick="reenviarDte()">
                     <i class="mdi mdi-email-send-outline"></i>
                     Reenviar DTE
