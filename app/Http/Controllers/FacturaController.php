@@ -466,6 +466,34 @@ class FacturaController extends Controller
             return $ex;
         }
     }
+    public function reenviarIntercambio(Request $request, $folio){
+        $validator = Validator::make($request->all(), [
+            'correo' => 'nullable|email|max:120',
+        ]);
+
+        if($validator->fails()){
+            return response()->json([
+                'success' => false,
+                'msg' => 'El correo ingresado no es válido',
+                'error' => $validator->errors()
+            ], 422);
+        }
+
+        $result = $this->facturapi->reenviarIntercambio(33, $folio, $request->input('correo'));
+
+        if(($result->success ?? true) === false){
+            return response()->json([
+                'success' => false,
+                'msg' => $result->msg ?? 'No se pudo reenviar el DTE'
+            ], 422);
+        }
+
+        return response()->json([
+            'success' => true,
+            'msg' => $result->msg ?? 'DTE reenviado correctamente'
+        ]);
+    }
+
     public function agregarPago(Request $request, $id){
         try{
             $validator = Validator::make($request->all(), [

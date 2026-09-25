@@ -127,6 +127,17 @@ class FacturapiService
         return $this->post('/documentos/emitir', $payload);
     }
 
+    /**
+     * Reenvía el DTE por correo de intercambio (síncrono). `$correo` es opcional y
+     * reemplaza el destino registrado (máx. 120 caracteres).
+     */
+    public function reenviarIntercambio(int $tipoDoc, $folio, ?string $correo = null): object
+    {
+        $payload = $correo !== null && $correo !== '' ? ['correo' => $correo] : [];
+
+        return $this->post("/documentos/{$tipoDoc}/{$folio}/reenviar-intercambio", $payload);
+    }
+
     public function cederDocumentos(array $documentos, array $factoring): object
     {
         $payload = array_merge(['documentos' => $documentos], $factoring);

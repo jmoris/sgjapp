@@ -16,6 +16,12 @@
                 <i class="mdi mdi-file-xml-box"></i>
                 Descargar XML
             </button>
+            @if(substr(str_pad((string) $factura->estado, 3, '0', STR_PAD_LEFT), 1, 1) === '0')
+                <button type="button" class="btn btn-warning" onclick="reenviarDte()">
+                    <i class="mdi mdi-email-send-outline"></i>
+                    Reenviar DTE
+                </button>
+            @endif
             <button type="button" class="btn btn-danger" onclick="location.href = '/ventas/facturas'">
                 <i class="mdi mdi-arrow-left"></i>
                 Volver
@@ -402,6 +408,43 @@
                 rightAlign: false
             });
         });
+
+        function reenviarDte(){
+            Swal.fire({
+                title: "Reenviar DTE",
+                text: "Se reenviará el DTE por correo de intercambio. Puede modificar el correo de destino.",
+                input: "email",
+                inputValue: @json(optional($factura->cliente)->email_dte ?? ''),
+                inputPlaceholder: "Correo de intercambio del cliente",
+                inputAttributes: { maxlength: 120 },
+                inputValidator: (value) => {
+                    if (value && value.length > 120) {
+                        return "El correo no puede superar los 120 caracteres";
+                    }
+                },
+                showCancelButton: true,
+                confirmButtonColor: "#6571FF",
+                cancelButtonColor: "#FF3366",
+                confirmButtonText: "Reenviar",
+                cancelButtonText: "Cancelar",
+                showLoaderOnConfirm: true,
+                allowOutsideClick: () => !Swal.isLoading(),
+                preConfirm: (correo) => {
+                    return $.ajax({
+                        type: "POST",
+                        url: "/api/ventas/facturas/reenviar-intercambio/{{ intval($documento['Encabezado']['IdDoc']['Folio']) }}",
+                        data: correo ? { correo: correo } : {}
+                    }).catch((xhr) => {
+                        var msg = (xhr.responseJSON && xhr.responseJSON.msg) ? xhr.responseJSON.msg : 'No se pudo reenviar el DTE';
+                        Swal.showValidationMessage(msg);
+                    });
+                }
+            }).then((result) => {
+                if (result.isConfirmed && result.value && result.value.success) {
+                    Swal.fire({ icon: "success", title: "DTE reenviado", text: result.value.msg }).then(() => location.reload());
+                }
+            });
+        }
 
         function abrirModalPago(){
             $('#modalPagos').modal('show');
