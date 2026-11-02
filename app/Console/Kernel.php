@@ -198,7 +198,7 @@ class Kernel extends ConsoleKernel
                             'email' => $cesion->factoring->email_cesion,
                         ]);
                         Log::info("Datos recibidos cesión:");
-                        Log::info($docData);
+                        Log::info(json_encode($docData));
                         if($docData->success ?? false){
                             // @unverified-response-shape: no está confirmado si el id de la cesión creada
                             // viene como 'id' o 'trackid' en la respuesta de POST /documentos/cesionar.
@@ -239,7 +239,7 @@ class Kernel extends ConsoleKernel
                     foreach($cesiones as $cesion){
                         $docData = $facturapi->consultarCesion((string) $cesion->facturapi_cesion_id);
                         Log::info("Estado consultado cesión {$cesion->id} (facturapi_cesion_id={$cesion->facturapi_cesion_id}):");
-                        Log::info($docData);
+                        Log::info(json_encode($docData));
 
                         $estadoTexto = strtolower((string) ($docData->estado ?? ''));
                         $nuevoEstado = null;
