@@ -117,6 +117,10 @@ class BorradorController extends Controller
             Log::info($request->info);
             InfoBorrador::where('borrador_id', $borrador->id)->delete();
             foreach($request->info as $info){
+                // Campos vacíos (ej. datos de traslado sin completar) llegan como null: no se guardan
+                if(!isset($info['valor']) || $info['valor'] === ''){
+                    continue;
+                }
                 $linea = new InfoBorrador();
                 $linea->nombre = $info['nombre'];
                 $linea->valor = $info['valor'];

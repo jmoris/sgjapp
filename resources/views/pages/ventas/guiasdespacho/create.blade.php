@@ -1192,7 +1192,7 @@
                     }
                 ].concat(['comuna_destino','direccion_destino','patente','patente_carro','rut_transportista','rut_chofer','nombre_chofer','fecha_salida','hora_salida','fecha_llegada'].map(function(c){
                     return { nombre: c, valor: $('#'+c).val() || '' };
-                })),
+                }).filter(function(i){ return i.valor !== ''; })),
                 items: fixedDetalle,
                 referencias: referencias,
                 proyecto: idProyecto,
