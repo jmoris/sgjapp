@@ -10,6 +10,7 @@ use App\DocumentoPendiente;
 use App\Factura;
 use App\Helpers\Ajustes;
 use App\Helpers\Herramientas;
+use App\Helpers\Traslado;
 use App\LineaFactura;
 use App\ListaPrecio;
 use App\PagoFactura;
@@ -277,6 +278,23 @@ class FacturaController extends Controller
                 ]);
             }
 
+            // Res. 144/2026: datos de traslado opcionales (factura que ampara traslado)
+            $traslado = Traslado::payload($request->all(), false);
+            unset($traslado['comuna_destino']);
+            if(!empty($request->comuna_destino)) $traslado['comuna_destino'] = $request->comuna_destino;
+            $conTraslado = !empty($traslado);
+            if($conTraslado){
+                $errTraslado = Traslado::validar($request->all(), [], $request->referencias ?? [], false);
+                if(!empty($errTraslado)){
+                    return response()->json([
+                        'success' => 'false',
+                        'msg' => collect($errTraslado)->flatten()->first(),
+                        'error' => collect($errTraslado)->flatten()->implode(' | '),
+                        'errors' => $errTraslado
+                    ]);
+                }
+            }
+
             $emisor = Ajustes::getEmisor();
             $cliente = Cliente::where('id', $request->cliente)->with('comuna')->first();
 
@@ -294,22 +312,13 @@ class FacturaController extends Controller
             }
             $detalle = array_filter($detalle);
 
-            $refArray = ($request->referencias==null)?[]:$request->referencias;
-
-
-            $referencias = [];
-            foreach($refArray as $ref){
-                array_push($referencias, [
-                    'tipo' => $ref['tipo'],
-                    'folio' => $ref['folio'],
-                    'fecha' => $ref['fecha'],
-                    'razon' => (!empty($ref['razon'])) ? $ref['razon'] : ' ',
-                    'codigo' => false
-                ]);
-            }
+            $referencias = Traslado::referencias($request->referencias ?? []);
             $vencimiento = date('Y-m-d', strtotime(str_replace('/', '-', $request->fecha_vencimiento)));
-            $detalleApi = array_map(function($item){
-                unset($item['descripcion']);
+            // La descripción solo se envía si la factura ampara traslado (Res. 144/2026)
+            $detalleApi = array_map(function($item) use ($conTraslado){
+                if(!$conTraslado || empty($item['descripcion'])){
+                    unset($item['descripcion']);
+                }
                 return $item;
             }, $detalle);
             $data = [
@@ -329,6 +338,7 @@ class FacturaController extends Controller
                 'referencias' => $referencias,
                 'correo_dte' => $cliente->email_dte
             ];
+            $data = array_merge($data, $traslado);
 
             Log::info("Datos enviados Factura:");
             Log::info($data);
@@ -340,7 +350,8 @@ class FacturaController extends Controller
                 return response()->json([
                     'success' => 'false',
                     'msg' => 'No se pudo generar el documento en la API',
-                    'error' => $docData->error ?? ($docData->msg ?? null)
+                    'error' => $docData->msg ?? ($docData->error ?? null),
+                    'errors' => $docData->errors ?? null
                 ]);
             }
 
@@ -364,6 +375,7 @@ class FacturaController extends Controller
                 $fact->glosa = str_replace('///', '<br>', $request->glosa);
             }
             $fact->tipo_pago = $request->tipo_pago;
+            Traslado::aplicar($fact, $request->all());
             $fact->save();
             // Se recorre listado de productos OC y se almacenan
             $subtotal = 0;
@@ -405,7 +417,11 @@ class FacturaController extends Controller
         }catch(Exception $ex){
             Log::error('Usuario conectado: '.auth()->user());
             Log::error($ex);
-            return $ex;
+            return response()->json([
+                'success' => 'false',
+                'msg' => 'No se pudo generar el documento',
+                'error' => $ex->getMessage()
+            ]);
         }
     }
 

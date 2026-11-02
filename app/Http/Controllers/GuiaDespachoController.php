@@ -9,6 +9,7 @@ use App\DocumentoPendiente;
 use App\GuiaDespacho;
 use App\Helpers\Ajustes;
 use App\Helpers\Herramientas;
+use App\Helpers\Traslado;
 use App\InfoBorrador;
 use App\LineaBorrador;
 use App\LineaGuia;
@@ -81,7 +82,7 @@ class GuiaDespachoController extends Controller
                 'fecha_emision' => 'required',
                 'cliente' => 'required',
                 'ind_traslado' => 'required',
-                'tipo_despacho' => 'required',
+                'tipo_despacho' => 'required_unless:ind_traslado,5',
                 'comuna_destino' => 'required',
                 'items' => 'required|array',
                 'referencias' => 'nullable|array',
@@ -96,6 +97,16 @@ class GuiaDespachoController extends Controller
                 ]);
             }
 
+            $errTraslado = Traslado::validar($request->all(), $request->items ?? [], $request->referencias ?? [], true);
+            if(!empty($errTraslado)){
+                return response()->json([
+                    'success' => 'false',
+                    'msg' => collect($errTraslado)->flatten()->first(),
+                    'error' => collect($errTraslado)->flatten()->implode(' | '),
+                    'errors' => $errTraslado
+                ]);
+            }
+
             $emisor = Ajustes::getEmisor();
             $cliente = Cliente::where('id', $request->cliente)->with('comuna')->first();
             $str = date('Y-m-d', strtotime($request->fecha_emision)).' '.date('H:i');
@@ -103,38 +114,26 @@ class GuiaDespachoController extends Controller
             $detArray = ($request->items==null)?[]:$request->items;
             $detalle = [];
             foreach($detArray as $item){
-                array_push($detalle, [
+                $linea = [
                     'nombre' => $item['nombre'],
                     'unidad' => Unidad::find($item['unidad'])->abreviacion,
                     'precio' => $item['precio'],
                     'cantidad' => $item['cantidad']
-                ]);
+                ];
+                if(!empty(trim($item['descripcion'] ?? ''))){
+                    $linea['descripcion'] = Herramientas::sanitizarString($item['descripcion']);
+                }
+                array_push($detalle, $linea);
             }
             $detalle = array_filter($detalle);
 
-            $refArray = ($request->referencias==null)?[]:$request->referencias;
-            $referencias = [];
-            foreach($refArray as $ref){
-                array_push($referencias, [
-                    'tipo' => $ref['tipo'],
-                    'folio' => $ref['folio'],
-                    'fecha' => $ref['fecha'],
-                    'razon' => (!empty($ref['razon'])) ? $ref['razon'] : ' ',
-                    'codigo' => false
-                ]);
-            }
+            $referencias = Traslado::referencias($request->referencias ?? []);
 
             $data = [
                 'acteco' => $emisor['acteco'],
                 'tipo' => 52,
                 'fecha' => $str,
-                'ind_traslado' => ($request->ind_traslado!=null)?$request->ind_traslado:null,
-                'tipo_despacho' => ($request->tipo_despacho!=null)?$request->tipo_despacho:null,
-                'comuna_destino' => $request->comuna_destino,
-                'direccion_destino' => ($request->direccion_destino!=null)?Herramientas::sanitizarString($request->direccion_destino):null,
-                'patente' => ($request->patente!=null)?$request->patente:null,
-                'rut_chofer' => ($request->rut_chofer!=null)?str_replace('.', '', $request->rut_chofer):null,
-                'nombre_chofer' => ($request->nombre_chofer!=null)?Herramientas::sanitizarString($request->nombre_chofer):null,
+                'ind_traslado' => (int)$request->ind_traslado,
                 'receptor' => [
                     'rut'=> $cliente->rut,
                     'razon_social'=> $cliente->razon_social,
@@ -147,6 +146,10 @@ class GuiaDespachoController extends Controller
                 'detalles' => $detalle,
                 'referencias' => $referencias
             ];
+            if((int)$request->ind_traslado !== 5 && $request->tipo_despacho != null){
+                $data['tipo_despacho'] = (int)$request->tipo_despacho;
+            }
+            $data = array_merge($data, Traslado::payload($request->all(), true));
 
             Log::info("Estructura Guia de Despacho:");
             Log::info(json_encode($data));
@@ -158,7 +161,8 @@ class GuiaDespachoController extends Controller
                 return response()->json([
                     'success' => 'false',
                     'msg' => 'No se pudo generar el documento en la API',
-                    'error' => $docData->msg ?? ($docData->error ?? null)
+                    'error' => $docData->msg ?? ($docData->error ?? null),
+                    'errors' => $docData->errors ?? null
                 ]);
             }
 
@@ -169,7 +173,9 @@ class GuiaDespachoController extends Controller
             $guia->cliente_id = $request->cliente;
             $guia->user_id = auth()->user()->id;
             $guia->ind_traslado = $request->ind_traslado;
-            $guia->tipo_despacho = $request->tipo_despacho;
+            $guia->tipo_despacho = ((int)$request->ind_traslado === 5) ? null : $request->tipo_despacho;
+            $guia->track_id = $docData->trackid ?? null;
+            Traslado::aplicar($guia, $request->all());
             $guia->descuento = 0;
             $guia->monto_neto = $docData->totales->neto;
             $guia->monto_iva = $docData->totales->iva;

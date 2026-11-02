@@ -103,6 +103,7 @@ class BorradorController extends Controller
                     $referencia->folio = $ref['folio'];
                     $referencia->fecha = date('Y-m-d', strtotime($ref['fecha']));
                     $referencia->razon = ($ref['razon']==null)?'':$ref['razon'];
+                    $referencia->rut_otro = $ref['rut_otro'] ?? null;
                     if($referencia->codigo == false){
                         $referencia->codigo = null;
                     }else{

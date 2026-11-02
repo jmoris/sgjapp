@@ -285,15 +285,19 @@
                                                                 <div class="col-sm-8">
                                                                     <select name="ind_traslado" id="ind_traslado"
                                                                         class="form-control form-control-sm">
-                                                                        <option value="1">Operación Constituye Venta
-                                                                        </option>
-                                                                        <option value="2">Venta Por efectuar</option>
-                                                                        <option value="3">Consigación</option>
-                                                                        <option value="4">Donación</option>
-                                                                        <option value="5">Traslado Interno</option>
-                                                                        <option value="6">No Constituye Venta</option>
-                                                                        <option value="7">Devolución</option>
-                                                                    </select>
+                                                                        <option value="1">Operación constituye venta</option>
+                                        <option value="2">Ventas por efectuar</option>
+                                        <option value="3">Consignaciones</option>
+                                        <option value="4">Entrega gratuita</option>
+                                        <option value="5">Traslados internos</option>
+                                        <option value="6">Otros traslados no venta</option>
+                                        <option value="7">Devolución de mercaderías</option>
+                                        <option value="8">Traslado para exportación (no venta)</option>
+                                        <option value="9">Venta de exportación</option>
+                                        <option value="10">Traslado tercerizado</option>
+                                        <option value="11">Traslado prolongado, importa venta</option>
+                                        <option value="12">Traslado prolongado, no venta</option>
+                                    </select>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -337,7 +341,7 @@
                                                                     <input type="text" name="patente"
                                                                                 id="patente"
                                                                                 class="form-control form-control-sm"
-                                                                                maxlength="6"
+                                                                                maxlength="8"
                                                                                 placeholder="Ingrese Patente del vehiculo">
                                                                 </div>
                                                             </div>
@@ -360,6 +364,26 @@
                                                                                 class="form-control form-control-sm"
                                                                                 placeholder="Ingrese Nombre del chofer">
                                                                 </div>
+                                                            </div>
+                                                            <div class="row mb-2">
+                                                                <label class="col-sm-4 col-form-label col-form-label-sm">Patente Carro</label>
+                                                                <div class="col-sm-8"><input type="text" name="patente_carro" id="patente_carro" class="form-control form-control-sm" maxlength="8" placeholder="Carro / remolque (opcional)"></div>
+                                                            </div>
+                                                            <div class="row mb-2">
+                                                                <label class="col-sm-4 col-form-label col-form-label-sm">RUT Transportista</label>
+                                                                <div class="col-sm-8"><input type="text" name="rut_transportista" id="rut_transportista" class="form-control form-control-sm" placeholder="RUT del transportista"></div>
+                                                            </div>
+                                                            <div class="row mb-2">
+                                                                <label class="col-sm-4 col-form-label col-form-label-sm">Fecha Salida</label>
+                                                                <div class="col-sm-8"><input type="date" name="fecha_salida" id="fecha_salida" class="form-control form-control-sm"></div>
+                                                            </div>
+                                                            <div class="row mb-2">
+                                                                <label class="col-sm-4 col-form-label col-form-label-sm">Hora Salida</label>
+                                                                <div class="col-sm-8"><input type="time" name="hora_salida" id="hora_salida" class="form-control form-control-sm"></div>
+                                                            </div>
+                                                            <div class="row mb-2">
+                                                                <label class="col-sm-4 col-form-label col-form-label-sm">Fecha Llegada</label>
+                                                                <div class="col-sm-8"><input type="date" name="fecha_llegada" id="fecha_llegada" class="form-control form-control-sm"><small class="text-muted">Obligatoria en traslado prolongado (11 y 12)</small></div>
                                                             </div>
 
                                                         </div>
@@ -488,6 +512,7 @@
                                                             <th>Folio</th>
                                                             <th>Fecha</th>
                                                             <th>Razón</th>
+                                                            <th>RUT otro emisor</th>
                                                         </thead>
                                                         <tbody>
                                                             <tr id="rowReferencia">
@@ -581,6 +606,11 @@
                                                                     <input id="ref_razon"
                                                                         class="form-control form-control-sm"
                                                                         type="text" placeholder="Razón" />
+                                                                </td>
+                                                                <td style="width: 15%">
+                                                                    <input id="ref_rut_otro"
+                                                                        class="form-control form-control-sm"
+                                                                        type="text" placeholder="Solo si lo emitió otro" />
                                                                 </td>
                                                                 <td style="width: 5%">
                                                                     <button type="button" onclick="agregarReferencia()"
@@ -811,26 +841,17 @@
                 groupSeparator: '.',
                 rightAlign: false
             });
-            $('#rut_chofer').change(function(){
-                var value = $(this).inputmask('unmaskedvalue');
-                console.log(value);
-                if(value.length == 8){
-                    $(this).inputmask('setvalue', '0'+value);
+            var rutMask = {
+                mask: '99.999.999-[9|k|K]',
+                definitions: {
+                    'K': { validator: "(k|K)", casing: "upper" },
+                    'k': { validator: "(k|K)", casing: "upper" }
                 }
-            });
-            $('#rut_chofer').inputmask({
-                    mask: '99.999.999-[9|k|K]',
-                    definitions: {
-                        'K': {
-                        validator: "(k|K)",
-                        casing: "upper"
-                    },
-                        'k': {
-                        validator: "(k|K)",
-                        casing: "upper"
-                    }
-                }
-            });
+            };
+            $('#rut_chofer').inputmask(rutMask);
+            $('#rut_transportista').inputmask(rutMask);
+            $('#ind_traslado').change(actualizarTraslado);
+            actualizarTraslado();
             $("#descuentoglobal").inputmask('percentage', {});
             $('#razon_social').select2();
             $('#comuna_destino').select2();
@@ -900,6 +921,39 @@
             return false;
         }
 
+        // Res. Ex. SII 144/2026: el tipo de despacho no aplica en traslados internos (5)
+        function actualizarTraslado() {
+            var interno = $('#ind_traslado').val() == '5';
+            $('#tipo_despacho').prop('disabled', interno).closest('.row').toggle(!interno);
+        }
+
+        function validarTraslado() {
+            var ind = parseInt($('#ind_traslado').val());
+            var salida = $('#fecha_salida').val();
+            var llegada = $('#fecha_llegada').val();
+            if (!salida) return 'Debe indicar la fecha de salida del traslado.';
+            if (llegada && llegada < salida) return 'La fecha de llegada no puede ser anterior a la de salida.';
+            if ((ind == 11 || ind == 12)) {
+                if (!llegada) return 'El traslado prolongado exige fecha de llegada.';
+                var ok = detalles.some(function(d) {
+                    return ((d.nombre || '') + ' ' + (d.descripcion || '')).toLowerCase().indexOf('prolongado') >= 0;
+                });
+                if (!ok) return 'En traslado prolongado algún ítem debe contener la palabra "prolongado" (ej. "Traslado prolongado por distancia").';
+            }
+            if (ind == 10) {
+                if (!$('#patente').val() || !$('#rut_transportista').val() || !$('#rut_chofer').val() || !$('#nombre_chofer').val())
+                    return 'Traslado tercerizado: patente, RUT transportista, RUT y nombre del chofer son obligatorios.';
+                if (referencias.length == 0) return 'Traslado tercerizado: debe referenciar el documento original.';
+            }
+            if ([1, 2, 9, 11].indexOf(ind) < 0) {
+                var sinMotivo = detalles.some(function(d) {
+                    return !(parseFloat(d.precio) > 0) && !(d.descripcion || '').trim();
+                });
+                if (sinMotivo) return 'Hay ítems sin precio: indique en la descripción el motivo del traslado.';
+            }
+            return null;
+        }
+
         function confirmarGuiaDespacho(e) {
             e.preventDefault();
             // Verificamos que se haya seleccionado un proveedor
@@ -923,6 +977,18 @@
                     subtitle: 'ahora',
                     position: 'top-right',
                     content: 'Debe seleccionar una comuna de destino para enviar el documento.',
+                    delay: 15000
+                });
+                return;
+            }
+            var errTraslado = validarTraslado();
+            if (errTraslado) {
+                $.toast({
+                    type: 'error',
+                    title: 'Datos de traslado (Res. SII 144/2026)',
+                    subtitle: 'ahora',
+                    position: 'top-right',
+                    content: errTraslado,
                     delay: 15000
                 });
                 return;
@@ -1059,12 +1125,15 @@
                         $('#lista_precio').val(parseInt(item['valor']));
                         $('#lista_precio').trigger('change');
                     }
-                    if(item['nombre'=='tipo_despacho']){
+                    if(item['nombre']=='tipo_despacho'){
                         $('#tipo_despacho').val(parseInt(item['valor']));
                         $('#tipo_despacho').trigger('change');
                         console.log('Despacho: ' + $('#tipo_despacho').val());
                     }
-                    if(item['nombre'=='ind_traslado']){
+                    if(['comuna_destino','direccion_destino','patente','patente_carro','rut_transportista','rut_chofer','nombre_chofer','fecha_salida','hora_salida','fecha_llegada'].indexOf(item['nombre']) >= 0){
+                        $('#'+item['nombre']).val(item['valor']).trigger('change');
+                    }
+                    if(item['nombre']=='ind_traslado'){
                         $('#ind_traslado').val(parseInt(item['valor']));
                         $('#ind_traslado').trigger('change');
                         console.log('Traslado: '+$('#ind_traslado').val());
@@ -1121,7 +1190,9 @@
                         nombre: 'ind_traslado',
                         valor: $('#ind_traslado').find(":selected").val(),
                     }
-                ],
+                ].concat(['comuna_destino','direccion_destino','patente','patente_carro','rut_transportista','rut_chofer','nombre_chofer','fecha_salida','hora_salida','fecha_llegada'].map(function(c){
+                    return { nombre: c, valor: $('#'+c).val() || '' };
+                })),
                 items: fixedDetalle,
                 referencias: referencias,
                 proyecto: idProyecto,
@@ -1155,6 +1226,11 @@
                 comuna_destino: $('#comuna_destino').val(),
                 direccion_destino: $('#direccion_destino').val(),
                 patente: $('#patente').val(),
+                patente_carro: $('#patente_carro').val(),
+                rut_transportista: $('#rut_transportista').val(),
+                fecha_salida: $('#fecha_salida').val(),
+                hora_salida: $('#hora_salida').val(),
+                fecha_llegada: $('#fecha_llegada').val(),
                 nombre_chofer: $('#nombre_chofer').val(),
                 rut_chofer: $('#rut_chofer').val(),
                 items: detalles,
@@ -1171,7 +1247,19 @@
                     $('#statusTxt').text('Recibiendo información de respuesta...');
                     console.log(data);
                     $('#loadingModal').modal('hide');
-                    location.href = '/ventas/guiasdespacho';
+                    if (data.success === true) {
+                        location.href = '/ventas/guiasdespacho';
+                        return;
+                    }
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'No se pudo emitir la guía',
+                        text: data.error || data.msg || 'Error desconocido',
+                    });
+                })
+                .fail(function(xhr) {
+                    $('#loadingModal').modal('hide');
+                    Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo comunicar con el servidor (' + xhr.status + ').' });
                 });
         }
 
@@ -1429,6 +1517,7 @@
                 'folio': $('#ref_folio').val(),
                 'fecha': $('#ref_fecha').val(),
                 'razon': $('#ref_razon').val(),
+                'rut_otro': $('#ref_rut_otro').val(),
                 'codigo': false
             };
 
@@ -1439,6 +1528,7 @@
                     <td>${referencia.folio}</td>
                     <td>${referencia.fecha}</td>
                     <td>${referencia.razon}</td>
+                    <td>${referencia.rut_otro || ''}</td>
                     <td>
                         <button type="button" onclick="eliminarReferencia(${ref_index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em; float:right;">
                         <span class="mdi mdi-delete"></span></button>
@@ -1450,6 +1540,7 @@
             $('#ref_folio').val('');
             $('#ref_fecha').val('');
             $('#ref_razon').val('');
+            $('#ref_rut_otro').val('');
 
 
             // Se inserta antes del rowDetalle que es nuestro formulario estatico

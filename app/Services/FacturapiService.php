@@ -106,7 +106,17 @@ class FacturapiService
 
             $body = is_object($body) ? $body : (object) [];
             $body->success = $body->success ?? false;
-            $body->msg = $body->msg ?? ($body->error ?? 'No se pudo completar la operación en FacturAPI');
+            $body->msg = $body->msg ?? ($body->error ?? ($body->message ?? 'No se pudo completar la operación en FacturAPI'));
+            if (isset($body->errors)) {
+                // 422 de Laravel: mostrar el detalle por campo
+                $detalle = [];
+                foreach ((array) $body->errors as $campo => $msgs) {
+                    $detalle[] = $campo.': '.implode(' ', (array) $msgs);
+                }
+                if ($detalle) {
+                    $body->msg = implode(' | ', $detalle);
+                }
+            }
 
             return $body;
         }

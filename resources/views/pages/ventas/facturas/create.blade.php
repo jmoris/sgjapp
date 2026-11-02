@@ -410,6 +410,27 @@
                                                     </table>
                                                 </div>
                                             </div>
+                                            <div class="col-md-12 mb-3">
+                                                <div class="mb-2 border-bottom">
+                                                    <a data-bs-toggle="collapse" href="#bloqueTraslado" role="button"><h5>Datos de traslado (opcional, Res. SII 144/2026) <span class="mdi mdi-chevron-down"></span></h5></a>
+                                                </div>
+                                                <div class="collapse" id="bloqueTraslado">
+                                                    <p class="text-muted small">Complete solo si esta factura ampara el traslado de los bienes. En retiro directo del comprador no es necesario.</p>
+                                                    <div class="row">
+                                                        <div class="col-md-3 mb-2"><label class="form-label form-label-sm">Comuna de destino</label>
+                                                            <select id="comuna_destino" class="form-control form-control-sm"><option value="">Seleccione Comuna</option>@foreach ($comunas as $comuna)<option value="{{ $comuna->id }}">{{ $comuna->nombre }}</option>@endforeach</select></div>
+                                                        <div class="col-md-3 mb-2"><label class="form-label form-label-sm">Dirección de destino</label><input type="text" id="direccion_destino" class="form-control form-control-sm" maxlength="70"></div>
+                                                        <div class="col-md-3 mb-2"><label class="form-label form-label-sm">Patente</label><input type="text" id="patente" class="form-control form-control-sm" maxlength="8"></div>
+                                                        <div class="col-md-3 mb-2"><label class="form-label form-label-sm">Patente carro</label><input type="text" id="patente_carro" class="form-control form-control-sm" maxlength="8"></div>
+                                                        <div class="col-md-3 mb-2"><label class="form-label form-label-sm">RUT transportista</label><input type="text" id="rut_transportista" class="form-control form-control-sm" placeholder="12345678-9"></div>
+                                                        <div class="col-md-3 mb-2"><label class="form-label form-label-sm">RUT chofer</label><input type="text" id="rut_chofer" class="form-control form-control-sm" placeholder="12345678-9"></div>
+                                                        <div class="col-md-3 mb-2"><label class="form-label form-label-sm">Nombre chofer</label><input type="text" id="nombre_chofer" class="form-control form-control-sm" maxlength="30"></div>
+                                                        <div class="col-md-3 mb-2"><label class="form-label form-label-sm">Fecha salida</label><input type="date" id="fecha_salida" class="form-control form-control-sm" ></div>
+                                                        <div class="col-md-3 mb-2"><label class="form-label form-label-sm">Hora salida</label><input type="time" id="hora_salida" class="form-control form-control-sm" ></div>
+                                                        <div class="col-md-3 mb-2"><label class="form-label form-label-sm">Fecha llegada</label><input type="date" id="fecha_llegada" class="form-control form-control-sm" ></div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <div class="col-md-8">
                                                 <div class="mb-2 border-bottom">
                                                     <h5>Referencias del documento</h5>
@@ -514,6 +535,11 @@
                                                                     <input id="ref_razon"
                                                                         class="form-control form-control-sm"
                                                                         type="text" placeholder="Razón" />
+                                                                </td>
+                                                                <td style="width: 15%">
+                                                                    <input id="ref_rut_otro"
+                                                                        class="form-control form-control-sm"
+                                                                        type="text" placeholder="RUT otro emisor" />
                                                                 </td>
                                                                 <td style="width: 5%">
                                                                     <button type="button" onclick="agregarReferencia()"
@@ -1112,6 +1138,16 @@
                 fecha_emision: $('#fecha_emision').val(),
                 fecha_vencimiento: $('#fecha_vencimiento').val(),
                 tipo_pago: $('#tipo_pago').val(),
+                comuna_destino: $('#comuna_destino').val(),
+                direccion_destino: $('#direccion_destino').val(),
+                patente: $('#patente').val(),
+                patente_carro: $('#patente_carro').val(),
+                rut_transportista: $('#rut_transportista').val(),
+                rut_chofer: $('#rut_chofer').val(),
+                nombre_chofer: $('#nombre_chofer').val(),
+                fecha_salida: $('#fecha_salida').val(),
+                hora_salida: $('#hora_salida').val(),
+                fecha_llegada: $('#fecha_llegada').val(),
                 items: detalles,
                 referencias: referencias,
                 proyecto: $('#nombre_proyecto option:selected').val(),
@@ -1122,11 +1158,16 @@
             $.post("/api/ventas/facturas", doc)
                 .done(function(data) {
                     $('#statusTxt').text('Recibiendo información de respuesta...');
-                    if(data.error){
-                        console.log(data.error);
-                    }
                     $('#loadingModal').modal('hide');
-                    location.href = '/ventas/facturas';
+                    if (data.success === true) {
+                        location.href = '/ventas/facturas';
+                        return;
+                    }
+                    Swal.fire({ icon: 'error', title: 'No se pudo emitir la factura', text: data.error || data.msg || 'Error desconocido' });
+                })
+                .fail(function(xhr) {
+                    $('#loadingModal').modal('hide');
+                    Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo comunicar con el servidor (' + xhr.status + ').' });
                 });
         }
 
@@ -1467,6 +1508,7 @@
                 'folio': $('#ref_folio').val(),
                 'fecha': $('#ref_fecha').val(),
                 'razon': $('#ref_razon').val(),
+                'rut_otro': $('#ref_rut_otro').val(),
                 'codigo': false
             };
 
@@ -1477,6 +1519,7 @@
                     <td>${referencia.folio}</td>
                     <td>${referencia.fecha}</td>
                     <td>${referencia.razon}</td>
+                    <td>${referencia.rut_otro || ''}</td>
                     <td>
                         <button type="button" onclick="eliminarReferencia(${ref_index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em; float:right;">
                         <span class="mdi mdi-delete"></span></button>
@@ -1488,6 +1531,7 @@
             $('#ref_folio').val('');
             $('#ref_fecha').val('');
             $('#ref_razon').val('');
+            $('#ref_rut_otro').val('');
 
 
             // Se inserta antes del rowDetalle que es nuestro formulario estatico
