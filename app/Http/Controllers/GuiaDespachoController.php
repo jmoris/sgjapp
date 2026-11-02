@@ -173,7 +173,7 @@ class GuiaDespachoController extends Controller
             $guia->cliente_id = $request->cliente;
             $guia->user_id = auth()->user()->id;
             $guia->ind_traslado = $request->ind_traslado;
-            $guia->tipo_despacho = ((int)$request->ind_traslado === 5) ? null : $request->tipo_despacho;
+            $guia->tipo_despacho = ((int)$request->ind_traslado === 5) ? 0 : $request->tipo_despacho; // columna NOT NULL; 0 = no aplica (traslado interno)
             $guia->track_id = $docData->trackid ?? null;
             Traslado::aplicar($guia, $request->all());
             $guia->descuento = 0;
