@@ -1413,7 +1413,7 @@
                 }
             })[0];
             // Se verifica si el producto existe en la tabla
-            var checked = detalles.find(item => item.sku == producto.sku);
+            var checked = (producto.sku !== '' && producto.sku != null) ? detalles.find(item => item.sku == producto.sku) : null;
             if (checked != null) {
                 var latestSubtotal = producto.precio * producto.cantidad;
                 var total = parseInt(checked.cantidad) + parseInt(producto.cantidad);
@@ -1444,14 +1444,14 @@
                 }
                 // Se crea una fila con toda la información necesaria
                 var row = `
-                <tr detIndex="${index}">
+                <tr detIndex="${detalles.length}">
                     <td>${producto.sku}</td>
                     <td>${producto.nombre}</td>
                     <td>${producto.cantidad} ${unidad.abreviacion}</td>
                     <td>${'$ ' + producto.precio.replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}</td>
                     <td>${'$ ' + subtotal.toFixed().replace(/(\d)(?=(\d{3})+(,|$))/g, '$1.')}</td>
                     <td>
-                        <button type="button" onclick="eliminarDetalle(${index})" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em; float:right;">
+                        <button type="button" onclick="eliminarDetalle(${detalles.length})" class="btn btn-sm btn-outline-danger" style="padding:.25em .5em; float:right;">
                         <span class="mdi mdi-delete"></span></button>
                     </td>
                 </tr>`;
@@ -1551,9 +1551,21 @@
             console.log(referencias);
         }
 
+        function reindexDetalle() {
+            // Mantiene el atributo detindex y los onclick de cada fila alineados con la posición real en `detalles`
+            $('#tablaDetalle tr[detindex]').each(function(i) {
+                $(this).attr('detindex', i);
+                $(this).find('button[onclick]').each(function() {
+                    $(this).attr('onclick', $(this).attr('onclick').replace(/\((\d+)/, '(' + i));
+                });
+            });
+            index = detalles.length;
+        }
+
         function eliminarDetalle(index) {
             detalles.splice(index, 1);
             $('#tablaDetalle tr[detindex="' + index + '"]').remove();
+            reindexDetalle();
             // Se calculan los totales y se aumenta el indice
             calcularTotales();
         }

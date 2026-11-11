@@ -106,7 +106,15 @@
                     $('#statusTxt').text('Recibiendo información de respuesta...');
                     console.log(data);
                     $('#loadingModal').modal('hide');
-                    location.href = '/ventas/notascredito';
+                    if (data.success === true) {
+                        location.href = '/ventas/notascredito';
+                    } else {
+                        Swal.fire('Error', (data.msg || 'No se pudo emitir la nota de crédito') + (data.error && typeof data.error === 'string' ? '<br><small>' + data.error + '</small>' : ''), 'error');
+                    }
+                })
+                .fail(function() {
+                    $('#loadingModal').modal('hide');
+                    Swal.fire('Error', 'No se pudo completar la solicitud', 'error');
                 });
 
         }

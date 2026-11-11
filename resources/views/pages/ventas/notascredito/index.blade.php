@@ -13,6 +13,9 @@
                     <i class="mdi mdi-plus"></i> Nueva Nota de Credito
                 </button>
                 <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                  @if(has_permission('crear-nota-credito'))
+                  <a class="dropdown-item" href="/ventas/notascredito/nuevo">Emitir nota de crédito</a>
+                  @endif
                   <a class="dropdown-item" href="/ventas/notascredito/selector">Anulación</a>
                 </div>
               </div>

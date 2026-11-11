@@ -132,7 +132,7 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
         });
         Route::prefix('notascredito')->middleware('tag:ver-nota-credito')->group(function(){
             Route::get('/', [NotaCreditoController::class, 'index']);
-            Route::get('/nuevo', [NotaCreditoController::class, 'newNotaCredito']);
+            Route::get('/nuevo', [NotaCreditoController::class, 'newNotaCredito'])->middleware('tag:crear-nota-credito');
             Route::get('/selector', [NotaCreditoController::class, 'showSelector']);
         });
         Route::prefix('proyectos')->middleware('tag:ver-proyecto')->group(function(){

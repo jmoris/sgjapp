@@ -251,7 +251,8 @@ Route::middleware(['auth:web', 'tenant'])->group(function () {
         Route::get('guiasdespacho/vistaprevia/{folio}', [GuiaDespachoController::class, 'vistaPreviaGuiaDespacho']);
 
         Route::get('notascredito', [NotaCreditoController::class, 'getAll']);
-        Route::post('notascredito', [NotaCreditoController::class, 'storeNotaCredito']);
+        Route::post('notascredito', [NotaCreditoController::class, 'storeNotaCredito'])->middleware('tag:crear-nota-credito');
+        Route::post('notascredito/vistaprevia', [NotaCreditoController::class, 'vistaPreviaEnvioNC'])->middleware('tag:crear-nota-credito');
         Route::post('notascredito/anulacion', [NotaCreditoController::class, 'storeAnulacion']);
         Route::get('notascredito/vistaprevia/{folio}', [NotaCreditoController::class, 'vistaPreviaNotaCredito']);
         Route::get('notascredito/descargar/{folio}', [NotaCreditoController::class, 'descargarXML']);
