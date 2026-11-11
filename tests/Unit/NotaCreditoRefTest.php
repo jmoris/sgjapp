@@ -43,6 +43,15 @@ class NotaCreditoRefTest extends TestCase
         $this->assertFalse(NotaCreditoRef::correccionTextoConMontos([$this->ref(['codigo' => 3])], [['precio' => 1000, 'cantidad' => 1]]));
     }
 
+    public function test_total_cero_solo_valido_con_codigo_2()
+    {
+        $cero = [['precio' => 0, 'cantidad' => 1]];
+        $this->assertFalse(NotaCreditoRef::totalCeroInvalido([$this->ref(['codigo' => 2])], $cero));
+        $this->assertTrue(NotaCreditoRef::totalCeroInvalido([$this->ref(['codigo' => 1])], $cero));
+        $this->assertTrue(NotaCreditoRef::totalCeroInvalido([$this->ref(['codigo' => 3])], $cero));
+        $this->assertFalse(NotaCreditoRef::totalCeroInvalido([$this->ref(['codigo' => 3])], [['precio' => 100, 'cantidad' => 1]]));
+    }
+
     public function test_totales_con_iva_19()
     {
         $t = NotaCreditoRef::totales([['precio' => 1000, 'cantidad' => 2], ['precio' => 500, 'cantidad' => 1]]);

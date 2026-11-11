@@ -67,10 +67,30 @@ class NotaCreditoRef
         return 1;
     }
 
+    /** ¿Alguna referencia corrige texto (código 2)? */
+    public static function tieneCorreccionTexto(array $refs): bool
+    {
+        foreach ($refs as $ref) {
+            if ((int) ($ref['codigo'] ?? 0) === 2) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Una NC con total $0 solo es válida si corrige texto (código 2): la línea de detalle
+     * con monto 0 describe la corrección. Con código 1 o 3 un total 0 es un error del usuario.
+     */
+    public static function totalCeroInvalido(array $refs, array $items): bool
+    {
+        return ! self::tieneCorreccionTexto($refs) && self::totales($items)['neto'] == 0;
+    }
+
     /** Regla facturacionv2: código 2 (corrige texto) no admite líneas con monto > 0. */
     public static function correccionTextoConMontos(array $refs, array $items): bool
     {
-        if (self::motivo($refs) !== 2) {
+        if (! self::tieneCorreccionTexto($refs)) {
             return false;
         }
         foreach ($items as $item) {

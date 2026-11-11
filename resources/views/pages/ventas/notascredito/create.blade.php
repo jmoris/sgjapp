@@ -839,6 +839,9 @@
             if ($('#nombre_proyecto option:selected').text() == 'Seleccione proyecto') return err('Debe seleccionar/añadir un proyecto para generar el documento.');
             if (detalles.length == 0) return err('Debe agregar productos al documento para poder procesarlo.');
             if (referencias.length == 0) return err('La nota de crédito requiere al menos una referencia al documento original.');
+            if (!referencias.some(r => r.codigo == 2) && detalles.reduce((t, d) => t + d.precio * d.cantidad, 0) == 0) {
+                return err('El total de la nota de crédito no puede ser $0. Solo una NC que corrige texto (código 2) puede tener monto 0.');
+            }
             if (referencias.some(r => r.codigo == 2) && detalles.some(d => d.precio * d.cantidad > 0)) {
                 return err('Una NC con código 2 (corrige texto) debe tener montos en $0. Cambie el código a 3 o ajuste los montos.');
             }
@@ -1168,7 +1171,11 @@
                 var subtotal = producto.precio * producto.cantidad;
                 subtotalDoc += subtotal;
                 // Verificamos que el producto contenga información valida
-                if (producto.nombre == '' || subtotal == 0) {
+                // Se permiten líneas con monto $0 (NC que corrige texto, código 2); el total
+                // en $0 solo se valida al emitir según el código de referencia.
+                if (producto.nombre == '' || isNaN(subtotal)) {
+                    $.toast({type: 'error', title: 'Error en formulario', subtitle: 'ahora', position: 'top-right',
+                        content: 'Debe indicar el nombre y un precio válido (puede ser 0 si corrige texto).', delay: 15000});
                     return;
                 }
                 // Se crea una fila con toda la información necesaria

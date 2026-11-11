@@ -259,6 +259,12 @@ class NotaCreditoController extends Controller
         if(!empty($errRef)){
             return response()->json(['success' => 'false', 'msg' => $errRef[0], 'error' => implode(' | ', $errRef)]);
         }
+        if(NotaCreditoRef::totalCeroInvalido($request->referencias, $request->items)){
+            return response()->json([
+                'success' => 'false',
+                'msg' => 'El total de la nota de crédito no puede ser $0. Solo las notas que corrigen texto (código 2) pueden emitirse con monto 0.'
+            ]);
+        }
         if(NotaCreditoRef::correccionTextoConMontos($request->referencias, $request->items)
             && !$request->boolean('confirmar_correccion_texto_sin_montos')){
             return response()->json([
