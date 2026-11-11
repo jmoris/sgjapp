@@ -43,7 +43,7 @@
                             <div class="row mx-3">
                                 <div style="width:100%; margin-top:24px;"></div>
                                 <div class="col-md-12">
-                                    <form class="form" id="storeForm" method="post" onsubmit="vistaPreviaNC(event)">
+                                    <form class="form" id="storeForm" method="post" novalidate onsubmit="vistaPreviaNC(event)">
                                         @csrf
                                         <div class="row">
                                             <div class="col-md-12 mb-3">
@@ -1302,7 +1302,9 @@
             // Se limpian los inputs
             $("#ref_tipo").val(null).trigger('change');
             $('#ref_folio').val('');
-            $('#ref_fecha').val('');
+            // La fecha vuelve al día actual (no vacía) para no dejar el campo date en estado inválido
+            var hoy = new Date();
+            $('#ref_fecha').val(hoy.getFullYear() + '-' + ('0' + (hoy.getMonth() + 1)).slice(-2) + '-' + ('0' + hoy.getDate()).slice(-2));
             $('#ref_razon').val('');
             referencias.push(referencia);
             avisoCodigo();
