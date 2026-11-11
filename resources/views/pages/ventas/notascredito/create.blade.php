@@ -664,7 +664,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <button type="button" class="btn btn-primary" onclick="procesarNC(event)">Emitir documento</button>
+                    <button type="button" id="btnEmitirNC" class="btn btn-primary" onclick="confirmarNC(event)">Emitir documento</button>
                 </div>
             </div>
         </div>
@@ -902,9 +902,39 @@
             });
         }
 
-        function procesarNC(e) {
-            $('#modal-vistaprevia').modal('hide');
+        // Evita la emisión múltiple: mientras haya una emisión en curso (o con resultado incierto) no se reenvía
+        var emitiendo = false;
+
+        function bloquearEmision(bloquear) {
+            emitiendo = bloquear;
+            $('#btnEmitirNC').prop('disabled', bloquear);
+        }
+
+        function confirmarNC(e) {
+            if (e) e.preventDefault();
+            if (emitiendo) return;
             if (!validarNC()) return;
+            Swal.fire({
+                title: "¿Quieres confirmar esta Nota de Crédito?",
+                text: "Una vez confirmada la Nota de Crédito no se podrán hacer cambios sobre ella, recomendamos revisar el detalle del documento.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Confirmar",
+                cancelButtonText: "Cancelar"
+            }).then((modalResult) => {
+                if (modalResult.isConfirmed) {
+                    procesarNC(e);
+                }
+            });
+        }
+
+        function procesarNC(e) {
+            if (emitiendo) return;
+            if (!validarNC()) return;
+            bloquearEmision(true);
+            $('#modal-vistaprevia').modal('hide');
             $('#loadingModal').modal('show');
             $('#statusTxt').text('Enviando información del documento...');
             $.post("/api/ventas/notascredito", docNC())
@@ -912,14 +942,22 @@
                     $('#statusTxt').text('Recibiendo información de respuesta...');
                     $('#loadingModal').modal('hide');
                     if (data.success === true) {
+                        // Se mantiene bloqueado hasta redirigir
                         location.href = '/ventas/notascredito';
                         return;
                     }
+                    // Rechazo informado por el servidor: se puede corregir y reintentar
+                    bloquearEmision(false);
                     Swal.fire({ icon: 'error', title: 'No se pudo emitir la nota de crédito', text: data.error || data.msg || 'Error desconocido' });
                 })
                 .fail(function(xhr) {
+                    // Resultado incierto (timeout/red/5xx): el documento pudo emitirse, por eso NO se desbloquea
                     $('#loadingModal').modal('hide');
-                    Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo comunicar con el servidor (' + xhr.status + ').' });
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'No se recibió respuesta del servidor (' + xhr.status + ')',
+                        text: 'Antes de reintentar, revise el listado de notas de crédito: el documento podría haberse emitido. Para reintentar, recargue la página.'
+                    });
                 });
         }
 
