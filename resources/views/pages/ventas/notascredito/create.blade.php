@@ -871,9 +871,16 @@
             $.post("/api/ventas/notascredito/vistaprevia", doc)
                 .done(function(data) {
                     $('#statusTxt').text('Recibiendo información de respuesta...');
+                    if(typeof data !== 'object' || data === null){
+                        // El servidor devolvió HTML (p. ej. página 404: la ruta no existe en el servidor)
+                        $('#loadingModal').modal('hide');
+                        Swal.fire({ icon: 'error', title: 'Respuesta inesperada del servidor', text: 'El servidor no devolvió datos válidos. Si dice "404", la ruta de vista previa no está disponible en el servidor (caché de rutas sin actualizar).' });
+                        return;
+                    }
                     if(!data.PDF){
                         $('#loadingModal').modal('hide');
-                        Swal.fire({ icon: 'error', title: 'No se pudo generar la vista previa', text: data.msg || data.error || 'Error desconocido' });
+                        var det = (typeof data.error === 'string' && data.error) ? ' — ' + data.error : '';
+                        Swal.fire({ icon: 'error', title: 'No se pudo generar la vista previa', text: (data.msg || 'Error desconocido') + det });
                         return;
                     }
                     var url = URL.createObjectURL(b64toBlob(data.PDF, 'application/pdf')) + '#toolbar=1&scrollbar=1';
@@ -1174,7 +1181,7 @@
                 'descripcion': $('#descripcionTxt').val(),
                 'cantidad': $('#cantidadTxt').val(),
                 'unidad': $('#unidadTxt').val(),
-                'precio': $('#precioTxt').inputmask('unmaskedvalue')
+                'precio': $('#precioTxt').inputmask('unmaskedvalue') || '0'
             };
             // Mapeamos las unidades y seleccionamos la información
             var unidad = $.map(unidades, (item) => {

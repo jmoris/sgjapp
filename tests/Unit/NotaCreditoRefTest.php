@@ -52,6 +52,20 @@ class NotaCreditoRefTest extends TestCase
         $this->assertFalse(NotaCreditoRef::totalCeroInvalido([$this->ref(['codigo' => 3])], [['precio' => 100, 'cantidad' => 1]]));
     }
 
+    public function test_normalizar_items_convierte_precio_vacio_o_con_mascara()
+    {
+        $out = NotaCreditoRef::normalizarItems([
+            ['nombre' => 'a', 'precio' => '', 'cantidad' => '2'],
+            ['nombre' => 'b', 'precio' => '$ 1.500', 'cantidad' => ''],
+            ['nombre' => 'c', 'precio' => '0', 'cantidad' => 1],
+        ]);
+        $this->assertSame(0, $out[0]['precio']);
+        $this->assertSame(2, $out[0]['cantidad']);
+        $this->assertSame(0, $out[1]['precio']);     // texto con máscara no se adivina: cae a 0
+        $this->assertSame(1, $out[1]['cantidad']);
+        $this->assertSame(0, $out[2]['precio']);
+    }
+
     public function test_totales_con_iva_19()
     {
         $t = NotaCreditoRef::totales([['precio' => 1000, 'cantidad' => 2], ['precio' => 500, 'cantidad' => 1]]);

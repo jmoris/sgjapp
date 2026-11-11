@@ -101,6 +101,24 @@ class NotaCreditoRef
         return false;
     }
 
+    /**
+     * Normaliza los ítems del formulario: precio y cantidad siempre numéricos.
+     * (El campo de precio con máscara puede llegar como "" o "$ 0"; en PHP 8 multiplicar
+     * un texto no numérico lanza TypeError.)
+     */
+    public static function normalizarItems(array $items): array
+    {
+        // Un valor no numérico NO se interpreta (evita convertir "1.500" en 1,5): cae al valor por defecto
+        $num = function ($v, $defecto) {
+            return is_numeric($v) ? $v + 0 : $defecto;
+        };
+        foreach ($items as $i => $item) {
+            $items[$i]['precio'] = $num($item['precio'] ?? 0, 0);
+            $items[$i]['cantidad'] = $num($item['cantidad'] ?? 1, 1);
+        }
+        return $items;
+    }
+
     /** Totales locales estimados (neto, IVA 19%, total) para la vista previa. */
     public static function totales(array $items): array
     {

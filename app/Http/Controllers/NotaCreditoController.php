@@ -239,6 +239,9 @@ class NotaCreditoController extends Controller
 
     /** Valida el request de emisión; devuelve null si es válido o la respuesta JSON de error. */
     private function validarEmision(Request $request, bool $requiereProyecto){
+        if(is_array($request->items)){
+            $request->merge(['items' => NotaCreditoRef::normalizarItems($request->items)]);
+        }
         $rules = [
             'fecha_emision' => 'required',
             'cliente' => 'required',
